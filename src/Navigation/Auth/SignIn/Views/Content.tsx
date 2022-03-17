@@ -11,7 +11,7 @@ export const Content = () => {
 
   return (
     <UI.View style={s(`container`)}>
-      <UI.Text style={s(`fsz:24 bold`)}>Вход</UI.Text>
+      <UI.Text style={s(`P5 medium`)}>Вход</UI.Text>
 
       <UI.HSpacer size={40} />
 

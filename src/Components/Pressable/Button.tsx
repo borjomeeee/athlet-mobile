@@ -11,7 +11,7 @@ interface ButtonProps
 export const Button: React.FC<ButtonProps> = ({label, ...props}) => {
   return (
     <Pressable style={s(`h:46 aic jcc bgc:blue br:4`)} {...props}>
-      <Text style={s(`fsz:16 bold c:white`)}>{label}</Text>
+      <Text style={s(`medium c:white`)}>{label}</Text>
     </Pressable>
   );
 };

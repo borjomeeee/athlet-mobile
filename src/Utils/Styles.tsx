@@ -10,8 +10,39 @@ export const Colors = {
 
   darkGray: '#666666',
 };
+
+const textSizeStyleSheet = {
+  P1: () => ({fontSize: 54}),
+  P2: () => ({fontSize: 40}),
+  P3: () => ({fontSize: 32}),
+  P4: () => ({fontSize: 28}),
+  P5: () => ({fontSize: 24}),
+  P6: () => ({fontSize: 18}),
+  P7: () => ({fontSize: 16}),
+  P8: () => ({fontSize: 14}),
+  P9: () => ({fontSize: 12}),
+  P10: () => ({fontSize: 10}),
+};
+
+const textFont = {fontFamily: 'Rubik-Regular'};
+
+const fontsStylesSheet = {
+  text: () => textFont,
+  medium: () => ({
+    fontFamily: 'Rubik-Medium',
+  }),
+  bold: () => ({
+    fontFamily: 'Rubik-Bold',
+  }),
+  montserrat: () => ({
+    fontFamily: 'Montserrat-Bold',
+  }),
+};
+
 export const configureStyles = () => {
   configureStylesheet({
+    ...textSizeStyleSheet,
+    ...fontsStylesSheet,
     container: () => ({paddingHorizontal: 20}),
   });
 

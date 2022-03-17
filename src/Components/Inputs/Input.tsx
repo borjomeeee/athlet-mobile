@@ -6,10 +6,11 @@ import {Colors} from 'src/Utils/Styles';
 import {Pressable} from '../Pressable';
 import {HSpacer, Text, View, VSpacer} from '../Common';
 
-export const Input: React.FC<
-  React.ComponentProps<typeof RN.TextInput>
-> = props => {
-  return <RN.TextInput {...props} />;
+export const Input: React.FC<React.ComponentProps<typeof RN.TextInput>> = ({
+  style,
+  ...props
+}) => {
+  return <RN.TextInput style={[s(`text P7`), style]} {...props} />;
 };
 
 interface InputWithVariantProps extends React.ComponentProps<typeof Input> {
@@ -53,7 +54,7 @@ export const DefaultInput: React.FC<DefaultInputProps> = ({
     )}
     <InputWithVariant
       Variant={Input}
-      style={s(`fill fsz:16 c:text p:0`)}
+      style={s(`fill p:0`)}
       placeholderTextColor={Colors.lightGray}
       {...props}
     />
@@ -75,7 +76,7 @@ export const DefaultInputWithLabel: React.FC<DefaultInputWithLabelProps> = ({
 }) => {
   return (
     <View>
-      <Text style={s(`fsz:16 c:darkGray`)}>{label}</Text>
+      <Text style={s(`c:darkGray`)}>{label}</Text>
       <HSpacer size={7} />
       <DefaultInput Variant={Input} {...props} />
     </View>
