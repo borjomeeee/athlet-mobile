@@ -10,7 +10,8 @@ export const Input: React.FC<React.ComponentProps<typeof RN.TextInput>> = ({
   style,
   ...props
 }) => {
-  return <RN.TextInput style={[s(`text P7`), style]} {...props} />;
+  const inputStyle = React.useMemo(() => [s(`text P7`), style], [style]);
+  return <RN.TextInput style={inputStyle} {...props} />;
 };
 
 interface InputWithVariantProps extends React.ComponentProps<typeof Input> {
@@ -28,6 +29,7 @@ export const EmailVariant: React.FC<InputWithVariantProps> = props => (
   <InputWithVariant
     keyboardType="email-address"
     textContentType="emailAddress"
+    autoCapitalize="none"
     {...props}
   />
 );
@@ -43,29 +45,34 @@ interface DefaultInputProps extends InputWithVariantProps {
 export const DefaultInput: React.FC<DefaultInputProps> = ({
   rightChild: RightChild,
   leftChild: LeftChild,
+
+  style,
   ...props
-}) => (
-  <View style={s(`h:46 br:4 bw:1 bc:lightGray ph:12 mb:7`, `row aic`)}>
-    {LeftChild && (
-      <>
-        <LeftChild />
-        <VSpacer size={10} />
-      </>
-    )}
-    <InputWithVariant
-      Variant={Input}
-      style={s(`fill p:0`)}
-      placeholderTextColor={Colors.lightGray}
-      {...props}
-    />
-    {RightChild && (
-      <>
-        <VSpacer size={10} />
-        <RightChild />
-      </>
-    )}
-  </View>
-);
+}) => {
+  const inputStyle = React.useMemo(() => [s(`fill p:0`), style], [style]);
+  return (
+    <View style={s(`h:46 br:4 bw:1 bc:lightGray ph:12 mb:7`, `row aic`)}>
+      {LeftChild && (
+        <>
+          <LeftChild />
+          <VSpacer size={10} />
+        </>
+      )}
+      <InputWithVariant
+        Variant={Input}
+        style={inputStyle}
+        placeholderTextColor={Colors.lightGray}
+        {...props}
+      />
+      {RightChild && (
+        <>
+          <VSpacer size={10} />
+          <RightChild />
+        </>
+      )}
+    </View>
+  );
+};
 
 interface DefaultInputWithLabelProps extends DefaultInputProps {
   label: string;

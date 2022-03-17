@@ -7,5 +7,6 @@ export const Text: React.FC<React.ComponentProps<typeof RN.Text>> = ({
   style,
   ...props
 }) => {
-  return <RN.Text style={[s(`text P7`), style]} {...props} />;
+  const textStyle = React.useMemo(() => [s(`text P7`), style], [style]);
+  return <RN.Text style={textStyle} {...props} />;
 };

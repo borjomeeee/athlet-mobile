@@ -10,7 +10,7 @@ export const Content = () => {
     useSignInController();
 
   return (
-    <UI.View style={s(`container`)}>
+    <UI.View>
       <UI.Text style={s(`P5 medium`)}>Вход</UI.Text>
 
       <UI.HSpacer size={40} />

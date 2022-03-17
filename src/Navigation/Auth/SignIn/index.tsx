@@ -6,23 +6,32 @@ import * as UI from 'src/Components';
 
 import {Header} from './Views/Header';
 import {Content} from './Views/Content';
+import {useSignInController} from './Hooks';
+import {useFocusEffect} from '@react-navigation/core';
 
 export const SignIn = () => {
+  const {resetForm} = useSignInController();
+
+  useFocusEffect(React.useCallback(() => () => resetForm(), [resetForm]));
+
   return (
     <UI.View style={s(`fill bgc:white`)}>
-      <UI.ScrollView contentContainerStyle={s(`fill pb:14`)}>
-        <SafeAreaView style={s(`fill`)}>
-          <Header />
-          <UI.View style={s(`fill`)} />
+      <SafeAreaView style={s(`fill container pb:14`)}>
+        <UI.HSpacer size={57} />
+        <Header />
+
+        <UI.View style={s(`fill`)} />
+        <UI.KeyboardAvoidingView>
           <Content />
+          <UI.HSpacer size={20} />
+        </UI.KeyboardAvoidingView>
 
-          <UI.HSpacer size={88} />
+        <UI.HSpacer size={68} />
 
-          <UI.View style={s(`aic`)}>
-            <UI.DeveloperInfo />
-          </UI.View>
-        </SafeAreaView>
-      </UI.ScrollView>
+        <UI.View style={s(`aic`)}>
+          <UI.DeveloperInfo />
+        </UI.View>
+      </SafeAreaView>
     </UI.View>
   );
 };

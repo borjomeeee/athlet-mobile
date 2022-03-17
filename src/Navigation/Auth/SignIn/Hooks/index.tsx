@@ -1,9 +1,12 @@
 import React from 'react';
+import {useRecoilState} from 'recoil';
+
 import {useAuthService} from 'src/Services/Auth';
+import {emailAtom, passwordAtom} from '../Store';
 
 export const useSignInStore = () => {
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const [email, setEmail] = useRecoilState(emailAtom);
+  const [password, setPassword] = useRecoilState(passwordAtom);
 
   return {
     email,
@@ -23,10 +26,16 @@ export const useSignInController = () => {
     [email, password, signIn],
   );
 
+  const resetForm = React.useCallback(() => {
+    setEmail('');
+    setPassword('');
+  }, [setEmail, setPassword]);
+
   return {
     handleChangeEmail: setEmail,
     handleChangePassword: setPassword,
 
     handlePressSignIn,
+    resetForm,
   };
 };
