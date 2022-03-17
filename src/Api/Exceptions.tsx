@@ -11,10 +11,8 @@ export class RequestError extends Error {
     super();
 
     this.requestInfo = requestInfo;
-    this.message = `[${exceptionName}] \n${JSON.stringify(
+    this.message = `[${exceptionName}] ${JSON.stringify(
       requestInfo,
-      null,
-      2,
     )}. ${message}`;
   }
 }

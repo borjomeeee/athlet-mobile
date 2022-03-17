@@ -1,8 +1,11 @@
 import {atom, useRecoilState} from 'recoil';
+import {getKeyFabricForDomain} from 'src/Utils/Recoil';
 import {User} from './Models/User';
 
+const createKey = getKeyFabricForDomain('account');
+
 export const accountStore = atom<User | undefined>({
-  key: 'account',
+  key: createKey('account'),
   default: undefined,
 });
 

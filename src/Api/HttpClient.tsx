@@ -6,7 +6,7 @@ import {
 } from './Types';
 import {appendParams, attachPath} from './Utils';
 
-import {BadNetworkConnectionError} from './Exceptions';
+import {BadNetworkConnectionError, RequestError} from './Exceptions';
 
 const defaultOptions: IHttpClientConfig = {
   protocol: 'https',
@@ -95,7 +95,7 @@ export class HttpClient implements IHttpClient {
       } else if (e.message === 'Network request failed') {
         throw new BadNetworkConnectionError(request, e.message);
       }
-      throw e;
+      throw new RequestError('FetchError', request, e.message);
     }
   }
 
