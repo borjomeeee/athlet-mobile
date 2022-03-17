@@ -9,6 +9,7 @@ module.exports = {
       '|recoil' +
       '|@borjomeeee/rn-styles' +
       '|react-native-safe-area-context' +
+      '|react-native-reanimated' +
       ')/)',
   ],
 
