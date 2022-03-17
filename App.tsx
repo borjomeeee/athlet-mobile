@@ -7,6 +7,9 @@ import {Config} from 'src/Config';
 
 import {FakeApiFabric} from 'fakeapi';
 import {Navigation} from 'src/Navigation';
+import {configureStyles} from 'src/Utils/Styles';
+
+configureStyles();
 
 const App = () => {
   React.useEffect(() => {

@@ -9,16 +9,12 @@ export class FakeApiFabric {
 
     return createServer({
       routes() {
-        this.post(
-          attachPath(baseUrl, ApiPaths.signIn),
-          () => {
-            return {
-              isOk: true,
-              data: {id: '1', email: 'test@test.com', nickname: 'borjome'},
-            };
-          },
-          {timing: 10_000},
-        );
+        this.post(attachPath(baseUrl, ApiPaths.signIn), () => {
+          return {
+            isOk: true,
+            data: {id: '1', email: 'test@test.com', nickname: 'borjome'},
+          };
+        });
       },
     });
   }

@@ -12,7 +12,7 @@ const defaultOptions: IHttpClientConfig = {
   protocol: 'https',
   domain: 'localhost',
 
-  timeout: 0,
+  timeout: 10_000,
   logger: console,
 };
 
@@ -48,7 +48,7 @@ export class HttpClient implements IHttpClient {
   }
 
   async request(request: RequestInfo) {
-    const {url, method, params, headers, data, timeout} = request;
+    const {url, method, params, headers, data} = request;
 
     const urlWithParams = appendParams(
       [
@@ -62,7 +62,10 @@ export class HttpClient implements IHttpClient {
 
     try {
       const controller = new AbortController();
-      setTimeout(() => controller.abort(), timeout);
+      setTimeout(
+        () => controller.abort(),
+        request.timeout || this.#options.timeout,
+      );
 
       this._logRequest({...request, url: urlWithParams, data: body});
       const response = await fetch(urlWithParams, {
