@@ -22,7 +22,7 @@ export const useSignInController = () => {
   const {signIn} = useAuthService();
 
   const handlePressSignIn = React.useCallback(
-    () => signIn({login: email, password}),
+    () => signIn(email, password),
     [email, password, signIn],
   );
 

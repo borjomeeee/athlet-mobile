@@ -8,23 +8,23 @@ export const useAuthService = () => {
 
   const {setAccount} = useAccountStore();
 
-  const signIn = useFlow<{login: string; password: string}>(
-    async ({login, password}) => {
+  const signIn = useFlow(
+    async (login: string, password: string) => {
       const user = await authRepo.signIn(login, password);
       setAccount(user);
     },
     [authRepo],
   );
-  const signUp = useFlow<{email: string; nickname: string; password: string}>(
-    async ({email, nickname, password}) => {
+  const signUp = useFlow(
+    async (email: string, nickname: string, password: string) => {
       const user = await authRepo.signUp(email, nickname, password);
       setAccount(user);
     },
     [authRepo, setAccount],
   );
 
-  const checkNicknameFree = useFlow<{nickname: string}>(
-    async ({nickname}) => {
+  const checkNicknameFree = useFlow(
+    async (nickname: string) => {
       try {
         await authRepo.checkNicknameFree(nickname);
         return true;
