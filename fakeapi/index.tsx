@@ -1,18 +1,24 @@
 import {createServer} from 'miragejs';
+import {ApiPaths} from 'src/Api/Paths';
+import {attachPath} from 'src/Api/Utils';
+import {Config} from 'src/Config';
 
 export class FakeApiFabric {
   static createFakeApi() {
+    const baseUrl = Config.defaultApiProtocol + '://' + Config.defaultApiDomain;
+
     return createServer({
       routes() {
-        this.get('/api/movies', () => {
-          return {
-            movies: [
-              {id: 1, name: 'Inception', year: 2010},
-              {id: 2, name: 'Interstellar', year: 2014},
-              {id: 3, name: 'Dunkirk', year: 2017},
-            ],
-          };
-        });
+        this.post(
+          attachPath(baseUrl, ApiPaths.signIn),
+          () => {
+            return {
+              isOk: true,
+              data: {id: '1', email: 'test@test.com', nickname: 'borjome'},
+            };
+          },
+          {timing: 10_000},
+        );
       },
     });
   }
