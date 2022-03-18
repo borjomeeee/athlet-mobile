@@ -22,7 +22,7 @@ export const parseSearchParams = (
 
 export const getBaseUrl = (
   domen: string,
-  protocol: string = 'https',
+  protocol = 'https',
   version?: string,
 ) => {
   let url = `${protocol}://${domen}`;

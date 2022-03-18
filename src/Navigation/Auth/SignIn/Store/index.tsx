@@ -8,7 +8,17 @@ export const emailAtom = atom({
   default: '',
 });
 
+export const emailErrorAtom = atom({
+  key: createKey('emailError'),
+  default: '',
+});
+
 export const passwordAtom = atom({
   key: createKey('password'),
+  default: '',
+});
+
+export const passwordErrorAtom = atom({
+  key: createKey('passwordError'),
   default: '',
 });

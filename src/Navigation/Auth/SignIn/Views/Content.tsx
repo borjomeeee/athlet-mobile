@@ -5,7 +5,7 @@ import * as UI from 'src/Components';
 import s from '@borjomeeee/rn-styles';
 
 export const Content = () => {
-  const {email, password} = useSignInStore();
+  const {email, emailError, password, passwordError} = useSignInStore();
   const {handleChangeEmail, handleChangePassword, handlePressSignIn} =
     useSignInController();
 
@@ -21,12 +21,14 @@ export const Content = () => {
         onChangeText={handleChangeEmail}
         placeholder="Введите email ..."
         label="Email"
+        error={emailError}
       />
       <UI.PasswordInput
         value={password}
         onChangeText={handleChangePassword}
         placeholder="Введите пароль ..."
         label="Пароль"
+        error={passwordError}
       />
 
       <UI.HSpacer size={20} />

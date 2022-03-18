@@ -3,5 +3,6 @@ export const NavPaths = {
     Self: 'auth',
 
     SignIn: 'auth/sign-in',
+    SignUp: 'auth/sign-up',
   },
 };

@@ -3,12 +3,17 @@ import * as RN from 'react-native';
 
 import s from '@borjomeeee/rn-styles';
 
-export const Input: React.FC<React.ComponentProps<typeof RN.TextInput>> = ({
+export interface InputProps extends React.ComponentProps<typeof RN.TextInput> {
+  inputRef?: React.MutableRefObject<RN.TextInput>;
+}
+export const Input: React.FC<InputProps> = ({
+  inputRef,
+
   style,
   ...props
 }) => {
   const inputStyle = React.useMemo(() => [s(`text P7`), style], [style]);
-  return <RN.TextInput style={inputStyle} {...props} />;
+  return <RN.TextInput ref={inputRef} style={inputStyle} {...props} />;
 };
 
 export interface InputWithVariantProps

@@ -3,11 +3,7 @@ import {RequestInfo, HttpRequestResult, HttpRequestBaseResult} from './Types';
 export class RequestError extends Error {
   message: string;
   requestInfo: RequestInfo;
-  constructor(
-    exceptionName: string,
-    requestInfo: RequestInfo,
-    message: string = '',
-  ) {
+  constructor(exceptionName: string, requestInfo: RequestInfo, message = '') {
     super();
 
     this.requestInfo = requestInfo;
@@ -39,7 +35,7 @@ export class RequestErrorWithBadStatus extends RequestError {
 
 export class ParseJsonError extends RequestError {
   result: HttpRequestBaseResult;
-  constructor(result: HttpRequestBaseResult, message: string = '') {
+  constructor(result: HttpRequestBaseResult, message = '') {
     super('ParseJsonError', result.request, message);
     this.result = result;
   }

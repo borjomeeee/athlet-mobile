@@ -40,11 +40,7 @@ export const parseDefaultApiResponse = (
         throw new BadApiResponseError(resultWithJson, json.reason);
       }
 
-      if (!json.data) {
-        throw new BadApiResponseError(resultWithJson);
-      }
-
-      return {...resultWithJson, json: resultWithJson.json.data};
+      return {...resultWithJson, json: resultWithJson.json.data || {}};
     })
     .catch(e => {
       if (e instanceof BadApiResponseError) {
