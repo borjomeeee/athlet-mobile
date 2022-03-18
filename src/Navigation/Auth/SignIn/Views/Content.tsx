@@ -15,7 +15,8 @@ export const Content = () => {
 
       <UI.HSpacer size={40} />
 
-      <UI.EmailInput
+      <UI.DefaultInputWithLabel
+        Variant={UI.EmailVariant}
         value={email}
         onChangeText={handleChangeEmail}
         placeholder="Введите email ..."
