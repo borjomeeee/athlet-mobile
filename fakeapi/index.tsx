@@ -33,7 +33,7 @@ export class FakeApiFabric {
 
         this.post(attachPath(baseUrl, ApiPaths.checkNickname), () => {
           const {checkNickname} = config.responses;
-          return makeResponse(checkNickname, account);
+          return makeResponse(checkNickname);
         });
       },
     });
