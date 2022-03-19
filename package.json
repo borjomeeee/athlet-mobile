@@ -13,6 +13,7 @@
   "dependencies": {
     "@borjomeeee/rn-styles": "^3.0.1",
     "@react-native-community/hooks": "^2.8.1",
+    "@react-navigation/bottom-tabs": "^6.2.0",
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/native-stack": "^6.5.0",
     "react": "17.0.2",

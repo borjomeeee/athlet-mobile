@@ -1,8 +1,4 @@
-import React from 'react';
-
-type Awaited<T> = T extends PromiseLike<infer U> ? U : T;
 type FlowReturnType<T> = [T, undefined] | [undefined, Error];
-
 export const flow = async <T extends () => Promise<any>>(
   cb: T,
 ): Promise<FlowReturnType<ReturnType<typeof cb>>> => {
