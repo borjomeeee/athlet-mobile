@@ -20,10 +20,14 @@ export const SignIn = () => {
         <UI.HSpacer size={57} />
         <Header />
 
-        <UI.View style={s(`fill`)} />
-        <UI.KeyboardAvoidingView>
-          <Content />
-          <UI.HSpacer size={20} />
+        <UI.KeyboardAvoidingView style={s(`fill`)}>
+          <UI.View style={s(`fill`)} />
+          <UI.View>
+            <UI.ScrollView style={s(`ofv zi:10`)}>
+              <Content />
+              <UI.HSpacer size={20} />
+            </UI.ScrollView>
+          </UI.View>
         </UI.KeyboardAvoidingView>
 
         <UI.HSpacer size={68} />

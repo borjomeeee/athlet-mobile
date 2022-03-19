@@ -34,7 +34,7 @@ export const useSignInStore = () => {
 
   const handleChangePassword = React.useCallback(
     (text: string) => {
-      setPassword(text);
+      setPassword(text.trim());
       setPasswordError('');
     },
     [setPassword, setPasswordError],

@@ -73,17 +73,21 @@ export const DefaultInput: React.FC<DefaultInputProps> = ({
     onChangeText?.(value || '');
   }, [inputRef, value, onChangeText]);
 
+  const containerStyle = React.useMemo(
+    () => [
+      errorAnimatedStyle,
+      s(
+        `rel h:46 br:4 bw:1 bc:lightGray ph:12 mb:7`,
+        `row aic bgc:white ofv`,
+        error && `bc:red`,
+      ),
+    ],
+    [error, errorAnimatedStyle],
+  );
+
   return (
     <View>
-      <Animated.View
-        style={[
-          errorAnimatedStyle,
-          s(
-            `rel h:46 br:4 bw:1 bc:lightGray ph:12 mb:7`,
-            `row aic ofv`,
-            error && `bc:red`,
-          ),
-        ]}>
+      <Animated.View style={containerStyle}>
         {LeftChild && (
           <>
             {LeftChild}
