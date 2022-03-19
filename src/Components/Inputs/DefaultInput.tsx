@@ -27,6 +27,7 @@ export interface DefaultInputProps extends InputWithVariantProps {
   leftChild?: React.ReactNode;
 
   error?: string;
+  hideErrorText?: boolean;
 }
 export const DefaultInput: React.FC<DefaultInputProps> = ({
   inputRef = React.createRef() as React.MutableRefObject<RN.TextInput>,
@@ -35,8 +36,9 @@ export const DefaultInput: React.FC<DefaultInputProps> = ({
   leftChild: LeftChild,
 
   error,
-  style,
+  hideErrorText,
 
+  style,
   value,
 
   onChangeText,
@@ -110,7 +112,7 @@ export const DefaultInput: React.FC<DefaultInputProps> = ({
           </>
         )}
 
-        {!!error && (
+        {!hideErrorText && !!error && (
           <View style={s(`abs t:0 r:0 b:0 l:0 bgc:white br:4`)}>
             <Pressable style={s(`fill aic jcc`)} onPress={handlePressError}>
               <Text style={s(`c:red P9 tac`)}>{error}</Text>

@@ -2,13 +2,10 @@ import {StackActions, useNavigation} from '@react-navigation/core';
 import React from 'react';
 import {useRecoilState} from 'recoil';
 import {BadApiResponseError} from 'src/Api/Exceptions';
+import {ApiResponse} from 'src/Api/Responses';
 import {NavPaths} from 'src/Navigation/Paths';
 
 import {useAuthService} from 'src/Services/Auth';
-import {
-  SignInFailedResponseReason,
-  SubmitFormResponseReason,
-} from 'src/Store/Models/Auth';
 import {validateEmail} from 'src/Utils/Common';
 import {
   emailAtom,
@@ -82,10 +79,10 @@ export const useSignInController = () => {
     const [_, error] = await signIn(email, password);
     if (error && error instanceof BadApiResponseError && error.reason) {
       switch (error.reason) {
-        case SignInFailedResponseReason.INCORRECT_DATA:
+        case ApiResponse.INCORRECT_DATA:
           setEmailError('Неверные логин или пароль');
           break;
-        case SubmitFormResponseReason.INVALID_EMAIL:
+        case ApiResponse.INVALID_EMAIL:
           setEmailError('Введите валидный email');
           break;
         default:

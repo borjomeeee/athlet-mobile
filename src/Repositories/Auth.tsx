@@ -29,14 +29,14 @@ export const useAuthRepository = () => {
     [],
   );
 
-  const checkNicknameFree = (nickname: string) => {
+  const checkNicknameFree = React.useCallback((nickname: string) => {
     return httpClient
       .post({
         url: ApiPaths.checkNickname,
         data: {nickname},
       })
       .then(parseDefaultApiResponse);
-  };
+  }, []);
 
   return {signIn, signUp, checkNicknameFree};
 };

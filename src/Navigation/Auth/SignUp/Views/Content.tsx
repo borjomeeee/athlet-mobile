@@ -3,6 +3,7 @@ import React from 'react';
 import s from '@borjomeeee/rn-styles';
 import * as UI from 'src/Components';
 import {useSignUpController, useSignUpStore} from '../Hooks';
+import {useDebounce} from 'src/Hooks/Common';
 
 export const Content = () => {
   const {
@@ -22,7 +23,18 @@ export const Content = () => {
     handleChangeNickname,
     handleChangePassword,
     handleChangeRepeatPassword,
+    checkNickname,
   } = useSignUpController();
+
+  const debouncedNickname = useDebounce(nickname, 500);
+
+  React.useEffect(() => {
+    if (debouncedNickname.length === 0) {
+      return;
+    }
+
+    checkNickname(debouncedNickname);
+  }, [debouncedNickname, checkNickname]);
 
   return (
     <UI.View>
@@ -43,8 +55,9 @@ export const Content = () => {
         value={nickname}
         onChangeText={handleChangeNickname}
         placeholder="Введите никнейм ..."
-        label="Никнейм"
+        label={nicknameError ? nicknameError : 'Никнейм'}
         error={nicknameError}
+        hideErrorText
       />
 
       <UI.PasswordInput

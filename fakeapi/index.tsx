@@ -3,12 +3,19 @@ import {ApiPaths} from 'src/Api/Paths';
 import {attachPath} from 'src/Api/Utils';
 import {Config} from 'src/Config';
 import {account} from './Data';
-import {DefaultResponse, IFakeApiConfig} from './Types';
+import {
+  CheckNicknameRespons,
+  DefaultResponse,
+  IFakeApiConfig,
+  SubmitFormResponse,
+} from './Types';
 
 export class FakeApiFabric {
   static createFakeApi() {
     const config: IFakeApiConfig = {
-      responses: {},
+      responses: {
+        signUp: SubmitFormResponse.INVALID_PASSWORD,
+      },
     };
     const baseUrl = Config.defaultApiProtocol + '://' + Config.defaultApiDomain;
 
@@ -17,6 +24,16 @@ export class FakeApiFabric {
         this.post(attachPath(baseUrl, ApiPaths.signIn), () => {
           const {signIn} = config.responses;
           return makeResponse(signIn, account);
+        });
+
+        this.post(attachPath(baseUrl, ApiPaths.signUp), () => {
+          const {signUp} = config.responses;
+          return makeResponse(signUp, account);
+        });
+
+        this.post(attachPath(baseUrl, ApiPaths.checkNickname), () => {
+          const {checkNickname} = config.responses;
+          return makeResponse(checkNickname, account);
         });
       },
     });
