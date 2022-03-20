@@ -34,4 +34,6 @@ export interface IFakeApiResponses {
   signIn: DefaultResponse | SubmitFormResponse | SignInResponse;
   signUp: DefaultResponse | SubmitFormResponse | SignUpResponse;
   checkNickname: DefaultResponse | CheckNicknameRespons;
+
+  getMyTrainings: DefaultResponse;
 }

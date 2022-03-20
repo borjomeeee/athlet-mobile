@@ -2,7 +2,7 @@ import {createServer, Response} from 'miragejs';
 import {ApiPaths} from 'src/Api/Paths';
 import {attachPath} from 'src/Api/Utils';
 import {Config} from 'src/Config';
-import {account} from './Data';
+import {account, training} from './Data';
 import {DefaultResponse, IFakeApiConfig} from './Types';
 
 export class FakeApiFabric {
@@ -27,6 +27,11 @@ export class FakeApiFabric {
         this.post(attachPath(baseUrl, ApiPaths.checkNickname), () => {
           const {checkNickname} = config.responses;
           return makeResponse(checkNickname);
+        });
+
+        this.get(attachPath(baseUrl, ApiPaths.getMyTrainings), () => {
+          const {getMyTrainings} = config.responses;
+          return makeResponse(getMyTrainings, [training]);
         });
       },
     });
