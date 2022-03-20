@@ -9,6 +9,7 @@ import {useInputRecoilState} from 'src/Hooks/Form';
 import {NavPaths} from 'src/Navigation/Paths';
 import {useAuthService} from 'src/Services/Auth';
 import {validateEmail} from 'src/Utils/Common';
+import {Logger} from 'src/Utils/Logger';
 import {
   emailAtom,
   emailErrorAtom,
@@ -149,7 +150,7 @@ export const useSignUpController = () => {
               setNicknameError('Никнейм занят');
               break;
             default:
-              console.error('get unhandled api response!');
+              Logger.error('get unhandled api response!');
               break;
           }
         }

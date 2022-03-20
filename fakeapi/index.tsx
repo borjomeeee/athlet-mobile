@@ -3,19 +3,12 @@ import {ApiPaths} from 'src/Api/Paths';
 import {attachPath} from 'src/Api/Utils';
 import {Config} from 'src/Config';
 import {account} from './Data';
-import {
-  CheckNicknameRespons,
-  DefaultResponse,
-  IFakeApiConfig,
-  SubmitFormResponse,
-} from './Types';
+import {DefaultResponse, IFakeApiConfig} from './Types';
 
 export class FakeApiFabric {
   static createFakeApi() {
     const config: IFakeApiConfig = {
-      responses: {
-        signUp: SubmitFormResponse.INVALID_PASSWORD,
-      },
+      responses: {},
     };
     const baseUrl = Config.defaultApiProtocol + '://' + Config.defaultApiDomain;
 
@@ -23,7 +16,7 @@ export class FakeApiFabric {
       routes() {
         this.post(attachPath(baseUrl, ApiPaths.signIn), () => {
           const {signIn} = config.responses;
-          return makeResponse(signIn, account);
+          return makeResponse(signIn, account, {Authorization: ''});
         });
 
         this.post(attachPath(baseUrl, ApiPaths.signUp), () => {
@@ -40,9 +33,16 @@ export class FakeApiFabric {
   }
 }
 
-function makeResponse(response: string | undefined, dataIfSuccess?: object) {
+function makeResponse(
+  response: string | undefined,
+  dataIfSuccess?: object,
+  headers?: Record<string, string>,
+) {
   if (response === undefined) {
-    return makeGoodResponse(dataIfSuccess);
+    return makeGoodResponse(dataIfSuccess, {
+      ...headers,
+      Authorization: 'Bearer validJWTtoken',
+    });
   }
 
   if (response === DefaultResponse.FATAL) {
@@ -50,6 +50,12 @@ function makeResponse(response: string | undefined, dataIfSuccess?: object) {
   } else if (response === DefaultResponse.AUTH_ERROR) {
     return new Response(401, undefined, {isOk: false, reason: response});
   } else if (response === DefaultResponse.SUCCESS) {
+    return makeGoodResponse(dataIfSuccess, headers);
+  } else if (response === DefaultResponse.BAD_AUTH_TOKEN) {
+    return makeGoodResponse(dataIfSuccess, {
+      Authorization: 'some not valid token',
+    });
+  } else if (response === DefaultResponse.EMPTY_AUTH_TOKEN) {
     return makeGoodResponse(dataIfSuccess);
   }
 
@@ -60,6 +66,6 @@ function makeBadResponse(reason: string) {
   return new Response(400, undefined, {isOk: false, reason});
 }
 
-function makeGoodResponse(data?: object) {
-  return new Response(200, undefined, {isOk: true, data});
+function makeGoodResponse(data?: object, headers?: Record<string, string>) {
+  return new Response(200, headers, {isOk: true, data});
 }

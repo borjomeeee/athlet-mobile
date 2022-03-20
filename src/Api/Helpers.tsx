@@ -1,8 +1,4 @@
-import {
-  RequestErrorWithBadStatus,
-  ParseJsonError,
-  BadApiResponseError,
-} from './Exceptions';
+import {ParseJsonError, BadApiResponseError} from './Exceptions';
 import {HttpRequestBaseResult, HttpRequestResult} from './Types';
 
 export const parseJson = async (
@@ -16,17 +12,6 @@ export const parseJson = async (
   } catch (e) {
     throw new ParseJsonError(result, e.message);
   }
-};
-
-export const parseJsonIfOk = async (
-  result: HttpRequestBaseResult,
-): Promise<HttpRequestResult> => {
-  const {response} = result;
-  if (response.ok) {
-    return await parseJson(result);
-  }
-
-  throw new RequestErrorWithBadStatus(result, 200);
 };
 
 export const parseDefaultApiResponse = (

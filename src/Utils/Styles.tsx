@@ -8,8 +8,9 @@ export const Colors = {
 
   ultraLightGray: '#E2E2E2',
   lightGray: '#DCDCDC',
-
   darkGray: '#666666',
+
+  layout: '#FAFAFA',
 };
 
 const textSizeStyleSheet = {
@@ -47,6 +48,18 @@ export const configureStyles = () => {
 
     uppercase: () => ({textTransform: 'uppercase'}),
     container: () => ({paddingHorizontal: 20}),
+
+    shadow: () => ({
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 4,
+      },
+      shadowOpacity: 0.05,
+      shadowRadius: 12,
+
+      elevation: 7,
+    }),
   });
 
   configureVariables({

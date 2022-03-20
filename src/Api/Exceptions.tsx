@@ -19,24 +19,18 @@ export class BadNetworkConnectionError extends RequestError {
   }
 }
 
-export class RequestErrorWithBadStatus extends RequestError {
-  result: HttpRequestBaseResult;
-
-  constructor(result: HttpRequestBaseResult, expectedStatus: number) {
-    super(
-      'BadResponseError',
-      result.request,
-      `Expected: ${expectedStatus}, but get ${result.response.status}`,
-    );
-
-    this.result = result;
-  }
-}
-
 export class ParseJsonError extends RequestError {
   result: HttpRequestBaseResult;
   constructor(result: HttpRequestBaseResult, message = '') {
     super('ParseJsonError', result.request, message);
+    this.result = result;
+  }
+}
+
+export class ParseJWTFromResponseError extends RequestError {
+  result: HttpRequestBaseResult;
+  constructor(result: HttpRequestBaseResult, message = '') {
+    super('ParseJWTFromResponseError', result.request, message);
     this.result = result;
   }
 }

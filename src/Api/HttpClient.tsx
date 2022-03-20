@@ -7,17 +7,20 @@ import {
 import {appendParams, attachPath} from './Utils';
 
 import {BadNetworkConnectionError, RequestError} from './Exceptions';
+import {Logger} from 'src/Utils/Logger';
 
 const defaultOptions: IHttpClientConfig = {
   protocol: 'https',
   domain: 'localhost',
 
   timeout: 10_000,
-  logger: console,
+  logger: {log: Logger.debug},
 };
 
 export class HttpClient implements IHttpClient {
+  jwtToken?: string;
   #options: IHttpClientConfig;
+
   constructor(options: Partial<IHttpClientConfig> = {}) {
     this.#options = {...defaultOptions, ...options};
   }
@@ -25,6 +28,14 @@ export class HttpClient implements IHttpClient {
   configure(options: Partial<IHttpClientConfig>) {
     this.#options = {...this.#options, ...options};
     return this;
+  }
+
+  authorize(jwtToken: string) {
+    this.jwtToken = jwtToken;
+  }
+
+  deauthorize() {
+    this.jwtToken = undefined;
   }
 
   static of(httpClient: HttpClient, options: Partial<IHttpClientConfig> = {}) {
@@ -70,7 +81,12 @@ export class HttpClient implements IHttpClient {
       this._logRequest({...request, url: urlWithParams, data: body});
       const response = await fetch(urlWithParams, {
         method,
-        headers,
+        headers: this.jwtToken
+          ? {
+              ...headers,
+              Authorization: `Bearer ${this.jwtToken}`,
+            }
+          : headers,
         body,
 
         signal: controller.signal,

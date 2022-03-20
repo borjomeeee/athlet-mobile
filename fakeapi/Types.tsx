@@ -8,6 +8,9 @@ export enum DefaultResponse {
   SUCCESS = 'success',
   AUTH_ERROR = 'not-authorized',
   FATAL = 'fatal',
+
+  EMPTY_AUTH_TOKEN = 'empty-auth-token',
+  BAD_AUTH_TOKEN = 'bad-auth-token',
 }
 
 export enum SignInResponse {

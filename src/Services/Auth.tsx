@@ -1,11 +1,11 @@
 import React from 'react';
-import {ApiResponse} from 'src/Api/Responses';
 import {BadApiResponseError} from 'src/Api/Exceptions';
 import {flow} from 'src/Hooks/Flow';
 import {useAuthRepository} from 'src/Repositories/Auth';
 import {useAccountStore} from 'src/Store/Account';
 import {StackActions, useNavigation} from '@react-navigation/core';
 import {NavPaths} from 'src/Navigation/Paths';
+import {httpClient} from 'src/Api';
 
 export const useAuthService = () => {
   const navigation = useNavigation();
@@ -20,22 +20,26 @@ export const useAuthService = () => {
   const signIn = React.useCallback(
     (login: string, password: string) =>
       flow(async () => {
-        const user = await fetchSignIn(login, password);
+        const {user, token} = await fetchSignIn(login, password);
+
+        httpClient.authorize(token);
         setAccount(user);
 
         navigation.dispatch(StackActions.replace(NavPaths.BottomTab.Self));
-      }),
+      }, 'signIn'),
     [fetchSignIn, setAccount, navigation],
   );
 
   const signUp = React.useCallback(
     (email: string, nickname: string, password: string) =>
       flow(async () => {
-        const user = await fetchSignUp(email, nickname, password);
+        const {user, token} = await fetchSignUp(email, nickname, password);
+
+        httpClient.authorize(token);
         setAccount(user);
 
         navigation.dispatch(StackActions.replace(NavPaths.BottomTab.Self));
-      }),
+      }, 'signUp'),
     [fetchSignUp, setAccount, navigation],
   );
 
@@ -55,16 +59,18 @@ export const useAuthService = () => {
 
           throw e;
         }
-      }),
+      }, 'checkNicknameFree'),
     [fetchCheckNicknameFree],
   );
 
   const logout = React.useCallback(
     () =>
       flow(async () => {
+        httpClient.deauthorize();
         setAccount(undefined);
+
         navigation.dispatch(StackActions.replace(NavPaths.Auth.SignIn));
-      }),
+      }, 'logout'),
     [setAccount, navigation],
   );
 
