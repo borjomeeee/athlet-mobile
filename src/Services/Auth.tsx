@@ -26,7 +26,7 @@ export const useAuthService = () => {
         setAccount(user);
 
         navigation.dispatch(StackActions.replace(NavPaths.BottomTab.Self));
-      }, 'signIn'),
+      }, 'authService__signIn'),
     [fetchSignIn, setAccount, navigation],
   );
 
@@ -39,7 +39,7 @@ export const useAuthService = () => {
         setAccount(user);
 
         navigation.dispatch(StackActions.replace(NavPaths.BottomTab.Self));
-      }, 'signUp'),
+      }, 'authService__signUp'),
     [fetchSignUp, setAccount, navigation],
   );
 
@@ -59,7 +59,7 @@ export const useAuthService = () => {
 
           throw e;
         }
-      }, 'checkNicknameFree'),
+      }, 'authService__checkNicknameFree'),
     [fetchCheckNicknameFree],
   );
 
@@ -70,7 +70,7 @@ export const useAuthService = () => {
         setAccount(undefined);
 
         navigation.dispatch(StackActions.replace(NavPaths.Auth.SignIn));
-      }, 'logout'),
+      }, 'authService__logout'),
     [setAccount, navigation],
   );
 

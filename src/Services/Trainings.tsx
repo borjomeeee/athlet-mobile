@@ -13,7 +13,7 @@ export const useTrainingsService = () => {
       flow(async () => {
         const trainings = await downloadMyTrainings();
         setMyTrainings(trainings);
-      }, 'getMyTrainings'),
+      }, 'trainingService__getMyTrainings'),
     [downloadMyTrainings, setMyTrainings],
   );
 
