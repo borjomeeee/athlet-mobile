@@ -3,13 +3,14 @@ import {ApiPaths} from 'src/Api/Paths';
 import {attachPath} from 'src/Api/Utils';
 import {Config} from 'src/Config';
 import {account, training} from './Data';
-import {DefaultResponse, IFakeApiConfig} from './Types';
+import {DefaultResponse, IFakeApiConfig, SignInResponse} from './Types';
 
 export class FakeApiFabric {
   static createFakeApi() {
     const config: IFakeApiConfig = {
       responses: {
         checkAuth: DefaultResponse.AUTH_ERROR,
+        signIn: DefaultResponse.FATAL,
       },
     };
     const baseUrl = Config.defaultApiProtocol + '://' + Config.defaultApiDomain;

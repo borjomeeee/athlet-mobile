@@ -36,7 +36,7 @@ export const useFlow = <T extends (...args: any[]) => Promise<any> | any>(
         return [await cb(...args), undefined];
       } catch (e) {
         Logger.error(e.message);
-        return [undefined, new Error()];
+        return [undefined, e];
       } finally {
         delete flowsStack[flowId];
       }

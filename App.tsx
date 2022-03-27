@@ -10,8 +10,7 @@ import {FakeApiFabric} from 'fakeapi';
 import {Navigation} from 'src/Navigation';
 import {configureStyles} from 'src/Utils/Styles';
 import {ModalRouter} from 'src/Lib/ModalRouter';
-
-// import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 configureStyles();
 
@@ -33,10 +32,10 @@ const App = () => {
   return (
     <RecoilRoot>
       <NavigationContainer>
-        <Navigation />
-        {/* <GestureHandlerRootView> */}
-        <ModalRouter />
-        {/* </GestureHandlerRootView> */}
+        <SafeAreaProvider>
+          <Navigation />
+          <ModalRouter />
+        </SafeAreaProvider>
       </NavigationContainer>
     </RecoilRoot>
   );

@@ -3,9 +3,8 @@ import React from 'react';
 import {useRecoilState} from 'recoil';
 import {BadApiResponseError} from 'src/Api/Exceptions';
 import {ApiResponse} from 'src/Api/Responses';
-import {BadNetworkConnection} from 'src/Components/Modals';
-import {useModalRouter} from 'src/Lib/ModalRouter';
 import {NavPaths} from 'src/Navigation/Paths';
+import {useAppController} from 'src/Services/App';
 
 import {useAuthService} from 'src/Services/Auth';
 import {validateEmail} from 'src/Utils/Common';
@@ -66,7 +65,7 @@ export const useSignInController = () => {
 
   const navigation = useNavigation();
   const {signIn} = useAuthService();
-  const {showModal} = useModalRouter();
+  const {defaultHandleError} = useAppController();
 
   const handlePressSignIn = React.useCallback(async () => {
     if (email.trim().length === 0) {
@@ -80,7 +79,7 @@ export const useSignInController = () => {
     }
 
     const [_, error] = await signIn(email, password);
-    if (error && error instanceof BadApiResponseError && error.reason) {
+    if (error && error instanceof BadApiResponseError) {
       switch (error.reason) {
         case ApiResponse.INCORRECT_DATA:
           setEmailError('Неверные логин или пароль');
@@ -89,11 +88,18 @@ export const useSignInController = () => {
           setEmailError('Введите валидный email');
           break;
         default:
-          setEmailError(error.reason);
+          defaultHandleError(error);
           break;
       }
     }
-  }, [email, password, signIn, setEmailError, setPasswordError]);
+  }, [
+    email,
+    password,
+    signIn,
+    setEmailError,
+    setPasswordError,
+    defaultHandleError,
+  ]);
 
   const handlePressGoToSignUp = React.useCallback(() => {
     navigation.dispatch(StackActions.replace(NavPaths.Auth.SignUp));

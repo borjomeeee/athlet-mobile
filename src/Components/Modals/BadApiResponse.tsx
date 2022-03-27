@@ -3,7 +3,7 @@ import React from 'react';
 import s from '@borjomeeee/rn-styles';
 import {BottomSheetModal, HSpacer, MultilineText, Text, View} from '../Common';
 
-import NetworkIcon from 'src/Assets/Svg/NetworkBig';
+import ErrorIcon from 'src/Assets/Svg/ErrorBig';
 import {
   useBottomSheetDynamicSnapPoints,
   BottomSheetView,
@@ -11,12 +11,10 @@ import {
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Button} from '../Pressable';
 
-interface BadNetworkConnectionProps {
+interface BadApiResponseProps {
   id: string;
 }
-export const BadNetworkConnection: React.FC<BadNetworkConnectionProps> = ({
-  id,
-}) => {
+export const BadApiResponse: React.FC<BadApiResponseProps> = ({id}) => {
   const {bottom} = useSafeAreaInsets();
   const {
     animatedHandleHeight,
@@ -34,19 +32,18 @@ export const BadNetworkConnection: React.FC<BadNetworkConnectionProps> = ({
       {dismiss => (
         <BottomSheetView style={s(`container`)} onLayout={handleContentLayout}>
           <View style={s(`aic jcc`)}>
-            <NetworkIcon />
+            <ErrorIcon />
             <HSpacer size={20} />
             <MultilineText style={s(`P5 medium`)}>
-              {['Плохое интернет', 'соединение']}
+              {['Ошибка выполнения', 'операции']}
             </MultilineText>
             <HSpacer size={30} />
             <Text style={s(`P7 tac maxW:294`)}>
-              Пожалуйста, проверьте свое подключение к интернету и попробуйте
-              снова
+              Пожалуйста, попробуйте повторить попытку позже
             </Text>
             <HSpacer size={20} />
           </View>
-          <Button label="Хорошо" onPress={dismiss} />
+          <Button label="Хорошо" style={s(`bgc:red`)} onPress={dismiss} />
           <HSpacer size={20 + bottom} />
         </BottomSheetView>
       )}

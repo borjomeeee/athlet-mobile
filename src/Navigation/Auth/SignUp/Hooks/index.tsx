@@ -6,6 +6,7 @@ import {ApiResponse} from 'src/Api/Responses';
 
 import {useInputRecoilState} from 'src/Hooks/Form';
 import {NavPaths} from 'src/Navigation/Paths';
+import {useAppController} from 'src/Services/App';
 import {useAuthService} from 'src/Services/Auth';
 import {validateEmail} from 'src/Utils/Common';
 import {Logger} from 'src/Utils/Logger';
@@ -94,6 +95,7 @@ export const useSignUpController = () => {
 
   const navigation = useNavigation();
   const {checkNicknameFree, signUp} = useAuthService();
+  const {defaultHandleError} = useAppController();
 
   const checkNickname = React.useCallback(
     async (value: string) => {
@@ -129,7 +131,7 @@ export const useSignUpController = () => {
     }
 
     const [_, error] = await signUp(email, nickname, password);
-    if (error && error instanceof BadApiResponseError && error.reason) {
+    if (error && error instanceof BadApiResponseError) {
       switch (error.reason) {
         case ApiResponse.INVALID_EMAIL:
           setEmailError('Введите валидный email');
@@ -147,7 +149,7 @@ export const useSignUpController = () => {
           setNicknameError('Никнейм занят');
           break;
         default:
-          Logger.error('get unhandled api response!');
+          defaultHandleError(error);
           break;
       }
     }
@@ -161,6 +163,7 @@ export const useSignUpController = () => {
     repeatPassword,
     setRepeatPasswordError,
     signUp,
+    defaultHandleError,
   ]);
 
   const handlePressGoToSignIn = React.useCallback(() => {

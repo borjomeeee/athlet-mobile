@@ -1,3 +1,4 @@
+import s from '@borjomeeee/rn-styles';
 import GBottomSheet, {BottomSheetBackdropProps} from '@gorhom/bottom-sheet';
 import React from 'react';
 import {
@@ -7,6 +8,7 @@ import {
   useSharedValue,
 } from 'react-native-reanimated';
 import {useModalRouter} from 'src/Lib/ModalRouter';
+import {Pressable} from '../Pressable';
 import {AnimatedView} from './View';
 
 interface BottomSheetProps extends React.ComponentProps<typeof GBottomSheet> {
@@ -23,7 +25,10 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
   }, [bottomSheetRef]);
 
   return (
-    <GBottomSheet ref={bottomSheetRef} {...props}>
+    <GBottomSheet
+      ref={bottomSheetRef}
+      handleIndicatorStyle={s(`w:35 h:4 br:2 bgc:#E1E4E8`)}
+      {...props}>
       {children(dismiss)}
     </GBottomSheet>
   );
@@ -47,21 +52,28 @@ export const BottomSheetModal: React.FC<BottomSheetModal> = ({
 
   const {dismissModal} = useModalRouter();
 
+  const handleClose = React.useCallback(() => {
+    dismissModal(id);
+    onClose?.();
+  }, [id, onClose, dismissModal]);
+
   const BackdropComponent = React.useMemo(
     () => () =>
       (
         <Backdrop
           animatedIndex={animatedIndex || _animatedIndex}
           animatedPosition={animatedPosition || _animatedPosition}
+          onPress={() => bottomSheetRef.current.close()}
         />
       ),
-    [animatedIndex, animatedPosition, _animatedIndex, _animatedPosition],
+    [
+      animatedIndex,
+      animatedPosition,
+      _animatedIndex,
+      _animatedPosition,
+      bottomSheetRef,
+    ],
   );
-
-  const handleClose = React.useCallback(() => {
-    dismissModal(id);
-    onClose?.();
-  }, [id, onClose, dismissModal]);
 
   return (
     <BottomSheet
@@ -77,14 +89,13 @@ export const BottomSheetModal: React.FC<BottomSheetModal> = ({
   );
 };
 
-const Backdrop: React.FC<BottomSheetBackdropProps> = ({animatedIndex}) => {
+const Backdrop: React.FC<BottomSheetBackdropProps & {onPress: () => void}> = ({
+  animatedIndex,
+  onPress,
+}) => {
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      position: 'absolute',
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
+      flex: 1,
 
       backgroundColor: '#000000',
       opacity: interpolate(
@@ -96,5 +107,12 @@ const Backdrop: React.FC<BottomSheetBackdropProps> = ({animatedIndex}) => {
     };
   });
 
-  return <AnimatedView style={animatedStyle} />;
+  return (
+    <Pressable
+      style={s(`abs t:0 b:0 r:0 l:0`)}
+      onPress={onPress}
+      activeOpacity={1}>
+      <AnimatedView style={animatedStyle} />
+    </Pressable>
+  );
 };

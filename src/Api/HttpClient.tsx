@@ -8,12 +8,13 @@ import {appendParams, attachPath} from './Utils';
 
 import {BadNetworkConnectionError, RequestError} from './Exceptions';
 import {Logger} from 'src/Utils/Logger';
+import {Config} from 'src/Config';
 
 const defaultOptions: IHttpClientConfig = {
   protocol: 'https',
   domain: 'localhost',
 
-  timeout: 10_000,
+  timeout: Config.badNetworkConnection ? 0 : 10_000,
   logger: {log: Logger.debug},
 };
 
