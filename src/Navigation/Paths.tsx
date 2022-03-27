@@ -1,4 +1,6 @@
 export const NavPaths = {
+  Init: 'init',
+
   Auth: {
     Self: 'auth',
 

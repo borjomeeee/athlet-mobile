@@ -1,11 +1,14 @@
 import React from 'react';
 import {BadApiResponseError} from 'src/Api/Exceptions';
-import {flow} from 'src/Hooks/Flow';
+import {useFlow} from 'src/Hooks/Flow';
 import {useAuthRepository} from 'src/Repositories/Auth';
 import {useAccountStore} from 'src/Store/Account';
 import {StackActions, useNavigation} from '@react-navigation/core';
 import {NavPaths} from 'src/Navigation/Paths';
 import {httpClient} from 'src/Api';
+import {LocalStorage} from 'src/Lib/LocalStorage';
+import {ApiResponse} from 'src/Api/Responses';
+import {User} from 'src/Store/Models/User';
 
 export const useAuthService = () => {
   const navigation = useNavigation();
@@ -14,67 +17,86 @@ export const useAuthService = () => {
     signIn: fetchSignIn,
     signUp: fetchSignUp,
     checkNicknameFree: fetchCheckNicknameFree,
+    checkAuth: fetchCheckAuth,
   } = useAuthRepository();
   const {setAccount} = useAccountStore();
 
-  const signIn = React.useCallback(
-    (login: string, password: string) =>
-      flow(async () => {
-        const {user, token} = await fetchSignIn(login, password);
+  const _completeAuth = React.useCallback(
+    (user: User, jwtToken: string) => {
+      httpClient.authorize(jwtToken);
+      LocalStorage.saveJwt(jwtToken);
 
-        httpClient.authorize(token);
-        setAccount(user);
+      setAccount(user);
 
-        navigation.dispatch(StackActions.replace(NavPaths.BottomTab.Self));
-      }, 'authService__signIn'),
-    [fetchSignIn, setAccount, navigation],
+      navigation.dispatch(StackActions.replace(NavPaths.BottomTab.Self));
+    },
+    [navigation, setAccount],
   );
 
-  const signUp = React.useCallback(
-    (email: string, nickname: string, password: string) =>
-      flow(async () => {
-        const {user, token} = await fetchSignUp(email, nickname, password);
+  const checkAuth = useFlow(
+    'authService__checkAuth',
+    async () => {
+      const jwtToken = LocalStorage.getJwt();
 
-        httpClient.authorize(token);
-        setAccount(user);
-
-        navigation.dispatch(StackActions.replace(NavPaths.BottomTab.Self));
-      }, 'authService__signUp'),
-    [fetchSignUp, setAccount, navigation],
+      const {user} = await fetchCheckAuth(jwtToken);
+      _completeAuth(user, jwtToken);
+    },
+    [_completeAuth, fetchCheckAuth],
   );
 
-  const checkNicknameFree = React.useCallback(
-    (nickname: string) =>
-      flow(async () => {
-        try {
-          await fetchCheckNicknameFree(nickname);
-          return true;
-        } catch (e) {
-          if (
-            e instanceof BadApiResponseError &&
-            e.reason === 'nickname-is-busy'
-          ) {
-            return false;
-          }
+  const signIn = useFlow(
+    'authService__signIn',
+    async (login: string, password: string) => {
+      const {user, token} = await fetchSignIn(login, password);
+      _completeAuth(user, token);
+    },
+    [fetchSignIn, _completeAuth],
+  );
 
-          throw e;
+  const signUp = useFlow(
+    'authService__signUp',
+    async (email: string, nickname: string, password: string) => {
+      const {user, token} = await fetchSignUp(email, nickname, password);
+      _completeAuth(user, token);
+    },
+    [fetchSignIn, _completeAuth],
+  );
+
+  const checkNicknameFree = useFlow(
+    'authService__checkNicknameFree',
+    async (nickname: string) => {
+      try {
+        await fetchCheckNicknameFree(nickname);
+        return true;
+      } catch (e) {
+        if (
+          e instanceof BadApiResponseError &&
+          e.reason === ApiResponse.NICKNAME_IS_BUSY
+        ) {
+          return false;
         }
-      }, 'authService__checkNicknameFree'),
+
+        throw e;
+      }
+    },
     [fetchCheckNicknameFree],
   );
 
-  const logout = React.useCallback(
-    () =>
-      flow(async () => {
-        httpClient.deauthorize();
-        setAccount(undefined);
+  const logout = useFlow(
+    'authService__logout',
+    () => {
+      httpClient.deauthorize();
+      LocalStorage.deleteJwt();
 
-        navigation.dispatch(StackActions.replace(NavPaths.Auth.SignIn));
-      }, 'authService__logout'),
-    [setAccount, navigation],
+      setAccount(undefined);
+
+      navigation.dispatch(StackActions.replace(NavPaths.Auth.SignIn));
+    },
+    [fetchSignIn, setAccount, navigation],
   );
 
   return {
+    checkAuth,
     signIn,
     signUp,
     checkNicknameFree,

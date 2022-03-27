@@ -11,12 +11,11 @@ export const useTrainingsRepository = () => {
     return httpClient
       .get({url: ApiPaths.getMyTrainings})
       .then(parseDefaultApiResponse)
-      .then(
-        data =>
-          canBeNull(z.array(TrainingScheme))
-            .default([])
-            .parse(data.json) as Training[],
-      );
+      .then(data => ({
+        trainings: canBeNull(z.array(TrainingScheme))
+          .default([])
+          .parse(data.json) as Training[],
+      }));
   }, []);
 
   return {downloadMyTrainings};

@@ -1,6 +1,7 @@
+import React from 'react';
 import {Logger} from 'src/Utils/Logger';
 
-type FlowReturnType<T> = [T, undefined] | [undefined, Error];
+type FlowReturnType<T> = Promise<[Awaited<T>, undefined] | [undefined, Error]>;
 export class FlowAlreadyStartedError extends Error {
   flowId: string;
   message: string;
@@ -14,25 +15,35 @@ export class FlowAlreadyStartedError extends Error {
 }
 
 const flowsStack: Record<string, true | undefined> = {};
-export const flow = async <T extends () => Promise<any>>(
+export const useFlow = <T extends (...args: any[]) => Promise<any> | any>(
+  flowId: string,
   cb: T,
-  id?: string,
-): Promise<FlowReturnType<ReturnType<typeof cb>>> => {
-  const flowId = id ?? Date.now().toString();
-  if (flowsStack[flowId]) {
-    const e = new FlowAlreadyStartedError(flowId);
-    Logger.error(e.message);
+  deps: any[],
+) => {
+  return React.useCallback(
+    async (
+      ...args: Parameters<T>
+    ): Promise<FlowReturnType<ReturnType<typeof cb>>> => {
+      if (flowsStack[flowId]) {
+        const e = new FlowAlreadyStartedError(flowId);
+        Logger.error(e.message);
 
-    return [undefined, e];
-  }
+        return [undefined, e];
+      }
 
-  try {
-    flowsStack[flowId] = true;
-    return [await cb(), undefined];
-  } catch (e) {
-    Logger.error(e.message);
-    return [undefined, e];
-  } finally {
-    delete flowsStack[flowId];
-  }
+      try {
+        flowsStack[flowId] = true;
+        return [await cb(...args), undefined];
+      } catch (e) {
+        Logger.error(e.message);
+        return [undefined, new Error()];
+      } finally {
+        delete flowsStack[flowId];
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    deps,
+  );
 };
+
+type Awaited<T> = T extends PromiseLike<infer U> ? U : T;

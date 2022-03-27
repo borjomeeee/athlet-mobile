@@ -8,6 +8,20 @@ import {ParseJWTFromResponseError} from 'src/Api/Exceptions';
 import {HttpRequestBaseResult} from 'src/Api/Types';
 
 export const useAuthRepository = () => {
+  const checkAuth = React.useCallback(async (jwtToken: string) => {
+    try {
+      httpClient.authorize(jwtToken);
+      return await httpClient
+        .get({
+          url: ApiPaths.checkAuth,
+        })
+        .then(parseDefaultApiResponse)
+        .then(data => ({user: UserScheme.parse(data.json) as User}));
+    } finally {
+      httpClient.deauthorize();
+    }
+  }, []);
+
   const signIn = React.useCallback((login: string, password: string) => {
     return httpClient
       .post({
@@ -46,7 +60,7 @@ export const useAuthRepository = () => {
       .then(parseDefaultApiResponse);
   }, []);
 
-  return {signIn, signUp, checkNicknameFree};
+  return {checkAuth, signIn, signUp, checkNicknameFree};
 };
 
 const parseJWTFromResponse = (result: HttpRequestBaseResult) => {

@@ -32,10 +32,12 @@ export class HttpClient implements IHttpClient {
 
   authorize(jwtToken: string) {
     this.jwtToken = jwtToken;
+    return this;
   }
 
   deauthorize() {
     this.jwtToken = undefined;
+    return this;
   }
 
   static of(httpClient: HttpClient, options: Partial<IHttpClientConfig> = {}) {

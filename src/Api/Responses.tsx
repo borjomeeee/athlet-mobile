@@ -1,4 +1,6 @@
 export enum ApiResponse {
+  AUTHORIZATION_ERROR = 'not-authorized',
+
   INVALID_EMAIL = 'invalid-email',
   INVALID_PASSWORD = 'invalid-password',
   INVALID_NICKANAME = 'invalid-nickname',

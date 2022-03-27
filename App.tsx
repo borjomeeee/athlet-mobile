@@ -12,12 +12,19 @@ import {configureStyles} from 'src/Utils/Styles';
 configureStyles();
 
 const App = () => {
+  const [dev, setDev] = React.useState(Config.fakeApiEnabled);
   React.useEffect(() => {
     if (Config.fakeApiEnabled) {
       const server = FakeApiFabric.createFakeApi();
+
+      setTimeout(() => setDev(false), 100);
       return () => server?.shutdown();
     }
   }, []);
+
+  if (dev) {
+    return null;
+  }
 
   return (
     <RecoilRoot>

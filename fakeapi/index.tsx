@@ -29,6 +29,11 @@ export class FakeApiFabric {
           return makeResponse(checkNickname);
         });
 
+        this.get(attachPath(baseUrl, ApiPaths.checkAuth), () => {
+          const {checkAuth} = config.responses;
+          return makeResponse(checkAuth, account);
+        });
+
         this.get(attachPath(baseUrl, ApiPaths.getMyTrainings), () => {
           const {getMyTrainings} = config.responses;
           return makeResponse(getMyTrainings, [training]);
