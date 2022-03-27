@@ -31,6 +31,7 @@ export const ExerciseScheme = ElementSheme.extend({
   completionType: ElementCompletionTypeScheme.default(
     ExerciseCompletionType.REPS,
   ),
+  restAfterComplete: MayBeIntegerScheme.default(0),
 });
 export type Exercise = z.TypeOf<typeof ExerciseScheme>;
 
@@ -66,7 +67,7 @@ export const ExerciseElementScheme = z.union([
 ]);
 export type ExerciseElement = z.TypeOf<typeof ExerciseElementScheme>;
 
-export const SetElementScheme = z.union([ExerciseElementScheme, RestScheme]);
+export const SetElementScheme = ExerciseElementScheme;
 export type SetElement = z.TypeOf<typeof SetElementScheme>;
 
 export const SetScheme = ElementSheme.extend({
@@ -77,7 +78,7 @@ export type Set = z.TypeOf<typeof SetScheme>;
 
 export const TrainingElementScheme = z.union([
   SetScheme,
-  RestScheme,
+  // RestScheme,
   ExerciseElementScheme,
 ]);
 export type TrainingElement = z.TypeOf<typeof TrainingElementScheme>;

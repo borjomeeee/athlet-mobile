@@ -3,7 +3,6 @@ import {StackActions} from '@react-navigation/native';
 import React from 'react';
 import {BadApiResponseError} from 'src/Api/Exceptions';
 import {ApiResponse} from 'src/Api/Responses';
-import {flow} from 'src/Hooks/Flow';
 
 import {useInputRecoilState} from 'src/Hooks/Form';
 import {NavPaths} from 'src/Navigation/Paths';
@@ -110,63 +109,59 @@ export const useSignUpController = () => {
     [checkNicknameFree, setNicknameError],
   );
 
-  const handlePressSignUp = React.useCallback(
-    () =>
-      flow(async () => {
-        if (email.length === 0) {
-          return setEmailError('Поле не должно быть пустым');
-        } else if (nickname.length === 0) {
-          return setNicknameError('Поле не должно быть пустым');
-        } else if (password.length === 0) {
-          return setPasswordError('Поле не должно быть пустым');
-        } else if (repeatPassword.length === 0) {
-          return setRepeatPasswordError('Поле не должно быть пустым');
-        }
+  const handlePressSignUp = React.useCallback(async () => {
+    if (email.length === 0) {
+      return setEmailError('Поле не должно быть пустым');
+    } else if (nickname.length === 0) {
+      return setNicknameError('Поле не должно быть пустым');
+    } else if (password.length === 0) {
+      return setPasswordError('Поле не должно быть пустым');
+    } else if (repeatPassword.length === 0) {
+      return setRepeatPasswordError('Поле не должно быть пустым');
+    }
 
-        if (!validateEmail(email)) {
-          return setEmailError('Введите валидный email');
-        }
+    if (!validateEmail(email)) {
+      return setEmailError('Введите валидный email');
+    }
 
-        if (repeatPassword !== password) {
-          return setRepeatPasswordError('Пароли не совпадают');
-        }
+    if (repeatPassword !== password) {
+      return setRepeatPasswordError('Пароли не совпадают');
+    }
 
-        const [_, error] = await signUp(email, nickname, password);
-        if (error && error instanceof BadApiResponseError && error.reason) {
-          switch (error.reason) {
-            case ApiResponse.INVALID_EMAIL:
-              setEmailError('Введите валидный email');
-              break;
-            case ApiResponse.INVALID_PASSWORD:
-              setPasswordError('Введите валидный пароль');
-              break;
-            case ApiResponse.INVALID_NICKANAME:
-              setNicknameError('Введите валидный никнейм');
-              break;
-            case ApiResponse.EMAIL_IS_BUSY:
-              setEmailError('Email занят');
-              break;
-            case ApiResponse.NICKNAME_IS_BUSY:
-              setNicknameError('Никнейм занят');
-              break;
-            default:
-              Logger.error('get unhandled api response!');
-              break;
-          }
-        }
-      }),
-    [
-      email,
-      setEmailError,
-      nickname,
-      setNicknameError,
-      password,
-      setPasswordError,
-      repeatPassword,
-      setRepeatPasswordError,
-      signUp,
-    ],
-  );
+    const [_, error] = await signUp(email, nickname, password);
+    if (error && error instanceof BadApiResponseError && error.reason) {
+      switch (error.reason) {
+        case ApiResponse.INVALID_EMAIL:
+          setEmailError('Введите валидный email');
+          break;
+        case ApiResponse.INVALID_PASSWORD:
+          setPasswordError('Введите валидный пароль');
+          break;
+        case ApiResponse.INVALID_NICKANAME:
+          setNicknameError('Введите валидный никнейм');
+          break;
+        case ApiResponse.EMAIL_IS_BUSY:
+          setEmailError('Email занят');
+          break;
+        case ApiResponse.NICKNAME_IS_BUSY:
+          setNicknameError('Никнейм занят');
+          break;
+        default:
+          Logger.error('get unhandled api response!');
+          break;
+      }
+    }
+  }, [
+    email,
+    setEmailError,
+    nickname,
+    setNicknameError,
+    password,
+    setPasswordError,
+    repeatPassword,
+    setRepeatPasswordError,
+    signUp,
+  ]);
 
   const handlePressGoToSignIn = React.useCallback(() => {
     navigation.dispatch(StackActions.replace(NavPaths.Auth.SignIn));

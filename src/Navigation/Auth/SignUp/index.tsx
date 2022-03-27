@@ -14,7 +14,7 @@ export const SignUp = () => {
   useFocusEffect(React.useCallback(() => () => resetForm(), [resetForm]));
 
   return (
-    <UI.View style={s(`fill bgc:white`)}>
+    <UI.View style={s(`fill bgc:layout`)}>
       <SafeAreaView style={s(`fill container pb:14`)}>
         <UI.HSpacer size={57} />
         <Header />

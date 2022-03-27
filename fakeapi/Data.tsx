@@ -29,6 +29,7 @@ export const training: Training = {
       title: 'Подтягивания',
       completionType: ExerciseCompletionType.REPS,
       reps: 10,
+      restAfterComplete: 10,
     },
     {
       type: ElementType.SET,
@@ -38,24 +39,18 @@ export const training: Training = {
           title: 'Подтягивания',
           completionType: ExerciseCompletionType.REPS,
           reps: 10,
-        },
-        {
-          type: ElementType.REST,
-          duration: 10,
+          restAfterComplete: 1,
         },
         {
           type: ElementType.EXERCISE,
           title: 'Подтягивания',
           completionType: ExerciseCompletionType.REPS,
           reps: 10,
+          restAfterComplete: 0,
         },
       ],
     },
     {
-      type: ElementType.REST,
-      duration: 10,
-    },
-    {
       type: ElementType.SET,
       elements: [
         {
@@ -63,16 +58,14 @@ export const training: Training = {
           title: 'Подтягивания',
           completionType: ExerciseCompletionType.REPS,
           reps: 10,
-        },
-        {
-          type: ElementType.REST,
-          duration: 10,
+          restAfterComplete: 10,
         },
         {
           type: ElementType.EXERCISE,
           title: 'Подтягивания',
           completionType: ExerciseCompletionType.REPS,
           reps: 10,
+          restAfterComplete: 10,
         },
       ],
     },
