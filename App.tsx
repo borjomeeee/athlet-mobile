@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import React from 'react';
 
 import {RecoilRoot} from 'recoil';
@@ -8,6 +9,9 @@ import {Config} from 'src/Config';
 import {FakeApiFabric} from 'fakeapi';
 import {Navigation} from 'src/Navigation';
 import {configureStyles} from 'src/Utils/Styles';
+import {ModalRouter} from 'src/Lib/ModalRouter';
+
+// import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 configureStyles();
 
@@ -30,6 +34,9 @@ const App = () => {
     <RecoilRoot>
       <NavigationContainer>
         <Navigation />
+        {/* <GestureHandlerRootView> */}
+        <ModalRouter />
+        {/* </GestureHandlerRootView> */}
       </NavigationContainer>
     </RecoilRoot>
   );

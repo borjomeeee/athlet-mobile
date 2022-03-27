@@ -3,6 +3,8 @@ import React from 'react';
 import {useRecoilState} from 'recoil';
 import {BadApiResponseError} from 'src/Api/Exceptions';
 import {ApiResponse} from 'src/Api/Responses';
+import {BadNetworkConnection} from 'src/Components/Modals';
+import {useModalRouter} from 'src/Lib/ModalRouter';
 import {NavPaths} from 'src/Navigation/Paths';
 
 import {useAuthService} from 'src/Services/Auth';
@@ -64,6 +66,7 @@ export const useSignInController = () => {
 
   const navigation = useNavigation();
   const {signIn} = useAuthService();
+  const {showModal} = useModalRouter();
 
   const handlePressSignIn = React.useCallback(async () => {
     if (email.trim().length === 0) {

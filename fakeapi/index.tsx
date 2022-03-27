@@ -8,7 +8,9 @@ import {DefaultResponse, IFakeApiConfig} from './Types';
 export class FakeApiFabric {
   static createFakeApi() {
     const config: IFakeApiConfig = {
-      responses: {},
+      responses: {
+        checkAuth: DefaultResponse.AUTH_ERROR,
+      },
     };
     const baseUrl = Config.defaultApiProtocol + '://' + Config.defaultApiDomain;
 

@@ -16,6 +16,7 @@ export const TrainingElement: React.FC<TrainingElementProps> = ({
     () => dayjs(trainining.createdAt).format('DD/MM/YYYY'),
     [trainining.createdAt],
   );
+
   return (
     <UI.View
       style={s(
