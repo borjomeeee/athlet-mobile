@@ -47,7 +47,7 @@ export const BottomSheetModal: React.FC<BottomSheetModal> = ({
   index = 0,
   ...props
 }) => {
-  const _animatedIndex = useSharedValue(0);
+  const _animatedIndex = useSharedValue(-1);
   const _animatedPosition = useSharedValue(0);
 
   const {dismissModal} = useModalRouter();
@@ -93,19 +93,17 @@ const Backdrop: React.FC<BottomSheetBackdropProps & {onPress: () => void}> = ({
   animatedIndex,
   onPress,
 }) => {
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      flex: 1,
+  const animatedStyle = useAnimatedStyle(() => ({
+    flex: 1,
 
-      backgroundColor: '#000000',
-      opacity: interpolate(
-        animatedIndex.value,
-        [-1, 0],
-        [0, 0.5],
-        Extrapolate.CLAMP,
-      ),
-    };
-  });
+    backgroundColor: '#000000',
+    opacity: interpolate(
+      animatedIndex.value,
+      [-1, 0],
+      [0, 0.5],
+      Extrapolate.CLAMP,
+    ),
+  }));
 
   return (
     <Pressable
