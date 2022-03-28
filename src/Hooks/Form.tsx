@@ -1,5 +1,5 @@
 import React from 'react';
-import {RecoilState, useRecoilState} from 'recoil';
+import {RecoilState, useSetRecoilState} from 'recoil';
 
 export const useInputRecoilState = (
   valueAtom: RecoilState<string>,
@@ -7,8 +7,8 @@ export const useInputRecoilState = (
 
   notTrim?: boolean,
 ) => {
-  const [value, setValue] = useRecoilState(valueAtom);
-  const [error, setError] = useRecoilState(errorAtom);
+  const setValue = useSetRecoilState(valueAtom);
+  const setError = useSetRecoilState(errorAtom);
 
   const handleChangeValue = React.useCallback(
     (text: string) => {
@@ -24,10 +24,7 @@ export const useInputRecoilState = (
   );
 
   return {
-    value,
     setValue: handleChangeValue,
-
-    error,
     setError,
   };
 };

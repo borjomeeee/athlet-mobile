@@ -2,20 +2,29 @@ import React from 'react';
 
 import s from '@borjomeeee/rn-styles';
 import * as UI from 'src/Components';
-import {useSignUpController, useSignUpStore} from '../Hooks';
+import {useSignUpController} from '../Hooks';
 import {useDebounce} from 'src/Hooks/Common';
+import {useRecoilValue} from 'recoil';
+import {
+  emailAtom,
+  emailErrorAtom,
+  nicknameAtom,
+  nicknameErrorAtom,
+  passwordAtom,
+  passwordErrorAtom,
+  repeatPasswordAtom,
+  repeatPasswordErrorAtom,
+} from '../Store';
 
 export const Content = () => {
-  const {
-    email,
-    emailError,
-    nickname,
-    nicknameError,
-    password,
-    passwordError,
-    repeatPassword,
-    repeatPasswordError,
-  } = useSignUpStore();
+  const email = useRecoilValue(emailAtom);
+  const emailError = useRecoilValue(emailErrorAtom);
+  const nickname = useRecoilValue(nicknameAtom);
+  const nicknameError = useRecoilValue(nicknameErrorAtom);
+  const password = useRecoilValue(passwordAtom);
+  const passwordError = useRecoilValue(passwordErrorAtom);
+  const repeatPassword = useRecoilValue(repeatPasswordAtom);
+  const repeatPasswordError = useRecoilValue(repeatPasswordErrorAtom);
 
   const {
     handlePressSignUp,

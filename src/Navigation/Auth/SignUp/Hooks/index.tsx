@@ -1,97 +1,38 @@
+import React from 'react';
 import {useNavigation} from '@react-navigation/core';
 import {StackActions} from '@react-navigation/native';
-import React from 'react';
+import {useRecoilValue} from 'recoil';
 import {BadApiResponseError} from 'src/Api/Exceptions';
 import {ApiResponse} from 'src/Api/Responses';
 
-import {useInputRecoilState} from 'src/Hooks/Form';
 import {NavPaths} from 'src/Navigation/Paths';
 import {useAppController} from 'src/Services/App';
 import {useAuthService} from 'src/Services/Auth';
 import {validateEmail} from 'src/Utils/Common';
-import {Logger} from 'src/Utils/Logger';
 import {
   emailAtom,
-  emailErrorAtom,
   nicknameAtom,
-  nicknameErrorAtom,
   passwordAtom,
-  passwordErrorAtom,
   repeatPasswordAtom,
-  repeatPasswordErrorAtom,
+  useSignUpStore,
 } from '../Store';
-
-export const useSignUpStore = () => {
-  const {
-    value: email,
-    setValue: setEmail,
-    error: emailError,
-    setError: setEmailError,
-  } = useInputRecoilState(emailAtom, emailErrorAtom);
-
-  const {
-    value: nickname,
-    setValue: setNickname,
-    error: nicknameError,
-    setError: setNicknameError,
-  } = useInputRecoilState(nicknameAtom, nicknameErrorAtom);
-
-  const {
-    value: password,
-    setValue: setPassword,
-    error: passwordError,
-    setError: setPasswordError,
-  } = useInputRecoilState(passwordAtom, passwordErrorAtom);
-
-  const {
-    value: repeatPassword,
-    setValue: setRepeatPassword,
-    error: repeatPasswordError,
-    setError: setRepeatPasswordError,
-  } = useInputRecoilState(repeatPasswordAtom, repeatPasswordErrorAtom);
-
-  return {
-    email,
-    setEmail,
-
-    emailError,
-    setEmailError,
-
-    nickname,
-    setNickname,
-
-    nicknameError,
-    setNicknameError,
-
-    password,
-    setPassword,
-
-    passwordError,
-    setPasswordError,
-
-    repeatPassword,
-    setRepeatPassword,
-
-    repeatPasswordError,
-    setRepeatPasswordError,
-  };
-};
 
 export const useSignUpController = () => {
   const {
-    email,
     setEmail,
     setEmailError,
-    nickname,
     setNickname,
     setNicknameError,
-    password,
     setPassword,
     setPasswordError,
-    repeatPassword,
     setRepeatPassword,
     setRepeatPasswordError,
   } = useSignUpStore();
+
+  const email = useRecoilValue(emailAtom);
+  const nickname = useRecoilValue(nicknameAtom);
+  const password = useRecoilValue(passwordAtom);
+  const repeatPassword = useRecoilValue(repeatPasswordAtom);
 
   const navigation = useNavigation();
   const {checkNicknameFree, signUp} = useAuthService();

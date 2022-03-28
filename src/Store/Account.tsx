@@ -1,4 +1,4 @@
-import {atom, useRecoilState} from 'recoil';
+import {atom, useSetRecoilState} from 'recoil';
 import {getKeyFabricForDomain} from 'src/Utils/Recoil';
 import {User} from './Models/User';
 
@@ -10,6 +10,6 @@ export const accountStore = atom<User | undefined>({
 });
 
 export const useAccountStore = () => {
-  const [account, setAccount] = useRecoilState(accountStore);
-  return {account, setAccount};
+  const setAccount = useSetRecoilState(accountStore);
+  return {setAccount};
 };

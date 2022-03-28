@@ -1,6 +1,6 @@
 import {StackActions, useNavigation} from '@react-navigation/core';
 import React from 'react';
-import {useRecoilState} from 'recoil';
+import {useRecoilValue} from 'recoil';
 import {BadApiResponseError} from 'src/Api/Exceptions';
 import {ApiResponse} from 'src/Api/Responses';
 import {NavPaths} from 'src/Navigation/Paths';
@@ -8,63 +8,18 @@ import {useAppController} from 'src/Services/App';
 
 import {useAuthService} from 'src/Services/Auth';
 import {validateEmail} from 'src/Utils/Common';
-import {
-  emailAtom,
-  emailErrorAtom,
-  passwordAtom,
-  passwordErrorAtom,
-} from '../Store';
-
-export const useSignInStore = () => {
-  const [email, setEmail] = useRecoilState(emailAtom);
-  const [password, setPassword] = useRecoilState(passwordAtom);
-
-  const [emailError, setEmailError] = useRecoilState(emailErrorAtom);
-  const [passwordError, setPasswordError] = useRecoilState(passwordErrorAtom);
-
-  const handleChangeEmail = React.useCallback(
-    (text: string) => {
-      setEmail(text.trim());
-      setEmailError('');
-    },
-    [setEmail, setEmailError],
-  );
-
-  const handleChangePassword = React.useCallback(
-    (text: string) => {
-      setPassword(text.trim());
-      setPasswordError('');
-    },
-    [setPassword, setPasswordError],
-  );
-
-  return {
-    email,
-    setEmail: handleChangeEmail,
-
-    emailError,
-    setEmailError,
-
-    password,
-    setPassword: handleChangePassword,
-
-    passwordError,
-    setPasswordError,
-  };
-};
+import {emailAtom, passwordAtom, useSignInStore} from '../Store';
 
 export const useSignInController = () => {
-  const {
-    email,
-    password,
-    setEmail,
-    setEmailError,
-    setPassword,
-    setPasswordError,
-  } = useSignInStore();
+  const email = useRecoilValue(emailAtom);
+  const password = useRecoilValue(passwordAtom);
+
+  const {setEmail, setEmailError, setPassword, setPasswordError} =
+    useSignInStore();
 
   const navigation = useNavigation();
   const {signIn} = useAuthService();
+
   const {defaultHandleError} = useAppController();
 
   const handlePressSignIn = React.useCallback(async () => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import {atom, useRecoilState} from 'recoil';
+import {atom, useSetRecoilState} from 'recoil';
 import {TrainingElement} from 'src/Store/Models/Training';
 import {getKeyFabricForDomain} from 'src/Utils/Recoil';
 
@@ -16,8 +16,8 @@ export const trainingElements = atom<TrainingElementWithId[]>({
 });
 
 export const useTrainingConstructorStore = () => {
-  const [title, setTitle] = useRecoilState(trainingTitle);
-  const [elements, setElements] = useRecoilState(trainingElements);
+  const setTitle = useSetRecoilState(trainingTitle);
+  const setElements = useSetRecoilState(trainingElements);
 
   const addElement = React.useCallback(
     (element: TrainingElement) =>
@@ -47,10 +47,8 @@ export const useTrainingConstructorStore = () => {
   );
 
   return {
-    title,
     setTitle,
 
-    elements,
     addElement,
     removeElement,
     replaceElement,

@@ -5,4 +5,5 @@ export const ApiPaths = {
   checkAuth: '/auth/check-auth',
 
   getMyTrainings: '/trainings/my',
+  getExercises: '/exercises/all',
 };

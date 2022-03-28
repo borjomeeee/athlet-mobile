@@ -25,29 +25,36 @@ export enum ExerciseCompletionType {
 }
 export const ElementCompletionTypeScheme = z.nativeEnum(ExerciseCompletionType);
 
-export const ExerciseScheme = ElementSheme.extend({
-  type: z.literal(ElementType.EXERCISE),
+export const ExerciseScheme = z.object({
+  id: z.string(),
   title: MayBeStringScheme.default('Undefined'),
   completionType: ElementCompletionTypeScheme.default(
     ExerciseCompletionType.REPS,
   ),
-  restAfterComplete: MayBeIntegerScheme.default(0),
 });
 export type Exercise = z.TypeOf<typeof ExerciseScheme>;
 
-export const RestExerciseScheme = ExerciseScheme.extend({
+export const TrainingExerciseScheme = ElementSheme.merge(ExerciseScheme).extend(
+  {
+    type: z.literal(ElementType.EXERCISE),
+    restAfterComplete: MayBeIntegerScheme.default(0),
+  },
+);
+export type TrainingExercise = z.TypeOf<typeof TrainingExerciseScheme>;
+
+export const RestExerciseScheme = TrainingExerciseScheme.extend({
   completionType: z.literal(ExerciseCompletionType.REPS),
   reps: MayBeIntegerScheme.default(0),
 });
 export type RepsExercise = z.TypeOf<typeof RestExerciseScheme>;
 
-export const TimeExerciseScheme = ExerciseScheme.extend({
+export const TimeExerciseScheme = TrainingExerciseScheme.extend({
   completionType: z.literal(ExerciseCompletionType.TIME),
   time: MayBeIntegerScheme.default(0),
 });
 export type TimeExercise = z.TypeOf<typeof TimeExerciseScheme>;
 
-export const GymExerciseScheme = ExerciseScheme.extend({
+export const GymExerciseScheme = TrainingExerciseScheme.extend({
   completionType: z.literal(ExerciseCompletionType.GYM),
   reps: MayBeIntegerScheme.default(0),
   kg: MayBeIntegerScheme.default(0),

@@ -1,4 +1,5 @@
 import {atom} from 'recoil';
+import {useInputRecoilState} from 'src/Hooks/Form';
 import {getKeyFabricForDomain} from 'src/Utils/Recoil';
 
 const createKey = getKeyFabricForDomain('sign up screen');
@@ -42,3 +43,33 @@ export const repeatPasswordErrorAtom = atom({
   key: createKey('repeatPasswordError'),
   default: '',
 });
+
+export const useSignUpStore = () => {
+  const {setValue: setEmail, setError: setEmailError} = useInputRecoilState(
+    emailAtom,
+    emailErrorAtom,
+  );
+
+  const {setValue: setNickname, setError: setNicknameError} =
+    useInputRecoilState(nicknameAtom, nicknameErrorAtom);
+
+  const {setValue: setPassword, setError: setPasswordError} =
+    useInputRecoilState(passwordAtom, passwordErrorAtom);
+
+  const {setValue: setRepeatPassword, setError: setRepeatPasswordError} =
+    useInputRecoilState(repeatPasswordAtom, repeatPasswordErrorAtom);
+
+  return {
+    setEmail,
+    setEmailError,
+
+    setNickname,
+    setNicknameError,
+
+    setPassword,
+    setPasswordError,
+
+    setRepeatPassword,
+    setRepeatPasswordError,
+  };
+};

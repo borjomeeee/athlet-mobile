@@ -1,11 +1,22 @@
 import React from 'react';
-import {useSignInController, useSignInStore} from '../Hooks';
+import {useSignInController} from '../Hooks';
 
 import * as UI from 'src/Components';
 import s from '@borjomeeee/rn-styles';
+import {useRecoilValue} from 'recoil';
+import {
+  emailAtom,
+  emailErrorAtom,
+  passwordAtom,
+  passwordErrorAtom,
+} from '../Store';
 
 export const Content = () => {
-  const {email, emailError, password, passwordError} = useSignInStore();
+  const email = useRecoilValue(emailAtom);
+  const emailError = useRecoilValue(emailErrorAtom);
+  const password = useRecoilValue(passwordAtom);
+  const passwordError = useRecoilValue(passwordErrorAtom);
+
   const {handleChangeEmail, handleChangePassword, handlePressSignIn} =
     useSignInController();
 
