@@ -2,15 +2,13 @@ import {createServer, Response} from 'miragejs';
 import {ApiPaths} from 'src/Api/Paths';
 import {attachPath} from 'src/Api/Utils';
 import {Config} from 'src/Config';
-import {account, training} from './Data';
+import {account, exercises, training} from './Data';
 import {DefaultResponse, IFakeApiConfig} from './Types';
 
 export class FakeApiFabric {
   static createFakeApi() {
     const config: IFakeApiConfig = {
-      responses: {
-        checkAuth: DefaultResponse.AUTH_ERROR,
-      },
+      responses: {},
     };
     const baseUrl = Config.defaultApiProtocol + '://' + Config.defaultApiDomain;
 
@@ -39,6 +37,11 @@ export class FakeApiFabric {
         this.get(attachPath(baseUrl, ApiPaths.getMyTrainings), () => {
           const {getMyTrainings} = config.responses;
           return makeResponse(getMyTrainings, [training]);
+        });
+
+        this.get(attachPath(baseUrl, ApiPaths.getExercises), () => {
+          const {getExercises} = config.responses;
+          return makeResponse(getExercises, exercises);
         });
       },
     });

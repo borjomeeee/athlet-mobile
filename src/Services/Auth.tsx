@@ -9,6 +9,7 @@ import {httpClient} from 'src/Api';
 import {LocalStorage} from 'src/Lib/LocalStorage';
 import {ApiResponse} from 'src/Api/Responses';
 import {User} from 'src/Store/Models/User';
+import {useExercisesService} from './Exercises';
 
 export const useAuthService = () => {
   const navigation = useNavigation();
@@ -20,6 +21,7 @@ export const useAuthService = () => {
     checkAuth: fetchCheckAuth,
   } = useAuthRepository();
   const {setAccount} = useAccountStore();
+  const {getExercises} = useExercisesService();
 
   const _completeAuth = React.useCallback(
     (user: User, jwtToken: string) => {
@@ -27,10 +29,12 @@ export const useAuthService = () => {
       LocalStorage.saveJwt(jwtToken);
 
       setAccount(user);
+      // Unnecessary fetchs
+      getExercises();
 
       navigation.dispatch(StackActions.replace(NavPaths.BottomTab.Self));
     },
-    [navigation, setAccount],
+    [navigation, setAccount, getExercises],
   );
 
   const checkAuth = useFlow(

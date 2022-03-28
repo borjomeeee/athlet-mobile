@@ -1,17 +1,18 @@
 import {
   ElementType,
+  ExerciseApi,
   ExerciseCompletionType,
-  Training,
+  TrainingApi,
 } from 'src/Store/Models/Training';
-import {User} from 'src/Store/Models/User';
+import {UserApi} from 'src/Store/Models/User';
 
-export const account: User = {
+export const account: UserApi = {
   id: '1',
   email: 'test@test.com',
   nickname: 'borjome',
 };
 
-export const training: Training = {
+export const training: TrainingApi = {
   id: '1',
 
   title: 'First training',
@@ -25,6 +26,7 @@ export const training: Training = {
 
   elements: [
     {
+      id: '1',
       type: ElementType.EXERCISE,
       title: 'Подтягивания',
       completionType: ExerciseCompletionType.REPS,
@@ -35,6 +37,7 @@ export const training: Training = {
       type: ElementType.SET,
       elements: [
         {
+          id: '1',
           type: ElementType.EXERCISE,
           title: 'Подтягивания',
           completionType: ExerciseCompletionType.REPS,
@@ -42,6 +45,7 @@ export const training: Training = {
           restAfterComplete: 1,
         },
         {
+          id: '1',
           type: ElementType.EXERCISE,
           title: 'Подтягивания',
           completionType: ExerciseCompletionType.REPS,
@@ -54,6 +58,7 @@ export const training: Training = {
       type: ElementType.SET,
       elements: [
         {
+          id: '1',
           type: ElementType.EXERCISE,
           title: 'Подтягивания',
           completionType: ExerciseCompletionType.REPS,
@@ -61,6 +66,7 @@ export const training: Training = {
           restAfterComplete: 10,
         },
         {
+          id: '1',
           type: ElementType.EXERCISE,
           title: 'Подтягивания',
           completionType: ExerciseCompletionType.REPS,
@@ -71,3 +77,8 @@ export const training: Training = {
     },
   ],
 };
+
+export const exercises: ExerciseApi[] = [
+  {id: '1', title: 'Подтягивания'},
+  {id: '2', title: 'Бег', completionType: ExerciseCompletionType.TIME},
+];

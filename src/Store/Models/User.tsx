@@ -13,5 +13,8 @@ export const UserScheme = z.object({
   email: MayBeStringScheme.default(''),
 });
 
-export type UserPreview = z.TypeOf<typeof UserPreviewScheme>;
-export type User = z.TypeOf<typeof UserScheme>;
+export type UserPreviewApi = z.input<typeof UserPreviewScheme>;
+export type UserPreview = z.output<typeof UserPreviewScheme>;
+
+export type UserApi = z.input<typeof UserScheme>;
+export type User = z.output<typeof UserScheme>;

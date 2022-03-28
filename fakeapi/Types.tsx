@@ -37,4 +37,5 @@ export interface IFakeApiResponses {
   checkAuth: DefaultResponse;
 
   getMyTrainings: DefaultResponse;
+  getExercises: DefaultResponse;
 }
