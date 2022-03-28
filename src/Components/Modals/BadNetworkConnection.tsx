@@ -10,6 +10,7 @@ import {
 } from '@gorhom/bottom-sheet';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Button} from '../Pressable';
+import {useModal} from 'src/Lib/ModalRouter';
 
 interface BadNetworkConnectionProps {
   id: string;
@@ -17,6 +18,7 @@ interface BadNetworkConnectionProps {
 export const BadNetworkConnection: React.FC<BadNetworkConnectionProps> = ({
   id,
 }) => {
+  const {hide} = useModal(id);
   const {bottom} = useSafeAreaInsets();
   const {
     animatedHandleHeight,
@@ -31,25 +33,23 @@ export const BadNetworkConnection: React.FC<BadNetworkConnectionProps> = ({
       snapPoints={animatedSnapPoints}
       handleHeight={animatedHandleHeight}
       contentHeight={animatedContentHeight}>
-      {dismiss => (
-        <BottomSheetView style={s(`container`)} onLayout={handleContentLayout}>
-          <View style={s(`aic jcc`)}>
-            <NetworkIcon />
-            <HSpacer size={20} />
-            <MultilineText style={s(`P5 medium`)}>
-              {['Плохое интернет', 'соединение']}
-            </MultilineText>
-            <HSpacer size={30} />
-            <Text style={s(`P7 tac maxW:294`)}>
-              Пожалуйста, проверьте свое подключение к интернету и попробуйте
-              снова
-            </Text>
-            <HSpacer size={20} />
-          </View>
-          <Button label="Хорошо" onPress={dismiss} />
-          <HSpacer size={20 + bottom} />
-        </BottomSheetView>
-      )}
+      <BottomSheetView style={s(`container`)} onLayout={handleContentLayout}>
+        <View style={s(`aic jcc`)}>
+          <NetworkIcon />
+          <HSpacer size={20} />
+          <MultilineText style={s(`P5 medium`)}>
+            {['Плохое интернет', 'соединение']}
+          </MultilineText>
+          <HSpacer size={30} />
+          <Text style={s(`P7 tac maxW:294`)}>
+            Пожалуйста, проверьте свое подключение к интернету и попробуйте
+            снова
+          </Text>
+          <HSpacer size={20} />
+        </View>
+        <Button label="Хорошо" onPress={hide} />
+        <HSpacer size={20 + bottom} />
+      </BottomSheetView>
     </BottomSheetModal>
   );
 };

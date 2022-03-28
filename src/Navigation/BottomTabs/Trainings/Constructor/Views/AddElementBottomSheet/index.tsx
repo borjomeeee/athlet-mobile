@@ -34,22 +34,20 @@ export const AddElementBottomSheet: React.FC<AddElementBottomSheetProps> = ({
       snapPoints={animatedSnapPoints}
       handleHeight={animatedHandleHeight}
       contentHeight={animatedContentHeight}>
-      {_ => (
-        <BottomSheetView onLayout={handleContentLayout}>
-          <SelectableItem
-            LeftIcon={SetIcon}
-            label="Добавить сет"
-            onPress={handlePressAddSet}
-          />
-          <SelectableItem
-            LeftIcon={GymIcon}
-            label="Добавить упражнение"
-            onPress={handlePressAddExercise}
-          />
+      <BottomSheetView onLayout={handleContentLayout}>
+        <SelectableItem
+          LeftIcon={SetIcon}
+          label="Добавить сет"
+          onPress={handlePressAddSet}
+        />
+        <SelectableItem
+          LeftIcon={GymIcon}
+          label="Добавить упражнение"
+          onPress={handlePressAddExercise}
+        />
 
-          <UI.HSpacer size={20 + bottom} />
-        </BottomSheetView>
-      )}
+        <UI.HSpacer size={20 + bottom} />
+      </BottomSheetView>
     </UI.BottomSheetModal>
   );
 };

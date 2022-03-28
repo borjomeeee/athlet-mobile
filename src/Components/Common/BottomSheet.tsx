@@ -12,25 +12,20 @@ import {Pressable} from '../Pressable';
 import {AnimatedView} from './View';
 
 interface BottomSheetProps extends React.ComponentProps<typeof GBottomSheet> {
-  bottomSheetRef?: React.MutableRefObject<GBottomSheet>;
-  children: (dismiss: () => void) => React.ReactNode;
+  bottomSheetRef?:
+    | React.MutableRefObject<GBottomSheet>
+    | React.RefObject<GBottomSheet>;
 }
 export const BottomSheet: React.FC<BottomSheetProps> = ({
   bottomSheetRef = React.createRef(),
-  children,
   ...props
 }) => {
-  const dismiss = React.useCallback(() => {
-    bottomSheetRef.current?.close();
-  }, [bottomSheetRef]);
-
   return (
     <GBottomSheet
       ref={bottomSheetRef}
       handleIndicatorStyle={s(`w:35 h:4 br:2 bgc:#E1E4E8`)}
-      {...props}>
-      {children(dismiss)}
-    </GBottomSheet>
+      {...props}
+    />
   );
 };
 
@@ -39,7 +34,7 @@ interface BottomSheetModal extends React.ComponentProps<typeof BottomSheet> {
 }
 export const BottomSheetModal: React.FC<BottomSheetModal> = ({
   id,
-  bottomSheetRef = React.createRef() as React.MutableRefObject<GBottomSheet>,
+  bottomSheetRef = React.createRef(),
   animatedIndex,
   animatedPosition,
   onClose,
@@ -71,7 +66,7 @@ export const BottomSheetModal: React.FC<BottomSheetModal> = ({
 
   React.useEffect(() => {
     if (!isVisible) {
-      bottomSheetRef.current.close();
+      bottomSheetRef.current?.close();
     }
   }, [isVisible, bottomSheetRef]);
 

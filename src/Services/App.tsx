@@ -19,32 +19,40 @@ export const useAppController = () => {
   const {show: showBadNetworkConnection} = useModal('bad-network-connection');
   const {show: showBadApiResponse} = useModal('bad-api-response');
 
+  const handleAuthorizationError = React.useCallback(() => {
+    LocalStorage.deleteJwt();
+    navigation.dispatch(StackActions.replace(NavPaths.Auth.Self));
+  }, [navigation]);
+
   const defaultHandleError = React.useCallback(
     (error: Error) => {
       if (error instanceof BadNetworkConnectionError) {
         showBadNetworkConnection(UI.BadNetworkConnection, {});
       } else if (error instanceof BadApiResponseError) {
+        if (error.reason === ApiResponse.AUTHORIZATION_ERROR) {
+          handleAuthorizationError();
+          return;
+        }
         showBadApiResponse(UI.BadApiResponse, {});
       }
     },
-    [showBadNetworkConnection, showBadApiResponse],
+    [showBadNetworkConnection, showBadApiResponse, handleAuthorizationError],
   );
 
   const init = React.useCallback(async () => {
     const [_, error] = await checkAuth();
     if (error) {
+      handleAuthorizationError();
       if (
         error instanceof BadApiResponseError &&
         error.reason === ApiResponse.AUTHORIZATION_ERROR
       ) {
-        LocalStorage.deleteJwt();
-      } else {
-        defaultHandleError(error);
+        return;
       }
 
-      navigation.dispatch(StackActions.replace(NavPaths.Auth.Self));
+      defaultHandleError(error);
     }
-  }, [checkAuth, navigation, defaultHandleError]);
+  }, [checkAuth, defaultHandleError, handleAuthorizationError]);
 
   return {init, defaultHandleError};
 };
