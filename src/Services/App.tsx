@@ -8,24 +8,26 @@ import {
   BadApiResponseError,
   BadNetworkConnectionError,
 } from 'src/Api/Exceptions';
-import {useModalRouter} from 'src/Lib/ModalRouter';
 import {ApiResponse} from 'src/Api/Responses';
 import {LocalStorage} from 'src/Lib/LocalStorage';
+import {useModal} from 'src/Lib/ModalRouter';
 
 export const useAppController = () => {
   const navigation = useNavigation();
   const {checkAuth} = useAuthService();
-  const {showModal} = useModalRouter();
+
+  const {show: showBadNetworkConnection} = useModal('bad-network-connection');
+  const {show: showBadApiResponse} = useModal('bad-api-response');
 
   const defaultHandleError = React.useCallback(
     (error: Error) => {
       if (error instanceof BadNetworkConnectionError) {
-        showModal(UI.BadNetworkConnection, {id: 'bad-network-connection'});
+        showBadNetworkConnection(UI.BadNetworkConnection, {});
       } else if (error instanceof BadApiResponseError) {
-        showModal(UI.BadApiResponse, {id: 'bad-api-response'});
+        showBadApiResponse(UI.BadApiResponse, {});
       }
     },
-    [showModal],
+    [showBadNetworkConnection, showBadApiResponse],
   );
 
   const init = React.useCallback(async () => {

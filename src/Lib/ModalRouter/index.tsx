@@ -1,8 +1,8 @@
 import React from 'react';
 
 import * as UI from 'src/Components';
-import {useRecoilValue, useSetRecoilState} from 'recoil';
-import {modalsStore} from 'src/Store/Modals';
+import {useRecoilState, useRecoilValue, useSetRecoilState} from 'recoil';
+import {modalsStore, modalsVisibileStoreFamily} from 'src/Store/Modals';
 import s from '@borjomeeee/rn-styles';
 
 export const useModalRouter = () => {
@@ -40,6 +40,42 @@ export const useModalRouter = () => {
   }, [setModals]);
 
   return {showModal, dismissModal, dismissAll};
+};
+
+export const useModalInternal = (id: string) => {
+  const {dismissModal} = useModalRouter();
+  const [isVisible, setIsVisible] = useRecoilState(
+    modalsVisibileStoreFamily(id),
+  );
+
+  const _onClose = React.useCallback(() => {
+    dismissModal(id);
+    setIsVisible(false);
+  }, [dismissModal, setIsVisible, id]);
+
+  return {isVisible, _onClose};
+};
+
+export const useModal = (id: string) => {
+  const {showModal} = useModalRouter();
+  const setIsVisible = useSetRecoilState(modalsVisibileStoreFamily(id));
+
+  const show = React.useCallback(
+    <T,>(Component: React.FC<T>, props: Omit<T, 'id'>) => {
+      setIsVisible(true);
+      showModal<T>(Component, {id, props} as any);
+    },
+    [showModal, setIsVisible, id],
+  );
+
+  const hide = React.useCallback(() => {
+    setIsVisible(false);
+  }, [setIsVisible]);
+
+  return {
+    show,
+    hide,
+  };
 };
 
 export const ModalRouter = () => {

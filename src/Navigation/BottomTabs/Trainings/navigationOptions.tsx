@@ -1,5 +1,11 @@
-import {NativeStackNavigationOptions} from '@react-navigation/native-stack';
+import * as UI from 'src/Components';
+import {StackNavigationOptions} from '@react-navigation/stack';
 
-export const trainingsStackOptions: NativeStackNavigationOptions = {
+export const trainingsStackOptions: StackNavigationOptions = {
   headerShown: false,
+};
+
+export const constructorScreenOptions: StackNavigationOptions = {
+  headerShown: true,
+  header: UI.Header,
 };

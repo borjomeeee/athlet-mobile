@@ -18,6 +18,7 @@ export const NavPaths = {
     Trainings: {
       Self: 'tabs/trainings',
       List: 'tabs/trainings/list',
+      Constructor: 'tabs/trainings/constructor',
     },
 
     Account: {

@@ -5,12 +5,14 @@ export const Colors = {
   blue: '#007AFF',
   red: '#FF0000',
   black: '#000000',
+  green: '#2DA44E',
 
   ultraLightGray: '#E2E2E2',
   lightGray: '#DCDCDC',
   darkGray: '#666666',
 
-  layout: '#FAFBFC',
+  layout: '#FAFAFA',
+  // placeholder: '#E1E4E8',
 };
 
 const textSizeStyleSheet = {

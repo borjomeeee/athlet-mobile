@@ -7,7 +7,7 @@ import {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
-import {useModalRouter} from 'src/Lib/ModalRouter';
+import {useModal, useModalInternal} from 'src/Lib/ModalRouter';
 import {Pressable} from '../Pressable';
 import {AnimatedView} from './View';
 
@@ -47,33 +47,33 @@ export const BottomSheetModal: React.FC<BottomSheetModal> = ({
   index = 0,
   ...props
 }) => {
+  const {isVisible, _onClose} = useModalInternal(id);
+
   const _animatedIndex = useSharedValue(-1);
   const _animatedPosition = useSharedValue(0);
 
-  const {dismissModal} = useModalRouter();
-
   const handleClose = React.useCallback(() => {
-    dismissModal(id);
+    _onClose();
     onClose?.();
-  }, [id, onClose, dismissModal]);
+  }, [onClose, _onClose]);
 
   const BackdropComponent = React.useMemo(
     () => () =>
       (
         <Backdrop
+          id={id}
           animatedIndex={animatedIndex || _animatedIndex}
           animatedPosition={animatedPosition || _animatedPosition}
-          onPress={() => bottomSheetRef.current.close()}
         />
       ),
-    [
-      animatedIndex,
-      animatedPosition,
-      _animatedIndex,
-      _animatedPosition,
-      bottomSheetRef,
-    ],
+    [id, animatedIndex, animatedPosition, _animatedIndex, _animatedPosition],
   );
+
+  React.useEffect(() => {
+    if (!isVisible) {
+      bottomSheetRef.current.close();
+    }
+  }, [isVisible, bottomSheetRef]);
 
   return (
     <BottomSheet
@@ -89,10 +89,12 @@ export const BottomSheetModal: React.FC<BottomSheetModal> = ({
   );
 };
 
-const Backdrop: React.FC<BottomSheetBackdropProps & {onPress: () => void}> = ({
+const Backdrop: React.FC<BottomSheetBackdropProps & {id: string}> = ({
+  id,
   animatedIndex,
-  onPress,
 }) => {
+  const {hide} = useModal(id);
+
   const animatedStyle = useAnimatedStyle(() => ({
     flex: 1,
 
@@ -108,7 +110,7 @@ const Backdrop: React.FC<BottomSheetBackdropProps & {onPress: () => void}> = ({
   return (
     <Pressable
       style={s(`abs t:0 b:0 r:0 l:0`)}
-      onPress={onPress}
+      onPress={hide}
       activeOpacity={1}>
       <AnimatedView style={animatedStyle} />
     </Pressable>

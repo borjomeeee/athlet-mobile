@@ -1,4 +1,4 @@
-import {atom} from 'recoil';
+import {atom, atomFamily} from 'recoil';
 import {getKeyFabricForDomain} from 'src/Utils/Recoil';
 
 const createKey = getKeyFabricForDomain('modals');
@@ -12,4 +12,9 @@ export interface Modal<T extends Record<string, any>> {
 export const modalsStore = atom<Modal<any>[]>({
   key: createKey('modals'),
   default: [],
+});
+
+export const modalsVisibileStoreFamily = atomFamily({
+  key: createKey('modalsFamily__isVisible'),
+  default: false,
 });
