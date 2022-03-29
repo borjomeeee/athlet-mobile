@@ -1,5 +1,5 @@
 import React from 'react';
-import {atom, useSetRecoilState} from 'recoil';
+import {atom, selector, useSetRecoilState} from 'recoil';
 import {getKeyFabricForDomain} from 'src/Utils/Recoil';
 import {Exercise} from './Models/Training';
 
@@ -10,6 +10,16 @@ interface ExercisesStore {
 export const exercisesStore = atom<ExercisesStore>({
   key: createKey('self'),
   default: {},
+});
+
+export const exercisesIdsStore = selector({
+  key: createKey('ids'),
+  get: ({get}) => Object.keys(get(exercisesStore)),
+});
+
+export const exercisesListStore = selector({
+  key: createKey('list'),
+  get: ({get}) => Object.values(get(exercisesStore)),
 });
 
 export const useExercisesStore = () => {

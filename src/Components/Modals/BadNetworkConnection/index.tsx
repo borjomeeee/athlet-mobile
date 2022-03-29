@@ -1,7 +1,13 @@
 import React from 'react';
 
 import s from '@borjomeeee/rn-styles';
-import {BottomSheetModal, HSpacer, MultilineText, Text, View} from '../Common';
+import {
+  BottomSheetModal,
+  HSpacer,
+  MultilineText,
+  Text,
+  View,
+} from '../../Common';
 
 import NetworkIcon from 'src/Assets/Svg/NetworkBig';
 import {
@@ -9,7 +15,7 @@ import {
   BottomSheetView,
 } from '@gorhom/bottom-sheet';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {Button} from '../Pressable';
+import {Button} from '../../Pressable';
 import {useModal} from 'src/Lib/ModalRouter';
 
 interface BadNetworkConnectionProps {

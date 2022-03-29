@@ -9,6 +9,7 @@ export const Colors = {
 
   ultraLightGray: '#E2E2E2',
   lightGray: '#DCDCDC',
+  gray: '#A0A0A0',
   darkGray: '#666666',
 
   layout: '#FAFAFA',

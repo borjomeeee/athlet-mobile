@@ -1,8 +1,8 @@
 import s from '@borjomeeee/rn-styles';
-import {TouchableHighlight} from '@gorhom/bottom-sheet';
 import React from 'react';
 
 import * as UI from 'src/Components';
+import {PressableItem} from 'src/Components';
 
 interface SelectableItemProps {
   label: string;
@@ -15,7 +15,7 @@ export const SelectableItem: React.FC<SelectableItemProps> = ({
   onPress,
 }) => {
   return (
-    <TouchableHighlight
+    <PressableItem
       style={s(`h:44 bgc:#fff`)}
       underlayColor="#D0D7DE32"
       onPress={onPress}>
@@ -26,6 +26,6 @@ export const SelectableItem: React.FC<SelectableItemProps> = ({
           <UI.Text style={s(`P7`)}>{label}</UI.Text>
         </UI.View>
       </UI.View>
-    </TouchableHighlight>
+    </PressableItem>
   );
 };
