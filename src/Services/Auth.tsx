@@ -38,7 +38,6 @@ export const useAuthService = () => {
   );
 
   const checkAuth = useFlow(
-    'authService__checkAuth',
     async () => {
       const jwtToken = LocalStorage.getJwt();
 
@@ -46,28 +45,28 @@ export const useAuthService = () => {
       _completeAuth(user, jwtToken);
     },
     [_completeAuth, fetchCheckAuth],
+    'authService__checkAuth',
   );
 
   const signIn = useFlow(
-    'authService__signIn',
     async (login: string, password: string) => {
       const {user, token} = await fetchSignIn(login, password);
       _completeAuth(user, token);
     },
     [fetchSignIn, _completeAuth],
+    'authService__signIn',
   );
 
   const signUp = useFlow(
-    'authService__signUp',
     async (email: string, nickname: string, password: string) => {
       const {user, token} = await fetchSignUp(email, nickname, password);
       _completeAuth(user, token);
     },
-    [fetchSignIn, _completeAuth],
+    [fetchSignUp, _completeAuth],
+    'authService__signUp',
   );
 
   const checkNicknameFree = useFlow(
-    'authService__checkNicknameFree',
     async (nickname: string) => {
       try {
         await fetchCheckNicknameFree(nickname);
@@ -84,10 +83,10 @@ export const useAuthService = () => {
       }
     },
     [fetchCheckNicknameFree],
+    'authService__checkNicknameFree',
   );
 
   const logout = useFlow(
-    'authService__logout',
     () => {
       httpClient.deauthorize();
       LocalStorage.deleteJwt();
@@ -96,7 +95,8 @@ export const useAuthService = () => {
 
       navigation.dispatch(StackActions.replace(NavPaths.Auth.SignIn));
     },
-    [fetchSignIn, setAccount, navigation],
+    [setAccount, navigation],
+    'authService__logout',
   );
 
   return {

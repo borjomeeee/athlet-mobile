@@ -12,6 +12,12 @@ module.exports = {
         'no-undef': 'off',
 
         quotes: ['error', 'single', {allowTemplateLiterals: true}],
+        'react-hooks/exhaustive-deps': [
+          'error',
+          {
+            additionalHooks: '(useFlow)',
+          },
+        ],
       },
     },
   ],
