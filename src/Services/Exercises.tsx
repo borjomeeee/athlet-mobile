@@ -7,12 +7,12 @@ export const useExercisesService = () => {
   const {setExercises} = useExercisesStore();
 
   const getExercises = useFlow(
-    'exercisesService__downloadExercises',
     async () => {
       const {exercises} = await fetchGetExercises();
       setExercises(exercises);
     },
     [setExercises, fetchGetExercises],
+    'exercisesService__downloadExercises',
   );
 
   return {getExercises};

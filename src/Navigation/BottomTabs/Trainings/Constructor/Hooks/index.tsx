@@ -9,8 +9,11 @@ import {useTrainingConstructorStore} from '../Store';
 
 export const useTrainingConstructorController = () => {
   const {show: showAddElement, hide: hideAddElement} = useModal('add-element');
-  const {show: showSelectExercise, hide: hideSelectExercise} = useModal(
+  const {show: showSelectExercise} = useModal(
     'trainingConstructor__selectExercise',
+  );
+  const {show: showEditExercise} = useModal(
+    'trainingConstructor__editExercise',
   );
 
   const handlePressAddElement = React.useCallback(() => {
@@ -20,9 +23,12 @@ export const useTrainingConstructorController = () => {
   const handlePressAddExercise = React.useCallback(() => {
     hideAddElement();
     showSelectExercise(UI.SelectExercise, {
-      onSelect: exercise => console.log(exercise),
+      onSelect: exercise => {
+        console.log('hm', exercise);
+        showEditExercise(UI.EditExercise, {exercise, onEdit: console.log});
+      },
     });
-  }, [hideAddElement, showSelectExercise]);
+  }, [hideAddElement, showSelectExercise, showEditExercise]);
 
   const handlePressAddSet = React.useCallback(() => {
     hideAddElement();

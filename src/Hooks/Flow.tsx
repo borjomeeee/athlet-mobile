@@ -16,9 +16,9 @@ export class FlowAlreadyStartedError extends Error {
 
 const flowsStack: Record<string, true | undefined> = {};
 export const useFlow = <T extends (...args: any[]) => Promise<any> | any>(
-  flowId: string,
   cb: T,
   deps: any[],
+  flowId: string,
 ) => {
   return React.useCallback(
     async (

@@ -5,3 +5,4 @@ export * from './Spacer';
 export * from './KeyboardAvoidingView';
 export * from './FlatList';
 export * from './BottomSheet';
+export * from './AnimatedHeightBox';
