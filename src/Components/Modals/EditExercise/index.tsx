@@ -16,6 +16,11 @@ import {useEditExerciseController} from './Hooks';
 import {CompletionType} from './Views/CompletionType';
 
 import * as UI from 'src/Components';
+import {
+  SelectGymWheel,
+  SelectRepsWheel,
+  SelectTimeWheel,
+} from 'src/Components/Custom';
 
 interface EditExerciseProps {
   id: string;
@@ -55,12 +60,10 @@ export const EditExercise: React.FC<EditExerciseProps> = ({
         <HSpacer size={30} />
 
         <UI.View style={s(`aic`)}>
-          <UI.View style={s(`rel`)}>
-            <SelectWheel start={0} end={100} defaultValue={1} />
-            <UI.View style={s(`abs t:0 b:0 l:60 aic jcc zi:-1`)}>
-              <UI.Text style={s(`P6 medium`)}>раз</UI.Text>
-            </UI.View>
-          </UI.View>
+          <SelectRepsWheel />
+
+          {/* <SelectTimeWheel />
+          <SelectGymWheel /> */}
         </UI.View>
 
         <HSpacer size={30} />
