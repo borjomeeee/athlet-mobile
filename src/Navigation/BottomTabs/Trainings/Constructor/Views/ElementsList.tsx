@@ -17,9 +17,9 @@ export const ElementsList = () => {
 
         if (element.type === ElementType.EXERCISE) {
           return (
-            <React.Fragment key={element.id}>
+            <React.Fragment key={element.elementId}>
               <TrainingExercise
-                id={element.id}
+                id={element.elementId}
                 exercise={element}
                 notShowTopBorder={notShowBorder}
               />
@@ -27,9 +27,9 @@ export const ElementsList = () => {
           );
         } else if (element.type === ElementType.SET) {
           return (
-            <React.Fragment key={element.id}>
+            <React.Fragment key={element.elementId}>
               <Set
-                id={element.id}
+                id={element.elementId}
                 set={element}
                 notShowTopBorder={notShowBorder}
               />

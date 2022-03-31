@@ -10,7 +10,7 @@ export const trainingTitle = atom({
   default: '',
 });
 
-type TrainingElementWithId = TrainingElement & {id: string};
+type TrainingElementWithId = TrainingElement & {elementId: string};
 export const trainingElementsStore = atom<TrainingElementWithId[]>({
   key: createKey('trainingElements'),
   default: [],
@@ -24,7 +24,7 @@ export const useTrainingConstructorStore = () => {
     (element: TrainingElement) =>
       setElements(currentElements => [
         ...currentElements,
-        {id: Date.now().toString(), ...element},
+        {elementId: Date.now().toString(), ...element},
       ]),
     [setElements],
   );
@@ -32,14 +32,16 @@ export const useTrainingConstructorStore = () => {
   const addExerciseToSet = React.useCallback(
     (setId: string, exercise: ExerciseElement) => {
       setElements(currentElements => {
-        const set = currentElements.find(element => element.id === setId);
+        const set = currentElements.find(
+          element => element.elementId === setId,
+        );
 
         if (!set || !TrainingUtils.isSet(set)) {
           return currentElements;
         }
 
         return currentElements.map(element =>
-          element.id !== setId
+          element.elementId !== setId
             ? element
             : {...set, elements: [...set.elements, exercise]},
         );
@@ -51,7 +53,7 @@ export const useTrainingConstructorStore = () => {
   const removeElement = React.useCallback(
     (id: string) =>
       setElements(currentElements =>
-        currentElements.filter(element => element.id !== id),
+        currentElements.filter(element => element.elementId !== id),
       ),
     [setElements],
   );
@@ -59,13 +61,15 @@ export const useTrainingConstructorStore = () => {
   const removeExerciseFromSet = React.useCallback(
     (setId: string, index: number) => {
       setElements(currentElements => {
-        const set = currentElements.find(element => element.id === setId);
+        const set = currentElements.find(
+          element => element.elementId === setId,
+        );
         if (!set || !TrainingUtils.isSet(set)) {
           return currentElements;
         }
 
         return currentElements.map(element =>
-          element.id !== setId
+          element.elementId !== setId
             ? element
             : {
                 ...set,
@@ -81,7 +85,9 @@ export const useTrainingConstructorStore = () => {
     (id: string, element: TrainingElement) =>
       setElements(currentElements =>
         currentElements.map(currElement =>
-          currElement.id === id ? {id, ...element} : currElement,
+          currElement.elementId === id
+            ? {elementId: id, ...element}
+            : currElement,
         ),
       ),
     [setElements],
@@ -90,13 +96,15 @@ export const useTrainingConstructorStore = () => {
   const replaceSetExercise = React.useCallback(
     (setId: string, index: number, exercise: ExerciseElement) => {
       setElements(currentElements => {
-        const set = currentElements.find(element => element.id === setId);
+        const set = currentElements.find(
+          element => element.elementId === setId,
+        );
         if (!set || !TrainingUtils.isSet(set)) {
           return currentElements;
         }
 
         return currentElements.map(currElement =>
-          currElement.id === setId
+          currElement.elementId === setId
             ? {
                 ...set,
                 elements: set.elements.map((el, indx) =>
@@ -114,7 +122,7 @@ export const useTrainingConstructorStore = () => {
     (id: string, rest: number) =>
       setElements(currentElements =>
         currentElements.map(currElement =>
-          currElement.id === id
+          currElement.elementId === id
             ? {...currElement, restAfterComplete: rest}
             : currElement,
         ),
@@ -125,13 +133,15 @@ export const useTrainingConstructorStore = () => {
   const changeSetExerciseRest = React.useCallback(
     (setId: string, index: number, rest: number) =>
       setElements(currentElements => {
-        const set = currentElements.find(element => element.id === setId);
+        const set = currentElements.find(
+          element => element.elementId === setId,
+        );
         if (!set || !TrainingUtils.isSet(set)) {
           return currentElements;
         }
 
         return currentElements.map(currElement =>
-          currElement.id === setId
+          currElement.elementId === setId
             ? {
                 ...set,
                 elements: set.elements.map((el, indx) =>
@@ -163,7 +173,7 @@ export const useTrainingConstructorElement = (id: string) => {
   const elements = useRecoilValue(trainingElementsStore);
 
   const element = React.useMemo(
-    () => elements.find(el => el.id === id),
+    () => elements.find(el => el.elementId === id),
     [elements, id],
   );
 
