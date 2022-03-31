@@ -80,7 +80,6 @@ export const useEditExerciseSubmitController = (id: string) => {
       return;
     }
 
-    hide();
     switch (selectedCompletionType) {
       case ExerciseCompletionType.REPS:
         props.onEdit?.({
@@ -111,6 +110,8 @@ export const useEditExerciseSubmitController = (id: string) => {
         });
         break;
     }
+
+    hide();
   }, [
     props,
     selectedCompletionType,

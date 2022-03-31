@@ -78,17 +78,15 @@ export const ExerciseElementScheme = z.union([
 ]);
 export type ExerciseElement = z.output<typeof ExerciseElementScheme>;
 
-export const SetElementScheme = ExerciseElementScheme;
+export const SetElementScheme = ElementSheme.extend({
+  type: z.literal(ElementType.SET),
+  elements: canBeNull(z.array(ExerciseElementScheme)).default([]),
+  restAfterComplete: MayBeIntegerScheme.default(0),
+});
 export type SetElement = z.output<typeof SetElementScheme>;
 
-export const SetScheme = ElementSheme.extend({
-  type: z.literal(ElementType.SET),
-  elements: canBeNull(z.array(SetElementScheme)).default([]),
-});
-export type Set = z.output<typeof SetScheme>;
-
 export const TrainingElementScheme = z.union([
-  SetScheme,
+  SetElementScheme,
   // RestScheme,
   ExerciseElementScheme,
 ]);

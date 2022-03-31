@@ -1,8 +1,7 @@
-import {Exercise, ExerciseElement} from 'src/Store/Models/Training';
+import {ExerciseElement} from 'src/Store/Models/Training';
 
 export interface EditExerciseProps {
   id: string;
-  exercise: Exercise;
-
+  exercise: ExerciseElement;
   onEdit: (exercise: ExerciseElement) => void;
 }
