@@ -4,7 +4,7 @@ import {trainingElementsStore} from '../Store';
 
 import * as UI from 'src/Components';
 import {ElementType} from 'src/Store/Models/Training';
-import {Exercise} from './Exercise';
+import {TrainingExercise} from './Exercise';
 import {Set} from './Set';
 
 export const ElementsList = () => {
@@ -17,11 +17,13 @@ export const ElementsList = () => {
 
         if (element.type === ElementType.EXERCISE) {
           return (
-            <Exercise
-              key={element.id}
-              exercise={element}
-              notShowTopBorder={notShowBorder}
-            />
+            <React.Fragment key={element.id}>
+              <TrainingExercise
+                id={element.id}
+                exercise={element}
+                notShowTopBorder={notShowBorder}
+              />
+            </React.Fragment>
           );
         } else if (element.type === ElementType.SET) {
           return (

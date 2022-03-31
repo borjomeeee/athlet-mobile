@@ -36,6 +36,9 @@ export const gymWeightStoreFamily = atomFamily({
 });
 
 export const useEditExerciseStore = (id: string) => {
+  const resetCurrentExercise = useResetRecoilState(
+    currentExerciseStoreFamily(id),
+  );
   const setCurrentExercise = useSetRecoilState(currentExerciseStoreFamily(id));
 
   const resetReps = useResetRecoilState(repsStoreFamily(id));
@@ -54,10 +57,15 @@ export const useEditExerciseStore = (id: string) => {
   const setGymReps = useSetRecoilState(gymRepsStoreFamily(id));
   const setGymWeight = useSetRecoilState(gymWeightStoreFamily(id));
 
+  const resetCompletionType = useResetRecoilState(
+    completionTypeStoreFamily(id),
+  );
   const setCompletionType = useSetRecoilState(completionTypeStoreFamily(id));
 
   return {
+    resetCurrentExercise,
     setCurrentExercise,
+    resetCompletionType,
     setCompletionType,
     setReps,
     setTime,

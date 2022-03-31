@@ -6,7 +6,11 @@ import * as UI from 'src/Components';
 import {AddElementBottomSheet} from '../Views/AddElementBottomSheet';
 import {useModal} from 'src/Lib/ModalRouter';
 import {ExerciseUtils} from 'src/Store/ModelsUtils/Exercise';
-import {useTrainingConstructorStore} from '../Store';
+import {
+  useTrainingConstructorElement,
+  useTrainingConstructorSetExercise,
+  useTrainingConstructorStore,
+} from '../Store';
 import {ElementType} from 'src/Store/Models/Training';
 
 export const useTrainingConstructorController = () => {
@@ -39,10 +43,34 @@ export const useTrainingConstructorController = () => {
 
   const handlePressAddSet = React.useCallback(() => {
     hideAddElement();
-    addElement({type: ElementType.SET, elements: []});
+    addElement({type: ElementType.SET, elements: [], restAfterComplete: 15});
   }, [hideAddElement, addElement]);
 
-  return {handlePressAddElement, handlePressAddExercise, handlePressAddSet};
+  return {
+    handlePressAddElement,
+    handlePressAddExercise,
+    handlePressAddSet,
+  };
+};
+
+export const useTrainingConstructorElementController = (id: string) => {
+  const {changeElementRest} = useTrainingConstructorStore();
+
+  const {element} = useTrainingConstructorElement(id);
+  const {show: showEditRest} = useModal('trainingConstructor__editRest');
+
+  const handlePressEditRest = React.useCallback(() => {
+    if (!element) {
+      return;
+    }
+
+    showEditRest(UI.SelectRest, {
+      onSelect: rest => changeElementRest(id, rest),
+      defaultRest: element.restAfterComplete,
+    });
+  }, [showEditRest, element, id, changeElementRest]);
+
+  return {handlePressEditRest};
 };
 
 export const useTrainingConstructorSetController = (id: string) => {
@@ -70,6 +98,29 @@ export const useTrainingConstructorSetController = (id: string) => {
   );
 
   return {handlePressAddExercise};
+};
+
+export const useTrainingConstructorSetExerciseController = (
+  setId: string,
+  index: number,
+) => {
+  const {changeSetExerciseRest} = useTrainingConstructorStore();
+
+  const {exercise} = useTrainingConstructorSetExercise(setId, index);
+  const {show: showEditRest} = useModal('trainingConstructor__editRest');
+
+  const handlePressEditRest = React.useCallback(() => {
+    if (!exercise) {
+      return;
+    }
+
+    showEditRest(UI.SelectRest, {
+      onSelect: rest => changeSetExerciseRest(setId, index, rest),
+      defaultRest: exercise.restAfterComplete,
+    });
+  }, [showEditRest, exercise, setId, index, changeSetExerciseRest]);
+
+  return {handlePressEditRest};
 };
 
 export const useTrainingConstructorHeader = () => {

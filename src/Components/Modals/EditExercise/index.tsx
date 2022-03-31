@@ -31,13 +31,15 @@ import {Title} from './Views/Title';
 
 export const EditExercise: React.FC<EditExerciseProps> = ({id, exercise}) => {
   const selectedCompletionType = useRecoilValue(completionTypeStoreFamily(id));
-  const {changeCurrentExercise} = useEditExerciseController(id);
+  const {changeCurrentExercise, reset} = useEditExerciseController(id);
 
   const {bottom} = useSafeAreaInsets();
 
   React.useEffect(() => {
     changeCurrentExercise(exercise);
   }, [exercise, changeCurrentExercise]);
+
+  React.useEffect(() => () => reset(), [reset]);
 
   const {
     animatedHandleHeight,

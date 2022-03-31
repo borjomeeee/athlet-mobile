@@ -20,7 +20,9 @@ import {EditExerciseProps} from '../Types';
 
 export const useEditExerciseController = (id: string) => {
   const {
+    resetCurrentExercise,
     setCurrentExercise,
+    resetCompletionType,
     setCompletionType,
     setGymReps,
     setGymWeight,
@@ -48,6 +50,21 @@ export const useEditExerciseController = (id: string) => {
     });
   }, [show, changeCurrentExercise]);
 
+  const reset = React.useCallback(() => {
+    resetCurrentExercise();
+    resetCompletionType();
+
+    resetGym();
+    resetReps();
+    resetTime();
+  }, [
+    resetCurrentExercise,
+    resetCompletionType,
+    resetGym,
+    resetReps,
+    resetTime,
+  ]);
+
   return {
     changeCurrentExercise,
 
@@ -62,6 +79,8 @@ export const useEditExerciseController = (id: string) => {
     resetGym,
     resetTime,
     resetReps,
+
+    reset,
   };
 };
 
