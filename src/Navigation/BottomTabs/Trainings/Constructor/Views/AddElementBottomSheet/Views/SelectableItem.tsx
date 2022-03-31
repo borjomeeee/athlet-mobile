@@ -15,10 +15,7 @@ export const SelectableItem: React.FC<SelectableItemProps> = ({
   onPress,
 }) => {
   return (
-    <PressableItem
-      style={s(`h:44 bgc:#fff`)}
-      underlayColor="#D0D7DE32"
-      onPress={onPress}>
+    <PressableItem style={s(`h:44 bgc:#fff`)} onPress={onPress}>
       <UI.View style={s(`container row h:44 aic`)}>
         <LeftIcon />
         <UI.VSpacer size={15} />

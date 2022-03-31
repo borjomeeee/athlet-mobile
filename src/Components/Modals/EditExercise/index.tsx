@@ -19,6 +19,7 @@ import {
 import {useRecoilValue} from 'recoil';
 import {
   completionTypeStoreFamily,
+  currentExerciseStoreFamily,
   gymRepsStoreFamily,
   gymWeightStoreFamily,
   repsStoreFamily,
@@ -30,7 +31,9 @@ import {Submit} from './Views/Submit';
 import {Title} from './Views/Title';
 
 export const EditExercise: React.FC<EditExerciseProps> = ({id, exercise}) => {
+  const currentExercise = useRecoilValue(currentExerciseStoreFamily(id));
   const selectedCompletionType = useRecoilValue(completionTypeStoreFamily(id));
+
   const {changeCurrentExercise, reset} = useEditExerciseController(id);
 
   const {bottom} = useSafeAreaInsets();
@@ -47,6 +50,10 @@ export const EditExercise: React.FC<EditExerciseProps> = ({id, exercise}) => {
     animatedContentHeight,
     handleContentLayout,
   } = useBottomSheetDynamicSnapPoints(['CONTENT_HEIGHT']);
+
+  if (!currentExercise) {
+    return null;
+  }
 
   return (
     <BottomSheetModal

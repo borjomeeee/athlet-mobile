@@ -7,4 +7,4 @@ export const Pressable: React.FC<
 
 export const PressableItem: React.FC<
   React.ComponentProps<typeof RN.TouchableHighlight>
-> = props => <RN.TouchableHighlight {...props} />;
+> = props => <RN.TouchableHighlight underlayColor="#D0D7DE32" {...props} />;

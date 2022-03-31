@@ -41,7 +41,6 @@ export const List: React.FC<ListProps> = ({id, onSelect}) => {
       return (
         <PressableItem
           style={s(`container pv:10 bgc:white`)}
-          underlayColor="#D0D7DE32"
           onPress={() => handlePressExercise(item)}>
           <Text>
             {res.map(([str, toHighlight], indx) => (

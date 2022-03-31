@@ -9,6 +9,7 @@ import Animated, {SlideInRight, SlideOutLeft} from 'react-native-reanimated';
 import {Pressable} from 'src/Components';
 import {
   useTrainingConstructorElementController,
+  useTrainingConstructorExerciseController,
   useTrainingConstructorSetExerciseController,
 } from '../Hooks';
 
@@ -24,6 +25,7 @@ export const Exercise: React.FC<ExerciseProps> = ({
   notShowTopBorder,
 
   handlePressRest,
+  handlePress,
 }) => {
   const formattedRest = React.useMemo(() => {
     return (
@@ -44,25 +46,28 @@ export const Exercise: React.FC<ExerciseProps> = ({
     return 'Undefined';
   }, [exercise]);
   return (
-    <Animated.View
-      entering={SlideInRight}
-      exiting={SlideOutLeft}
-      style={s(
-        `container row aic pv:8 btw:${
-          notShowTopBorder ? 0 : 1
-        } bbw:1 bc:ultraLightGray bgc:white`,
-      )}>
-      <UI.View style={s(`fill`)}>
-        <UI.Text>{exercise.title}</UI.Text>
-        <Pressable onPress={handlePressRest}>
-          <UI.Text style={s(`P8 medium c:gray`)}>
-            Отдых - {formattedRest}
-          </UI.Text>
-        </Pressable>
-      </UI.View>
-      <UI.View>
-        <UI.Text>{value}</UI.Text>
-      </UI.View>
+    <Animated.View entering={SlideInRight} exiting={SlideOutLeft}>
+      <UI.PressableItem
+        style={s(
+          `container row aic pv:8 btw:${
+            notShowTopBorder ? 0 : 1
+          } bbw:1 bc:ultraLightGray bgc:white`,
+        )}
+        onPress={handlePress}>
+        <>
+          <UI.View style={s(`fill`)}>
+            <UI.Text>{exercise.title}</UI.Text>
+            <Pressable style={s(`asfs`)} onPress={handlePressRest}>
+              <UI.Text style={s(`P8 medium c:gray`)}>
+                Отдых - {formattedRest}
+              </UI.Text>
+            </Pressable>
+          </UI.View>
+          <UI.View>
+            <UI.Text>{value}</UI.Text>
+          </UI.View>
+        </>
+      </UI.PressableItem>
     </Animated.View>
   );
 };
@@ -75,7 +80,14 @@ export const TrainingExercise: React.FC<TrainingExerciseProps> = ({
   ...props
 }) => {
   const {handlePressEditRest} = useTrainingConstructorElementController(id);
-  return <Exercise handlePressRest={handlePressEditRest} {...props} />;
+  const {handlePress} = useTrainingConstructorExerciseController(id);
+  return (
+    <Exercise
+      handlePress={handlePress}
+      handlePressRest={handlePressEditRest}
+      {...props}
+    />
+  );
 };
 
 interface SetExerciseProps extends ExerciseProps {
@@ -87,9 +99,13 @@ export const SetExercise: React.FC<SetExerciseProps> = ({
   index,
   ...props
 }) => {
-  const {handlePressEditRest} = useTrainingConstructorSetExerciseController(
-    setId,
-    index,
+  const {handlePressEditRest, handlePress} =
+    useTrainingConstructorSetExerciseController(setId, index);
+  return (
+    <Exercise
+      handlePress={handlePress}
+      handlePressRest={handlePressEditRest}
+      {...props}
+    />
   );
-  return <Exercise handlePressRest={handlePressEditRest} {...props} />;
 };

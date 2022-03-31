@@ -87,6 +87,29 @@ export const useTrainingConstructorStore = () => {
     [setElements],
   );
 
+  const replaceSetExercise = React.useCallback(
+    (setId: string, index: number, exercise: ExerciseElement) => {
+      setElements(currentElements => {
+        const set = currentElements.find(element => element.id === setId);
+        if (!set || !TrainingUtils.isSet(set)) {
+          return currentElements;
+        }
+
+        return currentElements.map(currElement =>
+          currElement.id === setId
+            ? {
+                ...set,
+                elements: set.elements.map((el, indx) =>
+                  indx !== index ? el : exercise,
+                ),
+              }
+            : currElement,
+        );
+      });
+    },
+    [setElements],
+  );
+
   const changeElementRest = React.useCallback(
     (id: string, rest: number) =>
       setElements(currentElements =>
@@ -131,6 +154,7 @@ export const useTrainingConstructorStore = () => {
 
     addExerciseToSet,
     removeExerciseFromSet,
+    replaceSetExercise,
     changeSetExerciseRest,
   };
 };
