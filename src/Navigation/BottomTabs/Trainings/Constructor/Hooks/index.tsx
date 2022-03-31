@@ -24,7 +24,6 @@ export const useTrainingConstructorController = () => {
     hideAddElement();
     showSelectExercise(UI.SelectExercise, {
       onSelect: exercise => {
-        console.log('hm', exercise);
         showEditExercise(UI.EditExercise, {exercise, onEdit: console.log});
       },
     });

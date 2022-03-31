@@ -2,7 +2,12 @@ import React from 'react';
 
 import * as UI from 'src/Components';
 import {useRecoilState, useRecoilValue, useSetRecoilState} from 'recoil';
-import {modalsStore, modalsVisibileStoreFamily} from 'src/Store/Modals';
+import {
+  Modal,
+  modalsMapStore,
+  modalsStore,
+  modalsVisibileStoreFamily,
+} from 'src/Store/Modals';
 import s from '@borjomeeee/rn-styles';
 
 export const useModalRouter = () => {
@@ -76,6 +81,15 @@ export const useModal = (id: string) => {
     show,
     hide,
   };
+};
+
+export const useModalProps = <T extends Record<string, any> = any>(
+  id: string,
+): {props: Partial<T>} => {
+  const modals = useRecoilValue(modalsMapStore);
+  const modal = React.useMemo(() => modals[id] as Modal<T>, [modals, id]);
+
+  return {props: modal.props || {}};
 };
 
 export const ModalRouter = () => {

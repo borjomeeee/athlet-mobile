@@ -5,21 +5,37 @@ import {SelectWheel, Text, View} from 'src/Components/Common';
 interface SelectGymWheelProps {
   reps?: number;
   weight?: number;
+
+  onChangeReps?: (value: number) => void;
+  onChangeWeight?: (value: number) => void;
 }
 export const SelectGymWheel: React.FC<SelectGymWheelProps> = ({
   reps = 10,
   weight = 40,
+  onChangeReps,
+  onChangeWeight,
 }) => {
   return (
     <View style={s(`rel row`)}>
       <View style={s(`abs t:0 b:0 l:-45 aic jcc zi:-1`)}>
         <Text style={s(`P7 medium`)}>reps.</Text>
       </View>
-      <SelectWheel start={0} end={99} defaultValue={reps} />
+      <SelectWheel
+        start={0}
+        end={99}
+        onChangeValue={onChangeReps}
+        defaultValue={reps}
+      />
       <View style={s(`abs t:0 b:0 r:80 pb:3 aic jcc zi:-1`)}>
         <Text style={s(`P5 medium`)}>x</Text>
       </View>
-      <SelectWheel width={90} start={0} end={240} defaultValue={weight} />
+      <SelectWheel
+        width={90}
+        start={0}
+        end={240}
+        onChangeValue={onChangeWeight}
+        defaultValue={weight}
+      />
       <View style={s(`abs t:0 b:0 r:-17 aic jcc zi:-1`)}>
         <Text style={s(`P7 medium`)}>kg.</Text>
       </View>

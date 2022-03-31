@@ -31,6 +31,7 @@ interface SelectWheelProps {
   defaultValue?: number;
 
   width?: number;
+  onChangeValue?: (value: number) => void;
 }
 
 const DIGIT_HEIGHT = 33;
@@ -43,22 +44,25 @@ export const SelectWheel: React.FC<SelectWheelProps> = ({
   step = 1,
   width = 60,
   defaultValue = 0,
+  onChangeValue,
 }) => {
   const numberItems = React.useMemo(
     () => Math.floor(end - start + 1) / step,
     [end, start, step],
   );
 
+  const [_defaultValue] = React.useState(defaultValue);
+
   const defaultValueIndex = React.useMemo(
-    () => Math.floor((defaultValue - start) / step),
-    [defaultValue, start, step],
+    () => Math.floor((_defaultValue - start) / step),
+    [_defaultValue, start, step],
   );
 
   const [startIndexToShow, setStartIndexToShow] =
     React.useState(defaultValueIndex);
 
   const topHeight = React.useMemo(() => {
-    return Math.max(startIndexToShow - 5, 0) * DIGIT_HEIGHT;
+    return Math.max(startIndexToShow - 3, 0) * DIGIT_HEIGHT;
   }, [startIndexToShow]);
 
   const startTranslateY = useSharedValue(defaultValueIndex * -DIGIT_HEIGHT);
@@ -112,14 +116,22 @@ export const SelectWheel: React.FC<SelectWheelProps> = ({
     _ => runOnJS(setStartIndexToShow)(-Math.round(y.value / DIGIT_HEIGHT)),
   );
 
-  const data = React.useMemo(
-    () =>
-      new Array(numberItems)
-        .fill(undefined)
-        .map((_, indx) => start + indx * step)
-        .slice(Math.max(startIndexToShow - 5, 0), startIndexToShow + 5 + 1),
-    [numberItems, startIndexToShow, start, step],
-  );
+  React.useEffect(() => {
+    onChangeValue?.(Math.min(Math.max(startIndexToShow, start), end));
+  }, [startIndexToShow, onChangeValue, start, end]);
+
+  const data = React.useMemo(() => {
+    const startIndex = Math.max(startIndexToShow - 3, 0);
+    const endIndex = Math.min(startIndex + 7, numberItems - 1);
+
+    if (endIndex - startIndex < 0) {
+      return [];
+    }
+
+    return new Array(endIndex - startIndex + 1)
+      .fill(undefined)
+      .map((_, indx) => start + (startIndex + indx) * step);
+  }, [numberItems, startIndexToShow, start, step]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{translateY: y.value}],

@@ -22,7 +22,7 @@ export const CompletionType: React.FC<CompletionTypeProps> = ({id}) => {
   const {screen} = useDimensions();
   const itemWidth = (screen.width - 40 - 6 - 2) / 3;
 
-  const {changeCompletionType} = useEditExerciseController(id);
+  const {handleChangeCompletionType} = useEditExerciseController(id);
   const selectedCompletionType = useRecoilValue(completionTypeStoreFamily(id));
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -51,21 +51,21 @@ export const CompletionType: React.FC<CompletionTypeProps> = ({id}) => {
           label="повторения"
           value={ExerciseCompletionType.REPS}
           isSelected={selectedCompletionType === ExerciseCompletionType.REPS}
-          onSelect={changeCompletionType}
+          onSelect={handleChangeCompletionType}
         />
         <Separator />
         <SelectableItem
           label="время"
           value={ExerciseCompletionType.TIME}
           isSelected={selectedCompletionType === ExerciseCompletionType.TIME}
-          onSelect={changeCompletionType}
+          onSelect={handleChangeCompletionType}
         />
         <Separator />
         <SelectableItem
           label="gym"
           value={ExerciseCompletionType.GYM}
           isSelected={selectedCompletionType === ExerciseCompletionType.GYM}
-          onSelect={changeCompletionType}
+          onSelect={handleChangeCompletionType}
         />
 
         <Animated.View style={animatedStyle} />

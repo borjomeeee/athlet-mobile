@@ -5,13 +5,8 @@ import {
 } from '@gorhom/bottom-sheet';
 import React from 'react';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {
-  BottomSheetModal,
-  HSpacer,
-  SelectWheel,
-  Text,
-} from 'src/Components/Common';
-import {Exercise} from 'src/Store/Models/Training';
+import {BottomSheetModal, HSpacer, Text} from 'src/Components/Common';
+import {ExerciseCompletionType} from 'src/Store/Models/Training';
 import {useEditExerciseController} from './Hooks';
 import {CompletionType} from './Views/CompletionType';
 
@@ -21,24 +16,28 @@ import {
   SelectRepsWheel,
   SelectTimeWheel,
 } from 'src/Components/Custom';
+import {useRecoilValue} from 'recoil';
+import {
+  completionTypeStoreFamily,
+  gymRepsStoreFamily,
+  gymWeightStoreFamily,
+  repsStoreFamily,
+  timeStoreFamily,
+} from './Store';
+import Animated, {SlideInRight, SlideOutLeft} from 'react-native-reanimated';
+import {EditExerciseProps} from './Types';
+import {Submit} from './Views/Submit';
+import {Title} from './Views/Title';
 
-interface EditExerciseProps {
-  id: string;
-  exercise: Exercise;
+export const EditExercise: React.FC<EditExerciseProps> = ({id, exercise}) => {
+  const selectedCompletionType = useRecoilValue(completionTypeStoreFamily(id));
+  const {changeCurrentExercise} = useEditExerciseController(id);
 
-  onEdit: (exercise: Exercise) => void;
-}
-export const EditExercise: React.FC<EditExerciseProps> = ({
-  id,
-  exercise,
-  onEdit,
-}) => {
-  const {changeCompletionType} = useEditExerciseController(id);
   const {bottom} = useSafeAreaInsets();
 
   React.useEffect(() => {
-    changeCompletionType(exercise.completionType);
-  }, [exercise, changeCompletionType]);
+    changeCurrentExercise(exercise);
+  }, [exercise, changeCurrentExercise]);
 
   const {
     animatedHandleHeight,
@@ -60,17 +59,79 @@ export const EditExercise: React.FC<EditExerciseProps> = ({
         <HSpacer size={30} />
 
         <UI.View style={s(`aic`)}>
-          <SelectRepsWheel />
+          {selectedCompletionType === ExerciseCompletionType.REPS && (
+            <Animated.View entering={SlideInRight} exiting={SlideOutLeft}>
+              <SelectReps id={id} />
+            </Animated.View>
+          )}
 
-          {/* <SelectTimeWheel />
-          <SelectGymWheel /> */}
+          {selectedCompletionType === ExerciseCompletionType.TIME && (
+            <Animated.View entering={SlideInRight} exiting={SlideOutLeft}>
+              <SelectTime id={id} />
+            </Animated.View>
+          )}
+
+          {selectedCompletionType === ExerciseCompletionType.GYM && (
+            <Animated.View entering={SlideInRight} exiting={SlideOutLeft}>
+              <SelectGym id={id} />
+            </Animated.View>
+          )}
         </UI.View>
 
         <HSpacer size={30} />
 
-        <Text>{exercise.title}</Text>
+        <Title id={id} />
+        <HSpacer size={15} />
+        <Submit id={id} />
         <HSpacer size={bottom + 20} />
       </BottomSheetView>
     </BottomSheetModal>
   );
 };
+
+interface SelectProps {
+  id: string;
+}
+function SelectTime({id}: SelectProps) {
+  const selectedTime = useRecoilValue(timeStoreFamily(id));
+  const {resetTime, handleChangeTime} = useEditExerciseController(id);
+
+  React.useEffect(() => () => resetTime(), [resetTime]);
+  return (
+    <SelectTimeWheel
+      selectedTime={selectedTime}
+      onChangeValue={handleChangeTime}
+    />
+  );
+}
+
+function SelectReps({id}: SelectProps) {
+  const selectedReps = useRecoilValue(repsStoreFamily(id));
+  const {resetReps, handleChangeReps} = useEditExerciseController(id);
+
+  React.useEffect(() => () => resetReps(), [resetReps]);
+  return (
+    <SelectRepsWheel
+      selectedNumber={selectedReps}
+      onChangeValue={handleChangeReps}
+    />
+  );
+}
+
+function SelectGym({id}: SelectProps) {
+  const selectedReps = useRecoilValue(gymRepsStoreFamily(id));
+  const selectedWeight = useRecoilValue(gymWeightStoreFamily(id));
+
+  const {resetGym, handleChangeGymReps, handleChangeGymWeight} =
+    useEditExerciseController(id);
+
+  React.useEffect(() => () => resetGym(), [resetGym]);
+  return (
+    <SelectGymWheel
+      onChangeReps={handleChangeGymReps}
+      onChangeWeight={handleChangeGymWeight}
+      reps={selectedReps}
+      weight={selectedWeight}
+    />
+  );
+}
