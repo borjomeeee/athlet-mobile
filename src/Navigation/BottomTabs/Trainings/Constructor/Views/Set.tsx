@@ -7,6 +7,14 @@ import {useTrainingConstructorSetController} from '../Hooks';
 import {Exercise} from './Exercise';
 import {ExerciseUtils} from 'src/Store/ModelsUtils/Exercise';
 import {TimeUtils} from 'src/Store/ModelsUtils/Time';
+import Animated, {
+  FadeInUp,
+  FadeOutDown,
+  SlideInRight,
+  SlideInUp,
+  SlideOutDown,
+  SlideOutLeft,
+} from 'react-native-reanimated';
 
 interface SetProps {
   id: string;
@@ -18,7 +26,7 @@ export const Set: React.FC<SetProps> = ({id, set, notShowTopBorder}) => {
   const {handlePressAddExercise} = useTrainingConstructorSetController(id);
 
   return (
-    <UI.View>
+    <Animated.View entering={SlideInRight} exiting={SlideOutLeft}>
       <UI.View
         style={s(
           `btw:${notShowTopBorder ? 0 : 1} bbw:1 bc:ultraLightGray bgc:#F6F8FA`,
@@ -45,6 +53,6 @@ export const Set: React.FC<SetProps> = ({id, set, notShowTopBorder}) => {
             'Без отдыха'}
         </UI.Text>
       </UI.View>
-    </UI.View>
+    </Animated.View>
   );
 };

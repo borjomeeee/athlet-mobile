@@ -5,6 +5,7 @@ import * as UI from 'src/Components';
 import s from '@borjomeeee/rn-styles';
 import {ExerciseUtils} from 'src/Store/ModelsUtils/Exercise';
 import {TimeUtils} from 'src/Store/ModelsUtils/Time';
+import Animated, {SlideInRight, SlideOutLeft} from 'react-native-reanimated';
 
 interface ExerciseProps {
   exercise: ExerciseElement;
@@ -33,7 +34,9 @@ export const Exercise: React.FC<ExerciseProps> = ({
     return 'Undefined';
   }, [exercise]);
   return (
-    <UI.View
+    <Animated.View
+      entering={SlideInRight}
+      exiting={SlideOutLeft}
       style={s(
         `container row aic pv:8 btw:${
           notShowTopBorder ? 0 : 1
@@ -46,6 +49,6 @@ export const Exercise: React.FC<ExerciseProps> = ({
       <UI.View>
         <UI.Text>{value}</UI.Text>
       </UI.View>
-    </UI.View>
+    </Animated.View>
   );
 };
