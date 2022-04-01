@@ -30,37 +30,41 @@ export const Set: React.FC<SetProps> = ({id, set, notShowTopBorder}) => {
 
   return (
     <Animated.View entering={SlideInRight} exiting={SlideOutLeft}>
-      <UI.View
-        style={s(
-          `btw:${notShowTopBorder ? 0 : 1} bbw:1 bc:ultraLightGray bgc:#F6F8FA`,
-          `pv:4 ph:16`,
-        )}>
-        <UI.Text style={s(`P8 bold c:#57606A`)}>СЕТ</UI.Text>
-      </UI.View>
+      <UI.AnimatedHeightBox>
+        <UI.View
+          style={s(
+            `btw:${
+              notShowTopBorder ? 0 : 1
+            } bbw:1 bc:ultraLightGray bgc:#F6F8FA`,
+            `pv:4 ph:16`,
+          )}>
+          <UI.Text style={s(`P8 bold c:#57606A`)}>СЕТ</UI.Text>
+        </UI.View>
 
-      {set.elements.map((exercise, indx) => (
-        <SetExercise
-          setId={id}
-          index={indx}
-          key={id + indx}
-          exercise={exercise}
-          notShowTopBorder
-        />
-      ))}
+        {set.elements.map((exercise, indx) => (
+          <SetExercise
+            setId={id}
+            index={indx}
+            key={id + indx}
+            exercise={exercise}
+            notShowTopBorder
+          />
+        ))}
 
-      <UI.Pressable
-        style={s(`container h:36 bbw:1 bc:ultraLightGray bgc:white jcc`)}
-        onPress={handlePressAddExercise}>
-        <UI.Text style={s(`P7 c:ultraLightGray`)}>
-          Добавить упражнение ...
-        </UI.Text>
-      </UI.Pressable>
-
-      <UI.View style={s(`pv:10 aic jcc`)}>
-        <UI.Pressable onPress={handlePressEditRest}>
-          <UI.Text style={s(`P8 medium c:gray`)}>{formattedRest}</UI.Text>
+        <UI.Pressable
+          style={s(`container h:36 bbw:1 bc:ultraLightGray bgc:white jcc`)}
+          onPress={handlePressAddExercise}>
+          <UI.Text style={s(`P7 c:ultraLightGray`)}>
+            Добавить упражнение ...
+          </UI.Text>
         </UI.Pressable>
-      </UI.View>
+
+        <UI.View style={s(`pv:10 aic jcc`)}>
+          <UI.Pressable onPress={handlePressEditRest}>
+            <UI.Text style={s(`P8 medium c:gray`)}>{formattedRest}</UI.Text>
+          </UI.Pressable>
+        </UI.View>
+      </UI.AnimatedHeightBox>
     </Animated.View>
   );
 };
