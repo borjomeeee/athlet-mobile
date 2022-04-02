@@ -10,14 +10,24 @@ import {
 import {SetExercise} from './Exercise';
 import {TimeUtils} from 'src/Store/ModelsUtils/Time';
 import Animated, {SlideInRight, SlideOutLeft} from 'react-native-reanimated';
+import {ExercisesPositions} from '../Types';
+import {ExerciseElementWithId} from '../Store';
 
 interface SetProps {
+  index: number;
+  exercisesPositions: ExercisesPositions;
   id: string;
 
   set: SetElement;
   notShowTopBorder?: boolean;
 }
-export const Set: React.FC<SetProps> = ({id, set, notShowTopBorder}) => {
+export const Set: React.FC<SetProps> = ({
+  id,
+  set,
+  exercisesPositions,
+  notShowTopBorder,
+  index,
+}) => {
   const {handlePressEditRest} = useTrainingConstructorElementController(id);
   const {handlePressAddExercise} = useTrainingConstructorSetController(id);
 
@@ -30,41 +40,39 @@ export const Set: React.FC<SetProps> = ({id, set, notShowTopBorder}) => {
 
   return (
     <Animated.View entering={SlideInRight} exiting={SlideOutLeft}>
-      <UI.AnimatedHeightBox>
-        <UI.View
-          style={s(
-            `btw:${
-              notShowTopBorder ? 0 : 1
-            } bbw:1 bc:ultraLightGray bgc:#F6F8FA`,
-            `pv:4 ph:16`,
-          )}>
-          <UI.Text style={s(`P8 bold c:#57606A`)}>СЕТ</UI.Text>
-        </UI.View>
+      <UI.View
+        style={s(
+          `btw:${notShowTopBorder ? 0 : 1} bbw:1 bc:ultraLightGray bgc:#F6F8FA`,
+          `pv:4 ph:16`,
+        )}>
+        <UI.Text style={s(`P8 bold c:#57606A`)}>СЕТ</UI.Text>
+      </UI.View>
 
-        {set.elements.map((exercise, indx) => (
-          <SetExercise
-            setId={id}
-            index={indx}
-            key={id + indx}
-            exercise={exercise}
-            notShowTopBorder
-          />
-        ))}
+      {(set.elements as ExerciseElementWithId[]).map((exercise, indx) => (
+        <SetExercise
+          exercisesPositions={exercisesPositions}
+          setId={id}
+          setIndex={indx}
+          index={index + indx}
+          key={exercise.elementId}
+          exercise={exercise}
+          notShowTopBorder
+        />
+      ))}
 
-        <UI.Pressable
-          style={s(`container h:36 bbw:1 bc:ultraLightGray bgc:white jcc`)}
-          onPress={handlePressAddExercise}>
-          <UI.Text style={s(`P7 c:ultraLightGray`)}>
-            Добавить упражнение ...
-          </UI.Text>
+      <UI.Pressable
+        style={s(`container h:36 bbw:1 bc:ultraLightGray bgc:white jcc`)}
+        onPress={handlePressAddExercise}>
+        <UI.Text style={s(`P7 c:ultraLightGray`)}>
+          Добавить упражнение ...
+        </UI.Text>
+      </UI.Pressable>
+
+      <UI.View style={s(`pv:10 aic jcc`)}>
+        <UI.Pressable onPress={handlePressEditRest}>
+          <UI.Text style={s(`P8 medium c:gray`)}>{formattedRest}</UI.Text>
         </UI.Pressable>
-
-        <UI.View style={s(`pv:10 aic jcc`)}>
-          <UI.Pressable onPress={handlePressEditRest}>
-            <UI.Text style={s(`P8 medium c:gray`)}>{formattedRest}</UI.Text>
-          </UI.Pressable>
-        </UI.View>
-      </UI.AnimatedHeightBox>
+      </UI.View>
     </Animated.View>
   );
 };

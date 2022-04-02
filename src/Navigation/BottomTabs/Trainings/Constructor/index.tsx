@@ -1,6 +1,7 @@
 import s from '@borjomeeee/rn-styles';
 import {useFocusEffect} from '@react-navigation/core';
 import React from 'react';
+import {ScrollView} from 'react-native-gesture-handler';
 
 import * as UI from 'src/Components';
 import {
@@ -18,13 +19,14 @@ export const Constructor = () => {
   useFocusEffect(React.useCallback(() => () => reset(), [reset]));
 
   return (
-    <UI.ScrollView
+    <ScrollView
       style={s(`fill bgc:layout`)}
-      contentContainerStyle={s(`pb:100`)}>
+      contentContainerStyle={s(`pb:100`)}
+      scrollEnabled={false}>
       <Header />
       <UI.HSpacer size={8} />
       <ElementsList />
       <AddElementButton />
-    </UI.ScrollView>
+    </ScrollView>
   );
 };

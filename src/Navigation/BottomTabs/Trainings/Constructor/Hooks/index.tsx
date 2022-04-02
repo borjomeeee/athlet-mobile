@@ -15,7 +15,8 @@ import {ElementType} from 'src/Store/Models/Training';
 import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
 
 export const useTrainingConstructorController = () => {
-  const {addElement, resetElements, resetTitle} = useTrainingConstructorStore();
+  const {addElement, resetElements, resetTitle, replaceExercises} =
+    useTrainingConstructorStore();
   const {show: showAddElement, hide: hideAddElement} = useModal('add-element');
   const {show: showSelectExercise} = useModal(
     'trainingConstructor__selectExercise',
@@ -56,6 +57,8 @@ export const useTrainingConstructorController = () => {
     handlePressAddElement,
     handlePressAddExercise,
     handlePressAddSet,
+
+    replaceExercises,
 
     reset,
   };

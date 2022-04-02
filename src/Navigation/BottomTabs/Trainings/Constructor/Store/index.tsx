@@ -5,9 +5,19 @@ import {
   useResetRecoilState,
   useSetRecoilState,
 } from 'recoil';
-import {ExerciseElement, TrainingElement} from 'src/Store/Models/Training';
+import {
+  ElementType,
+  ExerciseElement,
+  SetElement,
+  TrainingElement,
+} from 'src/Store/Models/Training';
 import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
 import {getKeyFabricForDomain} from 'src/Utils/Recoil';
+import {
+  ConstructorExercise,
+  ConstructorSet,
+  ConstructorSetExercise,
+} from '../Types';
 
 const createKey = getKeyFabricForDomain('training constructor');
 export const trainingTitle = atom({
@@ -15,7 +25,8 @@ export const trainingTitle = atom({
   default: '',
 });
 
-type TrainingElementWithId = TrainingElement & {elementId: string};
+export type TrainingElementWithId = ConstructorExercise | ConstructorSet;
+
 export const trainingElementsStore = atom<TrainingElementWithId[]>({
   key: createKey('trainingElements'),
   default: [],
@@ -32,7 +43,9 @@ export const useTrainingConstructorStore = () => {
     (element: TrainingElement) =>
       setElements(currentElements => [
         ...currentElements,
-        {elementId: Date.now().toString(), ...element},
+        element.type === ElementType.EXERCISE
+          ? {...element, elementId: Date.now().toString()}
+          : {...element, elementId: Date.now().toString(), elements: []},
       ]),
     [setElements],
   );
@@ -40,18 +53,26 @@ export const useTrainingConstructorStore = () => {
   const addExerciseToSet = React.useCallback(
     (setId: string, exercise: ExerciseElement) => {
       setElements(currentElements => {
-        const set = currentElements.find(
-          element => element.elementId === setId,
-        );
-
-        if (!set || !TrainingUtils.isSet(set)) {
+        const set = findSet(currentElements, setId);
+        if (!set) {
           return currentElements;
         }
 
         return currentElements.map(element =>
           element.elementId !== setId
             ? element
-            : {...set, elements: [...set.elements, exercise]},
+            : {
+                ...set,
+                elements: [
+                  ...set.elements,
+                  {
+                    ...exercise,
+                    elementId: Date.now().toString(),
+                    order: set.elements.length,
+                    setId,
+                  },
+                ],
+              },
         );
       });
     },
@@ -67,12 +88,10 @@ export const useTrainingConstructorStore = () => {
   );
 
   const removeExerciseFromSet = React.useCallback(
-    (setId: string, index: number) => {
+    (setId: string, order: number) => {
       setElements(currentElements => {
-        const set = currentElements.find(
-          element => element.elementId === setId,
-        );
-        if (!set || !TrainingUtils.isSet(set)) {
+        const set = findSet(currentElements, setId);
+        if (!set) {
           return currentElements;
         }
 
@@ -81,7 +100,7 @@ export const useTrainingConstructorStore = () => {
             ? element
             : {
                 ...set,
-                elements: set.elements.filter((_, indx) => indx !== index),
+                elements: set.elements.filter(el => el.order !== order),
               },
         );
       });
@@ -94,7 +113,9 @@ export const useTrainingConstructorStore = () => {
       setElements(currentElements =>
         currentElements.map(currElement =>
           currElement.elementId === id
-            ? {elementId: id, ...element}
+            ? element.type === ElementType.EXERCISE
+              ? {elementId: id, ...element}
+              : {elementId: id, ...element, elements: []}
             : currElement,
         ),
       ),
@@ -102,12 +123,10 @@ export const useTrainingConstructorStore = () => {
   );
 
   const replaceSetExercise = React.useCallback(
-    (setId: string, index: number, exercise: ExerciseElement) => {
+    (setId: string, order: number, exercise: ExerciseElement) => {
       setElements(currentElements => {
-        const set = currentElements.find(
-          element => element.elementId === setId,
-        );
-        if (!set || !TrainingUtils.isSet(set)) {
+        const set = findSet(currentElements, setId);
+        if (!set) {
           return currentElements;
         }
 
@@ -115,8 +134,10 @@ export const useTrainingConstructorStore = () => {
           currElement.elementId === setId
             ? {
                 ...set,
-                elements: set.elements.map((el, indx) =>
-                  indx !== index ? el : exercise,
+                elements: set.elements.map(el =>
+                  el.order !== order
+                    ? el
+                    : {...exercise, elementId: el.elementId, setId, order},
                 ),
               }
             : currElement,
@@ -139,12 +160,10 @@ export const useTrainingConstructorStore = () => {
   );
 
   const changeSetExerciseRest = React.useCallback(
-    (setId: string, index: number, rest: number) =>
+    (setId: string, order: number, rest: number) =>
       setElements(currentElements => {
-        const set = currentElements.find(
-          element => element.elementId === setId,
-        );
-        if (!set || !TrainingUtils.isSet(set)) {
+        const set = findSet(currentElements, setId);
+        if (!set) {
           return currentElements;
         }
 
@@ -152,13 +171,26 @@ export const useTrainingConstructorStore = () => {
           currElement.elementId === setId
             ? {
                 ...set,
-                elements: set.elements.map((el, indx) =>
-                  indx !== index ? el : {...el, restAfterComplete: rest},
+                elements: set.elements.map(el =>
+                  el.order !== order ? el : {...el, restAfterComplete: rest},
                 ),
               }
             : currElement,
         );
       }),
+    [setElements],
+  );
+
+  const replaceExercises = React.useCallback(
+    (exercisesIds: string[]) => {
+      setElements(currentElements => {
+        return _replaceElementsExercises(
+          currentElements,
+          _getElementsExercises(currentElements),
+          exercisesIds,
+        );
+      });
+    },
     [setElements],
   );
 
@@ -177,8 +209,71 @@ export const useTrainingConstructorStore = () => {
     removeExerciseFromSet,
     replaceSetExercise,
     changeSetExerciseRest,
+
+    replaceExercises,
   };
 };
+
+export function _getElementsExercises(elements: TrainingElementWithId[]) {
+  const res: Record<string, ConstructorExercise> = {};
+  for (let i = 0; i < elements.length; i++) {
+    const element = elements[i];
+    if (isSet(element)) {
+      for (let j = 0; j < element.elements.length; j++) {
+        const exercise = element.elements[j];
+        res[exercise.elementId] = exercise;
+      }
+    } else {
+      res[element.elementId] = element;
+    }
+  }
+
+  return res;
+}
+
+function _replaceElementsExercises(
+  elements: TrainingElementWithId[],
+  exercises: Record<string, ConstructorExercise | ConstructorSetExercise>,
+  newOrderExercises: string[],
+) {
+  let indx = 0;
+  const newElements = [...elements];
+
+  for (let i = 0; i < newElements.length; i++) {
+    const element = newElements[i];
+    if (isSet(element)) {
+      const newExercises = [...element.elements];
+      for (let j = 0; j < newExercises.length; j++) {
+        newExercises[j] = {
+          ...exercises[newOrderExercises[indx]],
+          order: newExercises[j].order,
+        } as ConstructorSetExercise;
+        indx++;
+      }
+      newElements[i] = {...element, elements: newExercises};
+    } else {
+      newElements[i] = {...exercises[newOrderExercises[indx]]};
+      indx++;
+    }
+  }
+
+  return newElements;
+}
+
+export function isSet(
+  element: TrainingElementWithId,
+): element is ConstructorSet {
+  return element.type === ElementType.SET;
+}
+
+function findSet(elements: TrainingElementWithId[], setId: string) {
+  const set = elements.find(element => element.elementId === setId);
+  if (!set || !isSet(set)) {
+    return undefined;
+  }
+
+  return set;
+}
 
 export const useTrainingConstructorElement = (id: string) => {
   const elements = useRecoilValue(trainingElementsStore);

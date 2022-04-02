@@ -43,6 +43,7 @@ export const training: TrainingApi = {
           completionType: ExerciseCompletionType.REPS,
           reps: 10,
           restAfterComplete: 1,
+          order: 1,
         },
         {
           id: '1',
@@ -51,6 +52,7 @@ export const training: TrainingApi = {
           completionType: ExerciseCompletionType.REPS,
           reps: 10,
           restAfterComplete: 0,
+          order: 0,
         },
       ],
     },
@@ -64,6 +66,7 @@ export const training: TrainingApi = {
           completionType: ExerciseCompletionType.REPS,
           reps: 10,
           restAfterComplete: 10,
+          order: 0,
         },
         {
           id: '1',
@@ -72,6 +75,7 @@ export const training: TrainingApi = {
           completionType: ExerciseCompletionType.REPS,
           reps: 10,
           restAfterComplete: 10,
+          order: 1,
         },
       ],
     },
