@@ -252,7 +252,9 @@ function _replaceElementsExercises(
       }
       newElements[i] = {...element, elements: newExercises};
     } else {
-      newElements[i] = {...exercises[newOrderExercises[indx]]};
+      newElements[i] = {
+        ...exercises[newOrderExercises[indx]],
+      };
       indx++;
     }
   }

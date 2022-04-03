@@ -39,181 +39,199 @@ interface ExerciseProps {
   handlePressRest?: () => void;
   handlePress?: () => void;
 }
-export const Exercise: React.FC<ExerciseProps> = ({
-  exercise,
+export const Exercise: React.FC<ExerciseProps> = React.memo(
+  ({
+    exercise,
 
-  handlePressRest,
-  handlePress,
+    handlePressRest,
+    handlePress,
 
-  exercisesPositions,
-}) => {
-  const {replaceExercises} = useTrainingConstructorController();
-  const animatedRef = useAnimatedRef<Animated.View>();
+    exercisesPositions,
+  }) => {
+    const {replaceExercises} = useTrainingConstructorController();
+    const animatedRef = useAnimatedRef<Animated.View>();
 
-  const id = React.useMemo(() => exercise.elementId, [exercise]);
-  const {layout, swap} = useDraggableController(exercisesPositions);
+    const id = React.useMemo(() => exercise.elementId, [exercise]);
+    const {layout, swap} = useDraggableController(exercisesPositions);
 
-  const formattedRest = React.useMemo(() => {
-    return (
-      TimeUtils.getFormattedTimeForTraining(exercise.restAfterComplete) ||
-      'Без отдыха'
-    );
-  }, [exercise]);
+    const formattedRest = React.useMemo(() => {
+      return (
+        TimeUtils.getFormattedTimeForTraining(exercise.restAfterComplete) ||
+        'Без отдыха'
+      );
+    }, [exercise]);
 
-  const value = React.useMemo(() => {
-    if (ExerciseUtils.isRepsExercise(exercise)) {
-      return `${exercise.reps} раз.`;
-    } else if (ExerciseUtils.isTimeExercise(exercise)) {
-      return TimeUtils.getFormattedTimeForTraining(exercise.time) || '0 сек.';
-    } else if (ExerciseUtils.isGymExercise(exercise)) {
-      return `${exercise.reps} x ${exercise.kg} кг.`;
-    }
+    const value = React.useMemo(() => {
+      if (ExerciseUtils.isRepsExercise(exercise)) {
+        return `${exercise.reps} раз.`;
+      } else if (ExerciseUtils.isTimeExercise(exercise)) {
+        return TimeUtils.getFormattedTimeForTraining(exercise.time) || '0 сек.';
+      } else if (ExerciseUtils.isGymExercise(exercise)) {
+        return `${exercise.reps} x ${exercise.kg} кг.`;
+      }
 
-    return 'Undefined';
-  }, [exercise]);
+      return 'Undefined';
+    }, [exercise]);
 
-  // const isReady = useSharedValue(false);
-  const isDragging = useSharedValue(false);
+    const isDragging = useSharedValue(false);
 
-  const translateY = useSharedValue(0);
-  const translateX = useSharedValue(0);
-  // const startTranslateYOffset = useSharedValue(0);
+    const translateY = useSharedValue(0);
 
-  // const initialY = useSharedValue(0);
-  // const offsetY = useSharedValue(0);
+    const changed = useSharedValue(false);
+    const offsetY = useSharedValue(0);
 
-  // const order = useSharedValue(exerciseIndex);
-  // const initialOrder = useDerivedValue(() => exerciseIndex);
+    useAnimatedReaction(
+      () => exercisesPositions.value,
+      positions => {
+        if (positions[id]) {
+          offsetY.value = positions[id].tempOffsetY || 0;
+          changed.value = !!positions[id].changed;
 
-  const offsetY = useSharedValue(0);
-  useAnimatedReaction(
-    () => exercisesPositions.value,
-    positions => (offsetY.value = positions[id].tempOffsetY),
-  );
-  // const position = useDerivedValue(() => exercisesPositions.value[id]);
+          if (isDragging.value) {
+            return;
+          }
 
-  const gesture = Gesture.Pan()
-    .onTouchesDown(() => {
-      isDragging.value = true;
-    })
-    .onUpdate(e => {
-      translateY.value = e.translationY;
-      translateX.value = e.translationX;
-    })
-    .onEnd(() => {
-      translateY.value = withTiming(0, {}, isFinished => {
-        if (isFinished) {
-          const orderedPositionsIds = Object.values(exercisesPositions.value)
-            .sort((pos1, pos2) => pos1.order - pos2.order)
-            .map(pos => pos.id);
-
-          runOnJS(replaceExercises)(orderedPositionsIds);
+          translateY.value = changed.value
+            ? withTiming(offsetY.value)
+            : offsetY.value;
         }
+      },
+    );
+
+    const gesture = Gesture.Pan()
+      .onTouchesDown(() => {
+        isDragging.value = true;
+      })
+      .onUpdate(e => {
+        translateY.value = e.translationY;
+      })
+      .onEnd(() => {
+        translateY.value = withTiming(offsetY.value, {}, isFinished => {
+          if (isFinished) {
+            const orderedPositionsIds = Object.values(exercisesPositions.value)
+              .sort((pos1, pos2) => pos1.order - pos2.order)
+              .map(pos => pos.id);
+
+            runOnJS(replaceExercises)(orderedPositionsIds);
+          }
+        });
+      })
+      .onTouchesUp(() => {
+        isDragging.value = false;
       });
 
-      translateX.value = withTiming(0);
-    })
-    .onTouchesUp(() => {
-      isDragging.value = false;
+    const animatedStyle = useAnimatedStyle(() => {
+      return {
+        transform: [
+          {
+            translateY: translateY.value,
+          },
+          {
+            scale: withTiming(isDragging.value ? 1.05 : 1, {duration: 50}),
+          },
+        ],
+
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 5,
+        },
+        shadowOpacity: withTiming(isDragging.value ? 0.1 : 0, {duration: 100}),
+        shadowRadius: 6.27,
+
+        elevation: 10,
+        zIndex: isDragging.value ? 100 : 1,
+      };
     });
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateY: isDragging.value
-          ? translateY.value
-          : offsetY.value !== 0
-          ? withTiming(offsetY.value)
-          : 0,
-      },
-      {
-        scale: withTiming(isDragging.value ? 1.05 : 1, {duration: 50}),
-      },
-    ],
+    useAnimatedReaction(
+      () => {
+        if (!isDragging.value) {
+          return id;
+        }
 
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    shadowOpacity: withTiming(isDragging.value ? 0.1 : 0, {duration: 100}),
-    shadowRadius: 6.27,
+        const currentPosition = exercisesPositions.value[id];
+        if (!currentPosition) {
+          return id;
+        }
 
-    elevation: 10,
-    zIndex: isDragging.value ? 100 : 1,
-  }));
+        for (const key in exercisesPositions.value) {
+          const position = exercisesPositions.value[key];
+          if (!position) {
+            continue;
+          }
 
-  useAnimatedReaction(
-    () => {
-      if (!isDragging.value) {
+          if (currentPosition.order > position.order) {
+            if (
+              currentPosition.offsetY + translateY.value <
+              position.offsetY + position.tempOffsetY
+            ) {
+              return position.id;
+            }
+          } else if (currentPosition.order < position.order) {
+            if (
+              currentPosition.offsetY + translateY.value >
+              position.offsetY + position.tempOffsetY
+            ) {
+              return position.id;
+            }
+          }
+        }
+
         return id;
-      }
-
-      const currentPosition = exercisesPositions.value[id];
-      for (const key in exercisesPositions.value) {
-        const position = exercisesPositions.value[key];
-        if (currentPosition.order <= position.order) {
-          continue;
+      },
+      newId => {
+        if (newId === id) {
+          return;
         }
 
-        if (currentPosition.offsetY + translateY.value < position.offsetY) {
-          return position.id;
-        }
-      }
+        runOnJS(swap)(id, newId);
+      },
+    );
 
-      return id;
-    },
-    newId => {
-      if (newId === id) {
-        return;
-      }
+    const handleLayout = React.useCallback(
+      (e: LayoutChangeEvent) => {
+        layout(id, e.nativeEvent.layout.height);
+      },
+      [layout, id],
+    );
 
-      runOnJS(swap)(id, newId);
-    },
-  );
-
-  const handleLayout = React.useCallback(
-    (e: LayoutChangeEvent) => {
-      layout(id, e.nativeEvent.layout.height);
-    },
-    [layout, id],
-  );
-
-  return (
-    <Animated.View
-      ref={animatedRef}
-      style={animatedStyle}
-      onLayout={handleLayout}>
-      <UI.PressableItem
-        style={s(`container bgc:white pv:8 ofv`, `bbw:1 btw:1 bc:#DADADA`)}
-        onPress={handlePress}>
-        <UI.View style={s(`row aic`)}>
-          <UI.View style={s(`fill`)}>
-            <UI.Text>{exercise.title}</UI.Text>
-            <Pressable style={s(`asfs`)} onPress={handlePressRest}>
-              <UI.Text style={s(`P8 medium c:gray`)}>
-                Отдых - {formattedRest}
-              </UI.Text>
-            </Pressable>
+    return (
+      <Animated.View
+        ref={animatedRef}
+        style={animatedStyle}
+        onLayout={handleLayout}>
+        <UI.PressableItem
+          style={s(`container bgc:white pv:8 ofv`, `bbw:1 btw:1 bc:#DADADA`)}
+          onPress={handlePress}>
+          <UI.View style={s(`row aic`)}>
+            <UI.View style={s(`fill`)}>
+              <UI.Text>{exercise.title}</UI.Text>
+              <Pressable style={s(`asfs`)} onPress={handlePressRest}>
+                <UI.Text style={s(`P8 medium c:gray`)}>
+                  Отдых - {formattedRest}
+                </UI.Text>
+              </Pressable>
+            </UI.View>
+            <UI.View>
+              <UI.Text>{value}</UI.Text>
+            </UI.View>
+            <UI.VSpacer size={28} />
           </UI.View>
-          <UI.View>
-            <UI.Text>{value}</UI.Text>
+        </UI.PressableItem>
+
+        <GestureDetector gesture={gesture}>
+          <UI.View style={s(`abs r:20 t:0 b:0 jcc`)}>
+            <DragIcon />
           </UI.View>
-          <UI.VSpacer size={28} />
-        </UI.View>
-      </UI.PressableItem>
+        </GestureDetector>
 
-      <GestureDetector gesture={gesture}>
-        <UI.View style={s(`abs r:20 t:0 b:0 jcc`)}>
-          <DragIcon />
-        </UI.View>
-      </GestureDetector>
-
-      {/* <UI.View style={s(`abs h:1 bgc:#DADADA r:0 l:0 t:-1 zi:10`)} />
+        {/* <UI.View style={s(`abs h:1 bgc:#DADADA r:0 l:0 t:-1 zi:10`)} />
       <UI.View style={s(`abs h:1 bgc:#DADADA r:0 l:0 b:-2 zi:10`)} /> */}
-    </Animated.View>
-  );
-};
+      </Animated.View>
+    );
+  },
+);
 
 export const TrainingExercise: React.FC<ExerciseProps> = ({
   exercise,
@@ -238,7 +256,7 @@ export const TrainingExercise: React.FC<ExerciseProps> = ({
 
 // TODO: fix problem with sets
 
-interface SetExerciseProps extends ExerciseProps {
+interface SetExerciseProps extends Omit<ExerciseProps, 'exercise'> {
   setId: string;
   exercise: ConstructorSetExercise;
 }

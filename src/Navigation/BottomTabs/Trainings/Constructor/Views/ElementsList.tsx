@@ -4,7 +4,7 @@ import {isSet, trainingElementsStore} from '../Store';
 
 import * as UI from 'src/Components';
 import {SetExercise, TrainingExercise} from './Exercise';
-import {useSharedValue} from 'react-native-reanimated';
+import {useAnimatedReaction, useSharedValue} from 'react-native-reanimated';
 import {
   ConstructorElementType,
   ConstructorElementViewList,
@@ -45,7 +45,7 @@ export const ElementsList = () => {
 
   const animatedExercisesPositions = useSharedValue<ExercisesPositions>({});
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     let offsetY = 0;
     animatedExercisesPositions.value = viewElements.reduce(
       (acc, element, order) => {
@@ -63,6 +63,7 @@ export const ElementsList = () => {
             offsetY,
             tempOffsetY: 0,
             order,
+            changed: false,
           };
 
           if (acc[element.element.elementId].height) {

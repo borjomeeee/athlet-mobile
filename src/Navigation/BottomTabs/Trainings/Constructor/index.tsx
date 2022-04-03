@@ -22,7 +22,7 @@ export const Constructor = () => {
     <ScrollView
       style={s(`fill bgc:layout`)}
       contentContainerStyle={s(`pb:100`)}
-      scrollEnabled={false}>
+      scrollEnabled={true}>
       <Header />
       <UI.HSpacer size={8} />
       <ElementsList />

@@ -1,10 +1,6 @@
 import React from 'react';
-import {runOnJS, runOnUI, useSharedValue} from 'react-native-reanimated';
-import {
-  AnimatedExercisesPositions,
-  ExercisePosition,
-  ExercisesPositions,
-} from '../Types';
+import {runOnUI, useSharedValue} from 'react-native-reanimated';
+import {AnimatedExercisesPositions} from '../Types';
 
 export const useDraggableController = (
   exercisesPositions: AnimatedExercisesPositions,
@@ -23,18 +19,21 @@ export const useDraggableController = (
       const diff =
         currentPosition.offsetY +
         currentPosition.tempOffsetY -
-        position.offsetY;
+        (position.offsetY + position.tempOffsetY);
+
       exercisesPositions.value = {
         ...exercisesPositions.value,
         [withId]: {
           ...position,
           tempOffsetY: position.tempOffsetY + diff,
           order: currentPosition.order,
+          changed: true,
         },
         [currentId]: {
           ...currentPosition,
           tempOffsetY: currentPosition.tempOffsetY - diff,
           order: position.order,
+          changed: true,
         },
       };
     },

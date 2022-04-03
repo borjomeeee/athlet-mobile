@@ -13,6 +13,8 @@ export interface ExercisePosition {
 
   height?: number;
   order: number;
+
+  changed?: boolean;
 }
 
 export type ExercisesPositions = {
