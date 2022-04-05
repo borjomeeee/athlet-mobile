@@ -6,6 +6,7 @@ import {SET_HEADER_HEIGHT} from '../Const';
 import {AnimatedExercisesPositions} from '../Types';
 import {useDraggablePosition} from '../Hooks/Draggable';
 import Animated, {
+  Layout,
   SlideInRight,
   SlideOutLeft,
   useAnimatedStyle,
@@ -26,19 +27,18 @@ export const SetHeader: React.FC<SetHeaderProps> = ({
   id,
   exercisesPositions,
 }) => {
-  const {changed, offsetY} = useDraggablePosition(id, exercisesPositions);
+  const {offsetY} = useDraggablePosition(id, exercisesPositions);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      {translateY: changed.value ? withTiming(offsetY.value) : offsetY.value},
-    ],
+    transform: [{translateY: withTiming(offsetY.value)}],
   }));
 
   return (
     <Animated.View
       entering={SlideInRight}
       exiting={SlideOutLeft}
-      style={animatedStyle}>
+      style={animatedStyle}
+      layout={Layout}>
       <UI.View
         style={s(
           `btw:1 bbw:1 bc:ultraLightGray bgc:#F6F8FA`,

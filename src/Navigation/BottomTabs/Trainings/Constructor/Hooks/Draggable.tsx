@@ -21,14 +21,11 @@ export const useDraggablePosition = (
   id: string,
   exercisesPositions: AnimatedExercisesPositions,
 ) => {
-  const changed = useDerivedValue(
-    () => !!exercisesPositions.value[id]?.changed,
-  );
   const offsetY = useDerivedValue(
     () => exercisesPositions.value[id]?.tempOffsetY || 0,
   );
 
-  return {changed, offsetY};
+  return {offsetY};
 };
 
 export const useDraggableController = (
@@ -38,7 +35,7 @@ export const useDraggableController = (
   scrollY: Animated.SharedValue<number>,
 ) => {
   const {replaceExercises} = useTrainingConstructorController();
-  const {changed, offsetY} = useDraggablePosition(id, exercisesPositions);
+  const {offsetY} = useDraggablePosition(id, exercisesPositions);
 
   const {height: windowHeight} = useWindowDimensions();
   const wasMeasured = useSharedValue(false);
@@ -207,7 +204,6 @@ export const useDraggableController = (
     isPressed,
     gestureTranslateY,
     initialScrollY,
-    changed,
     offsetY,
     draggingGesture,
     layout,

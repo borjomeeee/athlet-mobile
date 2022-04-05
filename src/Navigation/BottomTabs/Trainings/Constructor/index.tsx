@@ -3,6 +3,7 @@ import {useFocusEffect} from '@react-navigation/core';
 import React from 'react';
 import * as RN from 'react-native';
 import Animated, {
+  Layout,
   useAnimatedRef,
   useAnimatedScrollHandler,
   useSharedValue,
@@ -42,7 +43,10 @@ export const Constructor = () => {
       <UI.HSpacer size={8} />
       <ElementsList scrollViewRef={ref} scrollY={scrollY} />
       <UI.HSpacer size={20} />
-      <AddElementButton />
+
+      <Animated.View layout={Layout} style={s(`zi:1`)}>
+        <AddElementButton />
+      </Animated.View>
     </Animated.ScrollView>
   );
 };

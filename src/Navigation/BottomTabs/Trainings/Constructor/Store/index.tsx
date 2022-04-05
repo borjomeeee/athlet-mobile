@@ -89,22 +89,31 @@ export const useTrainingConstructorStore = () => {
     [setElements],
   );
 
-  const removeExerciseFromSet = React.useCallback(
-    (setId: string, index: number) => {
+  const removeExercise = React.useCallback(
+    (id: string) => {
       setElements(currentElements => {
-        const set = findSet(currentElements, setId);
-        if (!set) {
-          return currentElements;
-        }
+        return currentElements
+          .map(element => {
+            if (TrainingUtils.isSet(element)) {
+              if (
+                element.elements.find(
+                  setExercise => setExercise.elementId === id,
+                )
+              ) {
+                return {
+                  ...element,
+                  elements: element.elements.filter(
+                    setExercise => setExercise.elementId !== id,
+                  ),
+                };
+              }
+            }
 
-        return currentElements.map(element =>
-          element.elementId !== setId
-            ? element
-            : {
-                ...set,
-                elements: set.elements.filter((el, indx) => indx !== index),
-              },
-        );
+            return element;
+          })
+          .filter(
+            element => TrainingUtils.isSet(element) || element.elementId !== id,
+          );
       });
     },
     [setElements],
@@ -185,8 +194,6 @@ export const useTrainingConstructorStore = () => {
       setElements(currentElements => {
         const elementsById = _getElementsById(currentElements);
 
-        console.log('elements: ', elementsById);
-        console.log('replace', exercisesPositions);
         const newElementsStore: TrainingElementWithId[] = [];
         const positionsArray = Object.values(exercisesPositions).sort(
           (pos1, pos2) => pos1.order - pos2.order,
@@ -195,7 +202,6 @@ export const useTrainingConstructorStore = () => {
         let index = 0;
         let currentSet: ConstructorSet | undefined;
 
-        console.log('array', positionsArray);
         while (index !== positionsArray.length) {
           const position = positionsArray[index];
           if (isSetHeader(position.id)) {
@@ -204,7 +210,6 @@ export const useTrainingConstructorStore = () => {
               elements: [],
             } as ConstructorSet;
 
-            console.log(currentSet);
             newElementsStore.push(currentSet);
 
             index++;
@@ -219,7 +224,6 @@ export const useTrainingConstructorStore = () => {
           }
 
           if (currentSet) {
-            // const element = newElementsStore[index] as ConstructorSet;
             currentSet.elements.push(
               elementsById[position.id] as ConstructorExercise,
             );
@@ -246,9 +250,11 @@ export const useTrainingConstructorStore = () => {
     removeElement,
 
     addExerciseToSet,
-    removeExerciseFromSet,
+    // removeExerciseFromSet,
 
     replaceExercise,
+    removeExercise,
+
     changeExerciseRest,
 
     changeSetRest,
@@ -284,7 +290,7 @@ function _replaceElementsExercises(
 
   for (let i = 0; i < elements.length; i++) {
     const element = elements[i];
-
+    console.log(element);
     if (isSet(element)) {
       const newExercises = [];
 

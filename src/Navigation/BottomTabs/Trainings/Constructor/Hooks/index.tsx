@@ -65,7 +65,8 @@ export const useTrainingConstructorController = () => {
 };
 
 export const useTrainingConstructorExerciseController = (id: string) => {
-  const {replaceExercise, changeExerciseRest} = useTrainingConstructorStore();
+  const {replaceExercise, changeExerciseRest, removeExercise} =
+    useTrainingConstructorStore();
 
   const {show: showEditRest} = useModal('trainingConstructor__editRest');
   const {show: showEditExercise} = useModal(
@@ -98,7 +99,11 @@ export const useTrainingConstructorExerciseController = (id: string) => {
     });
   }, [showEditRest, exercise, id, changeExerciseRest]);
 
-  return {handlePress, handlePressEditRest};
+  const handlePressRemove = React.useCallback(() => {
+    removeExercise(id);
+  }, [id, removeExercise]);
+
+  return {handlePress, handlePressEditRest, handlePressRemove};
 };
 
 export const useTrainingConstructorSetController = (id: string) => {

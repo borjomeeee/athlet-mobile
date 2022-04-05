@@ -29,17 +29,21 @@ const textSizeStyleSheet = {
   P10: () => ({fontSize: 10}),
 };
 
+const defaultTextStyles = {color: Colors.black};
 const textFont = {fontFamily: 'Rubik-Regular'};
 
 const fontsStylesSheet = {
-  text: () => textFont,
+  text: () => ({...defaultTextStyles, ...textFont}),
   medium: () => ({
+    ...defaultTextStyles,
     fontFamily: 'Rubik-Medium',
   }),
   bold: () => ({
+    ...defaultTextStyles,
     fontFamily: 'Rubik-Bold',
   }),
   montserrat: () => ({
+    ...defaultTextStyles,
     fontFamily: 'Montserrat-Bold',
   }),
 };

@@ -14,6 +14,7 @@ import {
 } from '../Const';
 import {AnimatedExercisesPositions} from '../Types';
 import Animated, {
+  Layout,
   SlideInRight,
   SlideOutLeft,
   useAnimatedStyle,
@@ -36,7 +37,7 @@ export const SetFooter: React.FC<SetFooterProps> = ({
   id,
   exercisesPositions,
 }) => {
-  const {changed, offsetY} = useDraggablePosition(id, exercisesPositions);
+  const {offsetY} = useDraggablePosition(id, exercisesPositions);
 
   const {handlePressAddExercise} = useTrainingConstructorSetController(setId);
   const {handlePressEditRest} = useTrainingConstructorSetRestController(setId);
@@ -47,16 +48,15 @@ export const SetFooter: React.FC<SetFooterProps> = ({
   }, [restAfterComplete]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      {translateY: changed.value ? withTiming(offsetY.value) : offsetY.value},
-    ],
+    transform: [{translateY: withTiming(offsetY.value)}],
   }));
 
   return (
     <Animated.View
       entering={SlideInRight}
       exiting={SlideOutLeft}
-      style={animatedStyle}>
+      style={animatedStyle}
+      layout={Layout}>
       <UI.Pressable
         style={s(
           `container h:${SET_FOOTER_ADD_EXERCISE_BUTTON_HEIGHT} bgc:white jcc`,

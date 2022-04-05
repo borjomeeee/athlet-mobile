@@ -1,6 +1,10 @@
 import s from '@borjomeeee/rn-styles';
 import React from 'react';
-import {Gesture, GestureDetector} from 'react-native-gesture-handler';
+import {
+  Gesture,
+  GestureDetector,
+  gestureHandlerRootHOC,
+} from 'react-native-gesture-handler';
 import Animated, {
   Easing,
   runOnJS,
@@ -38,7 +42,7 @@ const DIGIT_HEIGHT = 33;
 const HEIGHT = DIGIT_HEIGHT * 5;
 
 const springConfig: WithSpringConfig = {damping: 20};
-export const SelectWheel: React.FC<SelectWheelProps> = ({
+export const SelectWheelHelper: React.FC<SelectWheelProps> = ({
   start,
   end,
   step = 1,
@@ -216,3 +220,5 @@ function End({width, height}: SvgProps) {
     </Svg>
   );
 }
+
+export const SelectWheel = gestureHandlerRootHOC(SelectWheelHelper, {flex: 0});
