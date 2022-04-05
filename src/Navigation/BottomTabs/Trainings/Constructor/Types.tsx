@@ -1,8 +1,15 @@
 import Animated from 'react-native-reanimated';
 import {ExerciseElement, SetElement} from 'src/Store/Models/Training';
 
+export enum ConstructorElementType {
+  EXERCISE = 'exercise',
+  SET_HEADER = 'set-header',
+  SET_FOOTER = 'set-footer',
+}
+
 export interface ExercisePosition {
   id: string;
+  type: ConstructorElementType;
 
   offsetY: number;
   tempOffsetY: number;
@@ -18,12 +25,6 @@ export type ExercisesPositions = {
 };
 export type AnimatedExercisesPositions =
   Animated.SharedValue<ExercisesPositions>;
-
-export enum ConstructorElementType {
-  EXERCISE = 'exercise',
-  SET_HEADER = 'set-header',
-  SET_FOOTER = 'set-footer',
-}
 
 export type ConstructorExercise = ExerciseElement & {elementId: string};
 export type ConstructorSetExercise = ConstructorExercise;

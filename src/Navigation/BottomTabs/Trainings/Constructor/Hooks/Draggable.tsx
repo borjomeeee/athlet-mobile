@@ -17,6 +17,20 @@ import {useTrainingConstructorController} from './index';
 import {AnimatedExercisesPositions} from '../Types';
 import {useWindowDimensions} from 'react-native';
 
+export const useDraggablePosition = (
+  id: string,
+  exercisesPositions: AnimatedExercisesPositions,
+) => {
+  const changed = useDerivedValue(
+    () => !!exercisesPositions.value[id]?.changed,
+  );
+  const offsetY = useDerivedValue(
+    () => exercisesPositions.value[id]?.tempOffsetY || 0,
+  );
+
+  return {changed, offsetY};
+};
+
 export const useDraggableController = (
   id: string,
   exercisesPositions: AnimatedExercisesPositions,
@@ -24,6 +38,7 @@ export const useDraggableController = (
   scrollY: Animated.SharedValue<number>,
 ) => {
   const {replaceExercises} = useTrainingConstructorController();
+  const {changed, offsetY} = useDraggablePosition(id, exercisesPositions);
 
   const {height: windowHeight} = useWindowDimensions();
   const wasMeasured = useSharedValue(false);
@@ -49,13 +64,6 @@ export const useDraggableController = (
         startScrollY.value = 0;
       }
     },
-  );
-
-  const changed = useDerivedValue(
-    () => !!exercisesPositions.value[id]?.changed,
-  );
-  const offsetY = useDerivedValue(
-    () => exercisesPositions.value[id]?.tempOffsetY || 0,
   );
 
   // TODO: measure when componen height changed
@@ -178,12 +186,7 @@ export const useDraggableController = (
         isFinished => {
           if (isFinished) {
             isDragging.value = false;
-
-            const orderedPositionsIds = Object.values(exercisesPositions.value)
-              .sort((pos1, pos2) => pos1.order - pos2.order)
-              .map(pos => pos.id);
-
-            runOnJS(replaceExercises)(orderedPositionsIds);
+            runOnJS(replaceExercises)(exercisesPositions.value);
           }
         },
       );
@@ -241,22 +244,19 @@ function swap(
     return;
   }
 
-  const diff =
-    currentPosition.offsetY +
-    currentPosition.tempOffsetY -
-    (position.offsetY + position.tempOffsetY);
+  const k = currentPosition.order > position.order ? 1 : -1;
 
   exercisesPositions.value = {
     ...exercisesPositions.value,
     [withId]: {
       ...position,
-      tempOffsetY: position.tempOffsetY + diff,
+      tempOffsetY: position.tempOffsetY + k * (currentPosition.height || 0),
       order: currentPosition.order,
       changed: true,
     },
     [currentId]: {
       ...currentPosition,
-      tempOffsetY: currentPosition.tempOffsetY - diff,
+      tempOffsetY: currentPosition.tempOffsetY - k * (position.height || 0),
       order: position.order,
       changed: true,
     },

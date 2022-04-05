@@ -17,7 +17,9 @@ import {
   ConstructorExercise,
   ConstructorSet,
   ConstructorSetExercise,
+  ExercisesPositions,
 } from '../Types';
+import {isSetFooter, isSetHeader, parseSetHeaderId} from '../Utils';
 
 const createKey = getKeyFabricForDomain('training constructor');
 export const trainingTitle = atom({
@@ -179,13 +181,56 @@ export const useTrainingConstructorStore = () => {
   );
 
   const replaceExercises = React.useCallback(
-    (exercisesIds: string[]) => {
+    (exercisesPositions: ExercisesPositions) => {
       setElements(currentElements => {
-        return _replaceElementsExercises(
-          currentElements,
-          _getElementsExercises(currentElements),
-          exercisesIds,
+        const elementsById = _getElementsById(currentElements);
+
+        console.log('elements: ', elementsById);
+        console.log('replace', exercisesPositions);
+        const newElementsStore: TrainingElementWithId[] = [];
+        const positionsArray = Object.values(exercisesPositions).sort(
+          (pos1, pos2) => pos1.order - pos2.order,
         );
+
+        let index = 0;
+        let currentSet: ConstructorSet | undefined;
+
+        console.log('array', positionsArray);
+        while (index !== positionsArray.length) {
+          const position = positionsArray[index];
+          if (isSetHeader(position.id)) {
+            currentSet = {
+              ...elementsById[parseSetHeaderId(position.id)],
+              elements: [],
+            } as ConstructorSet;
+
+            console.log(currentSet);
+            newElementsStore.push(currentSet);
+
+            index++;
+            continue;
+          }
+
+          if (isSetFooter(position.id)) {
+            currentSet = undefined;
+
+            index++;
+            continue;
+          }
+
+          if (currentSet) {
+            // const element = newElementsStore[index] as ConstructorSet;
+            currentSet.elements.push(
+              elementsById[position.id] as ConstructorExercise,
+            );
+          } else {
+            newElementsStore.push(elementsById[position.id]);
+          }
+
+          index++;
+        }
+
+        return newElementsStore;
       });
     },
     [setElements],
@@ -212,8 +257,8 @@ export const useTrainingConstructorStore = () => {
   };
 };
 
-export function _getElementsExercises(elements: TrainingElementWithId[]) {
-  const res: Record<string, ConstructorExercise> = {};
+export function _getElementsById(elements: TrainingElementWithId[]) {
+  const res: Record<string, TrainingElementWithId> = {};
   for (let i = 0; i < elements.length; i++) {
     const element = elements[i];
     if (isSet(element)) {
@@ -221,9 +266,9 @@ export function _getElementsExercises(elements: TrainingElementWithId[]) {
         const exercise = element.elements[j];
         res[exercise.elementId] = exercise;
       }
-    } else {
-      res[element.elementId] = element;
     }
+
+    res[element.elementId] = element;
   }
 
   return res;

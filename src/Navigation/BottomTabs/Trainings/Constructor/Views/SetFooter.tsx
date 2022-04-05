@@ -12,15 +12,27 @@ import {
   SET_FOOTER_ADD_EXERCISE_BUTTON_HEIGHT,
   SET_FOOTER_REST_BLOCK_HEIGHT,
 } from '../Const';
+import {AnimatedExercisesPositions} from '../Types';
+import Animated, {useAnimatedStyle, withTiming} from 'react-native-reanimated';
+import {useDraggablePosition} from '../Hooks/Draggable';
 
 interface SetFooterProps {
+  id: string;
+
   setId: string;
   restAfterComplete: number;
+
+  exercisesPositions: AnimatedExercisesPositions;
 }
 export const SetFooter: React.FC<SetFooterProps> = ({
   setId,
   restAfterComplete,
+
+  id,
+  exercisesPositions,
 }) => {
+  const {changed, offsetY} = useDraggablePosition(id, exercisesPositions);
+
   const {handlePressAddExercise} = useTrainingConstructorSetController(setId);
   const {handlePressEditRest} = useTrainingConstructorSetRestController(setId);
 
@@ -29,8 +41,14 @@ export const SetFooter: React.FC<SetFooterProps> = ({
     return restStr ? `Отдых - ${restStr}` : 'Без отдыха';
   }, [restAfterComplete]);
 
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {translateY: changed.value ? withTiming(offsetY.value) : offsetY.value},
+    ],
+  }));
+
   return (
-    <>
+    <Animated.View style={animatedStyle}>
       <UI.Pressable
         style={s(
           `container h:${SET_FOOTER_ADD_EXERCISE_BUTTON_HEIGHT} bgc:white jcc`,
@@ -46,6 +64,6 @@ export const SetFooter: React.FC<SetFooterProps> = ({
           <UI.Text style={s(`P8 medium c:gray`)}>{formattedRest}</UI.Text>
         </UI.Pressable>
       </UI.View>
-    </>
+    </Animated.View>
   );
 };

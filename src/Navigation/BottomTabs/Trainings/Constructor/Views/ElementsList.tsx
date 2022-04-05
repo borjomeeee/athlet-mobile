@@ -13,7 +13,7 @@ import {
 import {SetHeader} from './SetHeader';
 import {SetFooter} from './SetFooter';
 import {SET_FOOTER_HEIGHT, SET_HEADER_HEIGHT} from '../Const';
-import {ScrollView} from 'react-native';
+import {getSetFooterId, getSetHeaderId} from '../Utils';
 
 interface ElementsListProps {
   scrollViewRef: React.RefObject<Animated.ScrollView>;
@@ -58,13 +58,38 @@ export const ElementsList: React.FC<ElementsListProps> = ({
     animatedExercisesPositions.value = viewElements.reduce(
       (acc, element, order) => {
         if (element.type === ConstructorElementType.SET_HEADER) {
+          const id = getSetHeaderId(element.element.elementId);
+          acc[id] = {
+            ...acc[id],
+            id,
+            type: ConstructorElementType.SET_HEADER,
+            offsetY,
+            height: SET_HEADER_HEIGHT,
+            tempOffsetY: 0,
+            order,
+            changed: false,
+          };
+
           offsetY += SET_HEADER_HEIGHT;
         } else if (element.type === ConstructorElementType.SET_FOOTER) {
+          const id = getSetFooterId(element.element.elementId);
+          acc[id] = {
+            ...acc[id],
+            id,
+            type: ConstructorElementType.SET_FOOTER,
+            offsetY,
+            height: SET_FOOTER_HEIGHT,
+            tempOffsetY: 0,
+            order,
+            changed: false,
+          };
+
           offsetY += SET_FOOTER_HEIGHT;
         } else if (element.type === ConstructorElementType.EXERCISE) {
           acc[element.element.elementId] = {
             ...acc[element.element.elementId],
             id: element.element.elementId,
+            type: ConstructorElementType.EXERCISE,
             offsetY,
             tempOffsetY: 0,
             order,
@@ -75,6 +100,7 @@ export const ElementsList: React.FC<ElementsListProps> = ({
             offsetY += acc[element.element.elementId].height || 0;
           }
         }
+
         return acc;
       },
       {...animatedExercisesPositions.value},
@@ -97,17 +123,21 @@ export const ElementsList: React.FC<ElementsListProps> = ({
         } else if (element.type === ConstructorElementType.SET_HEADER) {
           return (
             <SetHeader
-              key={`set-header(setId=${element.element.elementId})`}
+              key={getSetHeaderId(element.element.elementId)}
+              id={getSetHeaderId(element.element.elementId)}
               setId={element.element.elementId}
               title={'СЕТ'}
+              exercisesPositions={animatedExercisesPositions}
             />
           );
         } else if (element.type === ConstructorElementType.SET_FOOTER) {
           return (
             <SetFooter
-              key={`set-footer(setId=${element.element.elementId})`}
+              key={getSetFooterId(element.element.elementId)}
+              id={getSetFooterId(element.element.elementId)}
               setId={element.element.elementId}
               restAfterComplete={element.element.restAfterComplete}
+              exercisesPositions={animatedExercisesPositions}
             />
           );
         }
