@@ -4,7 +4,7 @@ import {isSet, trainingElementsStore} from '../Store';
 
 import * as UI from 'src/Components';
 import {TrainingExercise} from './Exercise';
-import {useSharedValue} from 'react-native-reanimated';
+import Animated, {useSharedValue} from 'react-native-reanimated';
 import {
   ConstructorElementType,
   ConstructorElementViewList,
@@ -13,8 +13,16 @@ import {
 import {SetHeader} from './SetHeader';
 import {SetFooter} from './SetFooter';
 import {SET_FOOTER_HEIGHT, SET_HEADER_HEIGHT} from '../Const';
+import {ScrollView} from 'react-native';
 
-export const ElementsList = () => {
+interface ElementsListProps {
+  scrollViewRef: React.RefObject<Animated.ScrollView>;
+  scrollY: Animated.SharedValue<number>;
+}
+export const ElementsList: React.FC<ElementsListProps> = ({
+  scrollViewRef,
+  scrollY,
+}) => {
   const elements = useRecoilValue(trainingElementsStore);
 
   const viewElements = React.useMemo(() => {
@@ -82,6 +90,8 @@ export const ElementsList = () => {
               key={element.element.elementId}
               exercisesPositions={animatedExercisesPositions}
               exercise={element.element}
+              scrollViewRef={scrollViewRef}
+              scrollY={scrollY}
             />
           );
         } else if (element.type === ConstructorElementType.SET_HEADER) {

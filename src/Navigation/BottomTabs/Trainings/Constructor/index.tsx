@@ -1,7 +1,12 @@
 import s from '@borjomeeee/rn-styles';
 import {useFocusEffect} from '@react-navigation/core';
 import React from 'react';
-import {ScrollView} from 'react-native-gesture-handler';
+import * as RN from 'react-native';
+import Animated, {
+  useAnimatedRef,
+  useAnimatedScrollHandler,
+  useSharedValue,
+} from 'react-native-reanimated';
 
 import * as UI from 'src/Components';
 import {
@@ -13,21 +18,31 @@ import {ElementsList} from './Views/ElementsList';
 import {Header} from './Views/Header';
 
 export const Constructor = () => {
+  const ref = useAnimatedRef<Animated.ScrollView>();
+  const scrollY = useSharedValue(0);
+
+  const handleScroll = useAnimatedScrollHandler(
+    e => (scrollY.value = e.contentOffset.y),
+  );
+
   const {reset} = useTrainingConstructorController();
   useTrainingConstructorHeader();
 
   useFocusEffect(React.useCallback(() => () => reset(), [reset]));
 
   return (
-    <ScrollView
+    <Animated.ScrollView
+      ref={ref}
       style={s(`fill bgc:layout`)}
       contentContainerStyle={s(`pb:100`)}
-      scrollEnabled={true}>
+      scrollEventThrottle={16}
+      scrollEnabled={true}
+      onScroll={handleScroll}>
       <Header />
       <UI.HSpacer size={8} />
-      <ElementsList />
+      <ElementsList scrollViewRef={ref} scrollY={scrollY} />
       <UI.HSpacer size={20} />
       <AddElementButton />
-    </ScrollView>
+    </Animated.ScrollView>
   );
 };

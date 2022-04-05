@@ -19,7 +19,7 @@ import {AnimatedExercisesPositions, ConstructorExercise} from '../Types';
 import DragIcon from 'src/Assets/Svg/Drag';
 import {GestureDetector} from 'react-native-gesture-handler';
 import {useDraggableController} from '../Hooks/Draggable';
-import {LayoutChangeEvent} from 'react-native';
+import {LayoutChangeEvent, ScrollView} from 'react-native';
 
 interface ExerciseViewProps {
   title: string;
@@ -69,6 +69,9 @@ interface ExerciseProps {
 
   handlePressRest?: () => void;
   handlePress?: () => void;
+
+  scrollViewRef: React.RefObject<Animated.ScrollView>;
+  scrollY: Animated.SharedValue<number>;
 }
 export const Exercise: React.FC<ExerciseProps> = React.memo(
   ({
@@ -78,6 +81,8 @@ export const Exercise: React.FC<ExerciseProps> = React.memo(
     handlePress,
 
     exercisesPositions,
+    scrollViewRef,
+    scrollY,
   }) => {
     const animatedRef = useAnimatedRef<Animated.View>();
 
@@ -85,12 +90,13 @@ export const Exercise: React.FC<ExerciseProps> = React.memo(
     const {
       isDragging,
       isPressed,
+      initialScrollY,
       draggingGesture,
       gestureTranslateY,
       changed,
       offsetY,
       layout,
-    } = useDraggableController(id, exercisesPositions);
+    } = useDraggableController(id, exercisesPositions, scrollViewRef, scrollY);
 
     const formattedRest = React.useMemo(() => {
       return (
@@ -116,7 +122,7 @@ export const Exercise: React.FC<ExerciseProps> = React.memo(
         transform: [
           {
             translateY: isDragging.value
-              ? gestureTranslateY.value
+              ? gestureTranslateY.value + (scrollY.value - initialScrollY.value)
               : changed.value
               ? withTiming(offsetY.value)
               : offsetY.value,
@@ -171,8 +177,11 @@ export const Exercise: React.FC<ExerciseProps> = React.memo(
 );
 
 export const TrainingExercise: React.FC<
-  Pick<ExerciseProps, 'exercise' | 'exercisesPositions'>
-> = ({exercise, exercisesPositions}) => {
+  Pick<
+    ExerciseProps,
+    'exercise' | 'exercisesPositions' | 'scrollViewRef' | 'scrollY'
+  >
+> = ({exercise, ...props}) => {
   const {handlePress, handlePressEditRest} =
     useTrainingConstructorExerciseController(exercise.elementId);
 
@@ -181,7 +190,7 @@ export const TrainingExercise: React.FC<
       handlePress={handlePress}
       handlePressRest={handlePressEditRest}
       exercise={exercise}
-      exercisesPositions={exercisesPositions}
+      {...props}
     />
   );
 };
