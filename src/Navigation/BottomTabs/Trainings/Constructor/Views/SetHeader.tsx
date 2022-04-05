@@ -5,7 +5,12 @@ import * as UI from 'src/Components';
 import {SET_HEADER_HEIGHT} from '../Const';
 import {AnimatedExercisesPositions} from '../Types';
 import {useDraggablePosition} from '../Hooks/Draggable';
-import Animated, {useAnimatedStyle, withTiming} from 'react-native-reanimated';
+import Animated, {
+  SlideInRight,
+  SlideOutLeft,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
 
 interface SetHeaderProps {
   id: string;
@@ -30,7 +35,10 @@ export const SetHeader: React.FC<SetHeaderProps> = ({
   }));
 
   return (
-    <Animated.View style={animatedStyle}>
+    <Animated.View
+      entering={SlideInRight}
+      exiting={SlideOutLeft}
+      style={animatedStyle}>
       <UI.View
         style={s(
           `btw:1 bbw:1 bc:ultraLightGray bgc:#F6F8FA`,

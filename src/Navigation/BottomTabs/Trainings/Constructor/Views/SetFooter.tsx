@@ -13,7 +13,12 @@ import {
   SET_FOOTER_REST_BLOCK_HEIGHT,
 } from '../Const';
 import {AnimatedExercisesPositions} from '../Types';
-import Animated, {useAnimatedStyle, withTiming} from 'react-native-reanimated';
+import Animated, {
+  SlideInRight,
+  SlideOutLeft,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
 import {useDraggablePosition} from '../Hooks/Draggable';
 
 interface SetFooterProps {
@@ -48,7 +53,10 @@ export const SetFooter: React.FC<SetFooterProps> = ({
   }));
 
   return (
-    <Animated.View style={animatedStyle}>
+    <Animated.View
+      entering={SlideInRight}
+      exiting={SlideOutLeft}
+      style={animatedStyle}>
       <UI.Pressable
         style={s(
           `container h:${SET_FOOTER_ADD_EXERCISE_BUTTON_HEIGHT} bgc:white jcc`,
