@@ -88,7 +88,7 @@ export const useTrainingConstructorStore = () => {
   );
 
   const removeExerciseFromSet = React.useCallback(
-    (setId: string, order: number) => {
+    (setId: string, index: number) => {
       setElements(currentElements => {
         const set = findSet(currentElements, setId);
         if (!set) {
@@ -100,7 +100,7 @@ export const useTrainingConstructorStore = () => {
             ? element
             : {
                 ...set,
-                elements: set.elements.filter(el => el.order !== order),
+                elements: set.elements.filter((el, indx) => indx !== index),
               },
         );
       });
@@ -108,76 +108,73 @@ export const useTrainingConstructorStore = () => {
     [setElements],
   );
 
-  const replaceElement = React.useCallback(
-    (id: string, element: TrainingElement) =>
-      setElements(currentElements =>
-        currentElements.map(currElement =>
-          currElement.elementId === id
-            ? element.type === ElementType.EXERCISE
-              ? {elementId: id, ...element}
-              : {elementId: id, ...element, elements: []}
-            : currElement,
-        ),
-      ),
-    [setElements],
-  );
-
-  const replaceSetExercise = React.useCallback(
-    (setId: string, order: number, exercise: ExerciseElement) => {
+  const replaceExercise = React.useCallback(
+    (id: string, exercise: ExerciseElement) => {
       setElements(currentElements => {
-        const set = findSet(currentElements, setId);
-        if (!set) {
-          return currentElements;
-        }
-
-        return currentElements.map(currElement =>
-          currElement.elementId === setId
-            ? {
-                ...set,
-                elements: set.elements.map(el =>
-                  el.order !== order
-                    ? el
-                    : {...exercise, elementId: el.elementId, setId, order},
+        return currentElements.map(element => {
+          if (TrainingUtils.isSet(element)) {
+            if (
+              element.elements.find(setExercise => setExercise.elementId === id)
+            ) {
+              return {
+                ...element,
+                elements: element.elements.map(setExercise =>
+                  setExercise.elementId === id
+                    ? {...setExercise, ...exercise}
+                    : setExercise,
                 ),
-              }
-            : currElement,
-        );
+              };
+            }
+
+            return element;
+          }
+
+          return element.elementId === id ? {...element, ...exercise} : element;
+        });
       });
     },
     [setElements],
   );
 
-  const changeElementRest = React.useCallback(
+  const changeExerciseRest = React.useCallback(
+    (id: string, newRest: number) => {
+      setElements(currentElements => {
+        return currentElements.map(element => {
+          if (TrainingUtils.isSet(element)) {
+            if (
+              element.elements.find(setExercise => setExercise.elementId === id)
+            ) {
+              return {
+                ...element,
+                elements: element.elements.map(setExercise =>
+                  setExercise.elementId === id
+                    ? {...setExercise, restAfterComplete: newRest}
+                    : setExercise,
+                ),
+              };
+            }
+
+            return element;
+          }
+
+          return element.elementId === id
+            ? {...element, restAfterComplete: newRest}
+            : element;
+        });
+      });
+    },
+    [setElements],
+  );
+
+  const changeSetRest = React.useCallback(
     (id: string, rest: number) =>
       setElements(currentElements =>
         currentElements.map(currElement =>
-          currElement.elementId === id
+          TrainingUtils.isSet(currElement) && currElement.elementId === id
             ? {...currElement, restAfterComplete: rest}
             : currElement,
         ),
       ),
-    [setElements],
-  );
-
-  const changeSetExerciseRest = React.useCallback(
-    (setId: string, order: number, rest: number) =>
-      setElements(currentElements => {
-        const set = findSet(currentElements, setId);
-        if (!set) {
-          return currentElements;
-        }
-
-        return currentElements.map(currElement =>
-          currElement.elementId === setId
-            ? {
-                ...set,
-                elements: set.elements.map(el =>
-                  el.order !== order ? el : {...el, restAfterComplete: rest},
-                ),
-              }
-            : currElement,
-        );
-      }),
     [setElements],
   );
 
@@ -202,13 +199,14 @@ export const useTrainingConstructorStore = () => {
 
     addElement,
     removeElement,
-    replaceElement,
-    changeElementRest,
 
     addExerciseToSet,
     removeExerciseFromSet,
-    replaceSetExercise,
-    changeSetExerciseRest,
+
+    replaceExercise,
+    changeExerciseRest,
+
+    changeSetRest,
 
     replaceExercises,
   };
@@ -237,24 +235,22 @@ function _replaceElementsExercises(
   newOrderExercises: string[],
 ) {
   let indx = 0;
-  const newElements = [...elements];
+  const newElements = [];
 
-  for (let i = 0; i < newElements.length; i++) {
-    const element = newElements[i];
+  for (let i = 0; i < elements.length; i++) {
+    const element = elements[i];
+
     if (isSet(element)) {
-      const newExercises = [...element.elements];
-      for (let j = 0; j < newExercises.length; j++) {
-        newExercises[j] = {
-          ...exercises[newOrderExercises[indx]],
-          order: newExercises[j].order,
-        } as ConstructorSetExercise;
+      const newExercises = [];
+
+      for (let j = 0; j < element.elements.length; j++) {
+        newExercises.push(exercises[newOrderExercises[indx]]);
         indx++;
       }
-      newElements[i] = {...element, elements: newExercises};
+
+      newElements.push({...element, elements: newExercises});
     } else {
-      newElements[i] = {
-        ...exercises[newOrderExercises[indx]],
-      };
+      newElements.push(exercises[newOrderExercises[indx]]);
       indx++;
     }
   }
@@ -268,6 +264,47 @@ export function isSet(
   return element.type === ElementType.SET;
 }
 
+export const useTrainingConstructorExercise = (id: string) => {
+  const elements = useRecoilValue(trainingElementsStore);
+
+  const exercise = React.useMemo(
+    () => findExercise(elements, id),
+    [elements, id],
+  );
+
+  return {exercise};
+};
+
+export const useTrainingConstructorSet = (id: string) => {
+  const elements = useRecoilValue(trainingElementsStore);
+
+  const set = React.useMemo(
+    () =>
+      elements.find(el => TrainingUtils.isSet(el) && el.elementId === id) as
+        | ConstructorSet
+        | undefined,
+    [elements, id],
+  );
+
+  return {set};
+};
+
+function findExercise(elements: TrainingElementWithId[], exerciseId: string) {
+  for (const element of elements) {
+    if (!TrainingUtils.isSet(element) && element.elementId === exerciseId) {
+      return element;
+    }
+
+    if (TrainingUtils.isSet(element)) {
+      for (const setExercise of element.elements) {
+        if (setExercise.elementId === exerciseId) {
+          return setExercise;
+        }
+      }
+    }
+  }
+}
+
 function findSet(elements: TrainingElementWithId[], setId: string) {
   const set = elements.find(element => element.elementId === setId);
   if (!set || !isSet(set)) {
@@ -276,31 +313,3 @@ function findSet(elements: TrainingElementWithId[], setId: string) {
 
   return set;
 }
-
-export const useTrainingConstructorElement = (id: string) => {
-  const elements = useRecoilValue(trainingElementsStore);
-
-  const element = React.useMemo(
-    () => elements.find(el => el.elementId === id),
-    [elements, id],
-  );
-
-  return {element};
-};
-
-export const useTrainingConstructorSetExercise = (
-  setId: string,
-  index: number,
-) => {
-  const {element} = useTrainingConstructorElement(setId);
-
-  const exercise = React.useMemo(() => {
-    if (!element || !TrainingUtils.isSet(element)) {
-      return undefined;
-    }
-
-    return element.elements[index];
-  }, [element, index]);
-
-  return {exercise};
-};

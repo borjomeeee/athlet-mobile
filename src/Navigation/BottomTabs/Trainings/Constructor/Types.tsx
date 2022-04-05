@@ -1,9 +1,5 @@
 import Animated from 'react-native-reanimated';
-import {
-  ExerciseElement,
-  SetElement,
-  SetExercise,
-} from 'src/Store/Models/Training';
+import {ExerciseElement, SetElement} from 'src/Store/Models/Training';
 
 export interface ExercisePosition {
   id: string;
@@ -25,14 +21,12 @@ export type AnimatedExercisesPositions =
 
 export enum ConstructorElementType {
   EXERCISE = 'exercise',
-  SET_EXERCISE = 'set-exercise',
   SET_HEADER = 'set-header',
   SET_FOOTER = 'set-footer',
 }
 
 export type ConstructorExercise = ExerciseElement & {elementId: string};
-export type ConstructorSetExercise = SetExercise &
-  ConstructorExercise & {setId: string};
+export type ConstructorSetExercise = ConstructorExercise;
 
 export type ConstructorSet = Omit<SetElement, 'elements'> & {
   elementId: string;
@@ -49,10 +43,6 @@ export type ConstructorElementViewList = (
   | {
       type: ConstructorElementType.EXERCISE;
       element: ConstructorExercise;
-    }
-  | {
-      type: ConstructorElementType.SET_EXERCISE;
-      element: ConstructorSetExercise;
     }
   | {
       type:

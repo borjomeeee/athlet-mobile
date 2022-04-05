@@ -4,13 +4,12 @@ import s from '@borjomeeee/rn-styles';
 import * as UI from 'src/Components';
 
 import {
-  useTrainingConstructorElementController,
   useTrainingConstructorSetController,
+  useTrainingConstructorSetRestController,
 } from '../Hooks';
 import {TimeUtils} from 'src/Store/ModelsUtils/Time';
 import {
   SET_FOOTER_ADD_EXERCISE_BUTTON_HEIGHT,
-  SET_FOOTER_HEIGHT,
   SET_FOOTER_REST_BLOCK_HEIGHT,
 } from '../Const';
 
@@ -23,7 +22,7 @@ export const SetFooter: React.FC<SetFooterProps> = ({
   restAfterComplete,
 }) => {
   const {handlePressAddExercise} = useTrainingConstructorSetController(setId);
-  const {handlePressEditRest} = useTrainingConstructorElementController(setId);
+  const {handlePressEditRest} = useTrainingConstructorSetRestController(setId);
 
   const formattedRest = React.useMemo(() => {
     const restStr = TimeUtils.getFormattedTimeForTraining(restAfterComplete);

@@ -26,6 +26,7 @@ export const Constructor = () => {
       <Header />
       <UI.HSpacer size={8} />
       <ElementsList />
+      <UI.HSpacer size={20} />
       <AddElementButton />
     </ScrollView>
   );

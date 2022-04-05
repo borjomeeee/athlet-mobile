@@ -3,8 +3,8 @@ import {useRecoilValue} from 'recoil';
 import {isSet, trainingElementsStore} from '../Store';
 
 import * as UI from 'src/Components';
-import {SetExercise, TrainingExercise} from './Exercise';
-import {useAnimatedReaction, useSharedValue} from 'react-native-reanimated';
+import {TrainingExercise} from './Exercise';
+import {useSharedValue} from 'react-native-reanimated';
 import {
   ConstructorElementType,
   ConstructorElementViewList,
@@ -26,7 +26,7 @@ export const ElementsList = () => {
         data.push({type: ConstructorElementType.SET_HEADER, element: set});
         element.elements.forEach(exercise => {
           data.push({
-            type: ConstructorElementType.SET_EXERCISE,
+            type: ConstructorElementType.EXERCISE,
             element: exercise,
           });
         });
@@ -53,10 +53,7 @@ export const ElementsList = () => {
           offsetY += SET_HEADER_HEIGHT;
         } else if (element.type === ConstructorElementType.SET_FOOTER) {
           offsetY += SET_FOOTER_HEIGHT;
-        } else if (
-          element.type === ConstructorElementType.EXERCISE ||
-          element.type === ConstructorElementType.SET_EXERCISE
-        ) {
+        } else if (element.type === ConstructorElementType.EXERCISE) {
           acc[element.element.elementId] = {
             ...acc[element.element.elementId],
             id: element.element.elementId,
@@ -83,15 +80,6 @@ export const ElementsList = () => {
           return (
             <TrainingExercise
               key={element.element.elementId}
-              exercisesPositions={animatedExercisesPositions}
-              exercise={element.element}
-            />
-          );
-        } else if (element.type === ConstructorElementType.SET_EXERCISE) {
-          return (
-            <SetExercise
-              key={element.element.elementId}
-              setId={element.element.setId}
               exercisesPositions={animatedExercisesPositions}
               exercise={element.element}
             />
