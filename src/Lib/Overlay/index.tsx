@@ -44,68 +44,39 @@ export const useOverlay = () => {
 interface OverlayWrapperProps {
   overlayRef: React.RefObject<OverlayRef>;
   Component: React.FC;
-
-  // Waiting for layout animation was completed
-  delay?: number;
 }
 export const OverlayWrapper: React.FC<OverlayWrapperProps> = ({
   children,
 
   overlayRef,
   Component,
-
-  delay,
 }) => {
   const animatedRef = useAnimatedRef<Animated.View>();
   const {show: showOverlay} = useOverlay();
-
-  const layout = React.useRef<{
-    pageX: number;
-    pageY: number;
-    height: number;
-    width: number;
-  }>();
 
   React.useImperativeHandle(
     overlayRef,
     React.useCallback(
       () => ({
         show: () => {
-          showOverlay(
-            <OverlayInstance
-              pageX={layout.current?.pageX || 0}
-              pageY={layout.current?.pageY || 0}
-              width={layout.current?.width || 0}
-              height={layout.current?.height || 0}
-              Component={Component}
-            />,
-          );
+          if (animatedRef && animatedRef.current) {
+            animatedRef.current.measure((x, y, width, height, pageX, pageY) => {
+              showOverlay(
+                <OverlayInstance
+                  pageX={pageX}
+                  pageY={pageY}
+                  width={width}
+                  height={height}
+                  Component={Component}
+                />,
+              );
+            });
+          }
         },
       }),
-      [layout, Component, showOverlay],
+      [Component, showOverlay, animatedRef],
     ),
   );
-
-  const handleLayout = React.useCallback(() => {
-    if (animatedRef && animatedRef.current) {
-      animatedRef.current.measure((x, y, width, height, pageX, pageY) => {
-        layout.current = {
-          pageX,
-          pageY,
-
-          width,
-          height,
-        };
-      });
-    }
-  }, [animatedRef, layout]);
-
-  React.useEffect(() => {
-    if (delay) {
-      const timeout = setTimeout(() => handleLayout(), delay);
-      return () => clearTimeout(timeout);
-    }
-  });
 
   return <Animated.View ref={animatedRef}>{children}</Animated.View>;
 };

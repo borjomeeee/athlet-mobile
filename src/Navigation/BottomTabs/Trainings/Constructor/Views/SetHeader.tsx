@@ -64,10 +64,7 @@ export const SetHeader: React.FC<SetHeaderProps> = ({
           <UI.Text style={s(`P8 bold c:#57606A`)}>{title}</UI.Text>
         </UI.View>
 
-        <OverlayWrapper
-          overlayRef={ref}
-          Component={renderOptionsOverlay}
-          delay={400}>
+        <OverlayWrapper overlayRef={ref} Component={renderOptionsOverlay}>
           <UI.Pressable onPress={handlePressOptions}>
             <OptionsIcon />
           </UI.Pressable>
