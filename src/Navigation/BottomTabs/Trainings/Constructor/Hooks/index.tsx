@@ -113,6 +113,8 @@ export const useTrainingConstructorSetController = (id: string) => {
     removeElement,
     swapElementWithNext,
     swapElementWithPrevious,
+    changeSetTitle,
+    processSetTitle,
   } = useTrainingConstructorStore();
   const {show: showSelectExercise} = useModal(
     'trainingConstructor__selectExercise',
@@ -148,11 +150,24 @@ export const useTrainingConstructorSetController = (id: string) => {
     swapElementWithNext(id);
   }, [swapElementWithNext, id]);
 
+  const handleChangeSetTitle = React.useCallback(
+    (title: string) => {
+      changeSetTitle(id, title);
+    },
+    [changeSetTitle, id],
+  );
+
+  const handleBlurSetTitle = React.useCallback(() => {
+    processSetTitle(id);
+  }, [processSetTitle, id]);
+
   return {
     handlePressAddExercise,
     handlePressRemoveSet,
     handlePressSwapWithNext,
     handlePressSwapWithPrevious,
+    handleChangeSetTitle,
+    handleBlurSetTitle,
   };
 };
 

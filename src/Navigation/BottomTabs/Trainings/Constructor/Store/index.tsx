@@ -8,7 +8,7 @@ import {
 import {
   ElementType,
   ExerciseElement,
-  TrainingElement,
+  SetElement,
 } from 'src/Store/Models/Training';
 import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
 import {getKeyFabricForDomain} from 'src/Utils/Recoil';
@@ -33,19 +33,34 @@ export const trainingElementsStore = atom<TrainingElementWithId[]>({
 });
 
 export const useTrainingConstructorStore = () => {
-  const setTitle = useSetRecoilState(trainingTitle);
+  const _setTitle = useSetRecoilState(trainingTitle);
   const setElements = useSetRecoilState(trainingElementsStore);
 
   const resetTitle = useResetRecoilState(trainingTitle);
   const resetElements = useResetRecoilState(trainingElementsStore);
 
+  const setTitle = React.useCallback(
+    (text: string) => {
+      _setTitle(text.trim());
+    },
+    [_setTitle],
+  );
+
   const addElement = React.useCallback(
-    (element: TrainingElement) =>
+    (element: ExerciseElement | Omit<SetElement, 'title'>) =>
       setElements(currentElements => [
         ...currentElements,
         element.type === ElementType.EXERCISE
           ? {...element, elementId: Date.now().toString()}
-          : {...element, elementId: Date.now().toString(), elements: []},
+          : {
+              ...element,
+              elementId: Date.now().toString(),
+              title: `СЕТ ${
+                currentElements.filter(elem => TrainingUtils.isSet(elem))
+                  .length + 1
+              }`,
+              elements: [],
+            },
       ]),
     [setElements],
   );
@@ -227,6 +242,45 @@ export const useTrainingConstructorStore = () => {
     [setElements],
   );
 
+  const changeSetTitle = React.useCallback(
+    (id: string, text: string) => {
+      setElements(currentElements =>
+        currentElements.map(element =>
+          element.elementId === id && TrainingUtils.isSet(element)
+            ? {...element, title: text}
+            : element,
+        ),
+      );
+    },
+    [setElements],
+  );
+
+  const processSetTitle = React.useCallback(
+    (id: string) => {
+      setElements(currentElements => {
+        let setsCount = 0;
+        return currentElements.map(element => {
+          if (TrainingUtils.isSet(element)) {
+            setsCount += 1;
+          }
+
+          if (element.elementId === id && TrainingUtils.isSet(element)) {
+            return {
+              ...element,
+              title:
+                element.title.trim().length === 0
+                  ? `СЕТ ${setsCount}`
+                  : element.title.trim(),
+            };
+          }
+
+          return element;
+        });
+      });
+    },
+    [setElements],
+  );
+
   const replaceExercises = React.useCallback(
     (exercisesPositions: ExercisesPositions) => {
       setElements(currentElements => {
@@ -295,6 +349,9 @@ export const useTrainingConstructorStore = () => {
     replaceExercise,
     removeExercise,
 
+    changeSetTitle,
+    processSetTitle,
+
     changeExerciseRest,
     changeSetRest,
 
@@ -306,7 +363,7 @@ export function _getElementsById(elements: TrainingElementWithId[]) {
   const res: Record<string, TrainingElementWithId> = {};
   for (let i = 0; i < elements.length; i++) {
     const element = elements[i];
-    if (isSet(element)) {
+    if (TrainingUtils.isSet(element)) {
       for (let j = 0; j < element.elements.length; j++) {
         const exercise = element.elements[j];
         res[exercise.elementId] = exercise;
@@ -317,12 +374,6 @@ export function _getElementsById(elements: TrainingElementWithId[]) {
   }
 
   return res;
-}
-
-export function isSet(
-  element: TrainingElementWithId,
-): element is ConstructorSet {
-  return element.type === ElementType.SET;
 }
 
 export const useTrainingConstructorExercise = (id: string) => {
@@ -368,7 +419,7 @@ function findExercise(elements: TrainingElementWithId[], exerciseId: string) {
 
 function findSet(elements: TrainingElementWithId[], setId: string) {
   const set = elements.find(element => element.elementId === setId);
-  if (!set || !isSet(set)) {
+  if (!set || !TrainingUtils.isSet(set)) {
     return undefined;
   }
 

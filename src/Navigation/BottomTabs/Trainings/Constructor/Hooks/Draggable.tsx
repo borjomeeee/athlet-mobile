@@ -248,13 +248,11 @@ function swap(
       ...position,
       tempOffsetY: position.tempOffsetY + k * (currentPosition.height || 0),
       order: currentPosition.order,
-      changed: true,
     },
     [currentId]: {
       ...currentPosition,
       tempOffsetY: currentPosition.tempOffsetY - k * (position.height || 0),
       order: position.order,
-      changed: true,
     },
   };
 }

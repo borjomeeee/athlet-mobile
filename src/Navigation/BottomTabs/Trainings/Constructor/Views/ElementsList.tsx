@@ -1,6 +1,6 @@
 import React from 'react';
 import {useRecoilValue} from 'recoil';
-import {isSet, trainingElementsStore} from '../Store';
+import {trainingElementsStore} from '../Store';
 
 import * as UI from 'src/Components';
 import {TrainingExercise} from './Exercise';
@@ -14,6 +14,7 @@ import {SetHeader} from './SetHeader';
 import {SetFooter} from './SetFooter';
 import {SET_FOOTER_HEIGHT, SET_HEADER_HEIGHT} from '../Const';
 import {getSetFooterId, getSetHeaderId} from '../Utils';
+import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
 
 interface ElementsListProps {
   scrollViewRef: React.RefObject<Animated.ScrollView>;
@@ -28,7 +29,7 @@ export const ElementsList: React.FC<ElementsListProps> = ({
   const viewElements = React.useMemo(() => {
     const data: ConstructorElementViewList = [];
     elements.forEach(element => {
-      if (isSet(element)) {
+      if (TrainingUtils.isSet(element)) {
         const {elements: _, ...set} = element;
 
         data.push({type: ConstructorElementType.SET_HEADER, element: set});
@@ -67,7 +68,6 @@ export const ElementsList: React.FC<ElementsListProps> = ({
             height: SET_HEADER_HEIGHT,
             tempOffsetY: 0,
             order,
-            changed: false,
           };
 
           offsetY += SET_HEADER_HEIGHT;
@@ -81,7 +81,6 @@ export const ElementsList: React.FC<ElementsListProps> = ({
             height: SET_FOOTER_HEIGHT,
             tempOffsetY: 0,
             order,
-            changed: false,
           };
 
           offsetY += SET_FOOTER_HEIGHT;
@@ -93,7 +92,6 @@ export const ElementsList: React.FC<ElementsListProps> = ({
             offsetY,
             tempOffsetY: 0,
             order,
-            changed: false,
           };
 
           if (acc[element.element.elementId].height) {
@@ -124,9 +122,9 @@ export const ElementsList: React.FC<ElementsListProps> = ({
           return (
             <SetHeader
               key={getSetHeaderId(element.element.elementId)}
-              id={getSetHeaderId(element.element.elementId)}
+              positionId={getSetHeaderId(element.element.elementId)}
               setId={element.element.elementId}
-              title={'СЕТ'}
+              title={element.element.title}
               exercisesPositions={animatedExercisesPositions}
             />
           );
@@ -134,7 +132,7 @@ export const ElementsList: React.FC<ElementsListProps> = ({
           return (
             <SetFooter
               key={getSetFooterId(element.element.elementId)}
-              id={getSetFooterId(element.element.elementId)}
+              positionId={getSetFooterId(element.element.elementId)}
               setId={element.element.elementId}
               restAfterComplete={element.element.restAfterComplete}
               exercisesPositions={animatedExercisesPositions}

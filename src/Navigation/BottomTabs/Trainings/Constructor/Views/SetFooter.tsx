@@ -23,7 +23,7 @@ import Animated, {
 import {useDraggablePosition} from '../Hooks/Draggable';
 
 interface SetFooterProps {
-  id: string;
+  positionId: string;
 
   setId: string;
   restAfterComplete: number;
@@ -34,10 +34,10 @@ export const SetFooter: React.FC<SetFooterProps> = ({
   setId,
   restAfterComplete,
 
-  id,
+  positionId,
   exercisesPositions,
 }) => {
-  const {offsetY} = useDraggablePosition(id, exercisesPositions);
+  const {offsetY} = useDraggablePosition(positionId, exercisesPositions);
 
   const {handlePressAddExercise} = useTrainingConstructorSetController(setId);
   const {handlePressEditRest} = useTrainingConstructorSetRestController(setId);

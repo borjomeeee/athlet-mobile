@@ -22,7 +22,7 @@ import {
 import {OverlayRef} from 'src/Lib/Overlay/Types';
 
 interface SetHeaderProps {
-  id: string;
+  positionId: string;
 
   setId: string;
   title: string;
@@ -33,13 +33,15 @@ interface SetHeaderProps {
 export const SetHeader: React.FC<SetHeaderProps> = ({
   setId,
   title,
-  id,
+  positionId,
   exercisesPositions,
 }) => {
   const ref = React.useRef<OverlayRef>(null);
 
+  const {handleChangeSetTitle, handleBlurSetTitle} =
+    useTrainingConstructorSetController(setId);
   const {handlePressOptions} = useTrainingConstructorSetOptionsController(ref);
-  const {offsetY} = useDraggablePosition(id, exercisesPositions);
+  const {offsetY} = useDraggablePosition(positionId, exercisesPositions);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{translateY: withTiming(offsetY.value)}],
@@ -61,9 +63,17 @@ export const SetHeader: React.FC<SetHeaderProps> = ({
           `h:${SET_HEADER_HEIGHT} row aic ph:16`,
         )}>
         <UI.View style={s(`fill`)}>
-          <UI.Text style={s(`P8 bold c:#57606A`)}>{title}</UI.Text>
+          <UI.Input
+            style={s(`P8 bold c:#57606A uppercase`)}
+            onChangeText={handleChangeSetTitle}
+            value={title}
+            placeholder="Введите название сета ..."
+            autoCapitalize="characters"
+            onBlur={handleBlurSetTitle}
+          />
         </UI.View>
 
+        <UI.VSpacer size={20} />
         <OverlayWrapper overlayRef={ref} Component={renderOptionsOverlay}>
           <UI.Pressable onPress={handlePressOptions}>
             <OptionsIcon />

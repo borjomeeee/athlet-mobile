@@ -80,6 +80,7 @@ export type ExerciseElement = z.output<typeof ExerciseElementScheme>;
 
 export const SetElementScheme = ElementSheme.extend({
   type: z.literal(ElementType.SET),
+  title: MayBeStringScheme.default('Undefined'),
   elements: canBeNull(z.array(ExerciseScheme)).default([]),
   restAfterComplete: MayBeIntegerScheme.default(0),
 });
