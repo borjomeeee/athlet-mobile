@@ -8,7 +8,6 @@ import {
 import {
   ElementType,
   ExerciseElement,
-  SetElement,
   TrainingElement,
 } from 'src/Store/Models/Training';
 import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
@@ -16,7 +15,6 @@ import {getKeyFabricForDomain} from 'src/Utils/Recoil';
 import {
   ConstructorExercise,
   ConstructorSet,
-  ConstructorSetExercise,
   ExercisesPositions,
 } from '../Types';
 import {isSetFooter, isSetHeader, parseSetHeaderId} from '../Utils';
@@ -86,6 +84,46 @@ export const useTrainingConstructorStore = () => {
       setElements(currentElements =>
         currentElements.filter(element => element.elementId !== id),
       ),
+    [setElements],
+  );
+
+  const swapElementWithPrevious = React.useCallback(
+    (id: string) =>
+      setElements(currentElements => {
+        const elemIndex = currentElements.findIndex(
+          elem => elem.elementId === id,
+        );
+        if (elemIndex < 1) {
+          return currentElements;
+        }
+
+        const copyCurrElements = [...currentElements];
+
+        copyCurrElements[elemIndex] = currentElements[elemIndex - 1];
+        copyCurrElements[elemIndex - 1] = currentElements[elemIndex];
+
+        return copyCurrElements;
+      }),
+    [setElements],
+  );
+
+  const swapElementWithNext = React.useCallback(
+    (id: string) =>
+      setElements(currentElements => {
+        const elemIndex = currentElements.findIndex(
+          elem => elem.elementId === id,
+        );
+        if (elemIndex === -1 || elemIndex === currentElements.length - 1) {
+          return currentElements;
+        }
+
+        const copyCurrElements = [...currentElements];
+
+        copyCurrElements[elemIndex] = currentElements[elemIndex + 1];
+        copyCurrElements[elemIndex + 1] = currentElements[elemIndex];
+
+        return copyCurrElements;
+      }),
     [setElements],
   );
 
@@ -249,14 +287,15 @@ export const useTrainingConstructorStore = () => {
     addElement,
     removeElement,
 
+    swapElementWithNext,
+    swapElementWithPrevious,
+
     addExerciseToSet,
-    // removeExerciseFromSet,
 
     replaceExercise,
     removeExercise,
 
     changeExerciseRest,
-
     changeSetRest,
 
     replaceExercises,
@@ -278,35 +317,6 @@ export function _getElementsById(elements: TrainingElementWithId[]) {
   }
 
   return res;
-}
-
-function _replaceElementsExercises(
-  elements: TrainingElementWithId[],
-  exercises: Record<string, ConstructorExercise | ConstructorSetExercise>,
-  newOrderExercises: string[],
-) {
-  let indx = 0;
-  const newElements = [];
-
-  for (let i = 0; i < elements.length; i++) {
-    const element = elements[i];
-    console.log(element);
-    if (isSet(element)) {
-      const newExercises = [];
-
-      for (let j = 0; j < element.elements.length; j++) {
-        newExercises.push(exercises[newOrderExercises[indx]]);
-        indx++;
-      }
-
-      newElements.push({...element, elements: newExercises});
-    } else {
-      newElements.push(exercises[newOrderExercises[indx]]);
-      indx++;
-    }
-  }
-
-  return newElements;
 }
 
 export function isSet(

@@ -13,6 +13,7 @@ import {
 } from '../Store';
 import {ElementType} from 'src/Store/Models/Training';
 import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
+import {OverlayRef} from 'src/Lib/Overlay/Types';
 
 export const useTrainingConstructorController = () => {
   const {addElement, resetElements, resetTitle, replaceExercises} =
@@ -107,7 +108,12 @@ export const useTrainingConstructorExerciseController = (id: string) => {
 };
 
 export const useTrainingConstructorSetController = (id: string) => {
-  const {addExerciseToSet} = useTrainingConstructorStore();
+  const {
+    addExerciseToSet,
+    removeElement,
+    swapElementWithNext,
+    swapElementWithPrevious,
+  } = useTrainingConstructorStore();
   const {show: showSelectExercise} = useModal(
     'trainingConstructor__selectExercise',
   );
@@ -130,7 +136,34 @@ export const useTrainingConstructorSetController = (id: string) => {
     [showSelectExercise, showEditExercise, addExerciseToSet, id],
   );
 
-  return {handlePressAddExercise};
+  const handlePressRemoveSet = React.useCallback(() => {
+    removeElement(id);
+  }, [id, removeElement]);
+
+  const handlePressSwapWithPrevious = React.useCallback(() => {
+    swapElementWithPrevious(id);
+  }, [swapElementWithPrevious, id]);
+
+  const handlePressSwapWithNext = React.useCallback(() => {
+    swapElementWithNext(id);
+  }, [swapElementWithNext, id]);
+
+  return {
+    handlePressAddExercise,
+    handlePressRemoveSet,
+    handlePressSwapWithNext,
+    handlePressSwapWithPrevious,
+  };
+};
+
+export const useTrainingConstructorSetOptionsController = (
+  ref: React.RefObject<OverlayRef>,
+) => {
+  const handlePressOptions = React.useCallback(() => {
+    ref.current?.show();
+  }, [ref]);
+
+  return {handlePressOptions};
 };
 
 export const useTrainingConstructorSetRestController = (id: string) => {

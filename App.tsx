@@ -11,6 +11,7 @@ import {Navigation} from 'src/Navigation';
 import {configureStyles} from 'src/Utils/Styles';
 import {ModalRouter} from 'src/Lib/ModalRouter';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {OverlayProvider} from 'src/Lib/Overlay';
 
 configureStyles();
 
@@ -33,8 +34,10 @@ const App = () => {
     <RecoilRoot>
       <NavigationContainer>
         <SafeAreaProvider>
-          <Navigation />
-          <ModalRouter />
+          <OverlayProvider>
+            <Navigation />
+            <ModalRouter />
+          </OverlayProvider>
         </SafeAreaProvider>
       </NavigationContainer>
     </RecoilRoot>
