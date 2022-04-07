@@ -1,6 +1,11 @@
 import Animated from 'react-native-reanimated';
 import {ExerciseElement, SetElement} from 'src/Store/Models/Training';
 
+export enum ScreenState {
+  VIEWING,
+  EDITING,
+}
+
 export enum ConstructorElementType {
   EXERCISE = 'exercise',
   SET_HEADER = 'set-header',

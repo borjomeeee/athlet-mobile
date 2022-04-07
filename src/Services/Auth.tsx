@@ -4,7 +4,7 @@ import {useFlow} from 'src/Hooks/Flow';
 import {useAuthRepository} from 'src/Repositories/Auth';
 import {useAccountStore} from 'src/Store/Account';
 import {StackActions, useNavigation} from '@react-navigation/core';
-import {NavPaths} from 'src/Navigation/Paths';
+import {AuthPaths, AppPaths} from 'src/Navigation/Paths';
 import {httpClient} from 'src/Api';
 import {LocalStorage} from 'src/Lib/LocalStorage';
 import {ApiResponse} from 'src/Api/Responses';
@@ -32,7 +32,7 @@ export const useAuthService = () => {
       // Unnecessary fetchs
       getExercises();
 
-      navigation.dispatch(StackActions.replace(NavPaths.BottomTab.Self));
+      navigation.dispatch(StackActions.replace(AppPaths.BottomTab));
     },
     [navigation, setAccount, getExercises],
   );
@@ -93,7 +93,7 @@ export const useAuthService = () => {
 
       setAccount(undefined);
 
-      navigation.dispatch(StackActions.replace(NavPaths.Auth.SignIn));
+      navigation.dispatch(StackActions.replace(AuthPaths.SignIn));
     },
     [setAccount, navigation],
     'authService__logout',

@@ -1,7 +1,5 @@
 import s from '@borjomeeee/rn-styles';
-import {useFocusEffect} from '@react-navigation/core';
 import React from 'react';
-import * as RN from 'react-native';
 import Animated, {
   Layout,
   useAnimatedRef,
@@ -13,10 +11,12 @@ import * as UI from 'src/Components';
 import {
   useTrainingConstructorController,
   useTrainingConstructorHeader,
+  useTrainingConstructorNavigationEffect,
 } from './Hooks';
 import {AddElementButton} from './Views/AddElementButton';
 import {ElementsList} from './Views/ElementsList';
 import {Header} from './Views/Header';
+import {Submit} from './Views/Submit';
 
 export const Constructor = () => {
   const ref = useAnimatedRef<Animated.ScrollView>();
@@ -27,9 +27,11 @@ export const Constructor = () => {
   );
 
   const {reset} = useTrainingConstructorController();
+
+  useTrainingConstructorNavigationEffect();
   useTrainingConstructorHeader();
 
-  useFocusEffect(React.useCallback(() => () => reset(), [reset]));
+  React.useEffect(() => () => reset(), [reset]);
 
   return (
     <Animated.ScrollView
@@ -39,13 +41,18 @@ export const Constructor = () => {
       scrollEventThrottle={16}
       scrollEnabled={true}
       onScroll={handleScroll}>
-      <Header />
-      <UI.HSpacer size={8} />
-      <ElementsList scrollViewRef={ref} scrollY={scrollY} />
-      <UI.HSpacer size={20} />
+      <Animated.View style={s(`fill`)} layout={Layout}>
+        <Header />
 
-      <Animated.View layout={Layout} style={s(`zi:1`)}>
-        <AddElementButton />
+        <UI.HSpacer size={8} />
+        <ElementsList scrollViewRef={ref} scrollY={scrollY} />
+        <UI.HSpacer size={20} />
+
+        <Animated.View style={s(`zi:1`)} layout={Layout}>
+          <AddElementButton />
+          <UI.HSpacer size={20} />
+          <Submit />
+        </Animated.View>
       </Animated.View>
     </Animated.ScrollView>
   );

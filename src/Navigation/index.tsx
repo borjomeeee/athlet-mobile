@@ -5,7 +5,7 @@ import {Auth} from './Auth';
 import {BottomTabs} from './BottomTabs';
 import {Init} from './Init';
 
-import {NavPaths} from './Paths';
+import {AppPaths} from './Paths';
 import {appNavigationOptions} from './navigationOptions';
 
 const AppStack = createNativeStackNavigator();
@@ -13,10 +13,10 @@ export const Navigation = () => {
   return (
     <AppStack.Navigator
       screenOptions={appNavigationOptions}
-      initialRouteName={NavPaths.Init}>
-      <AppStack.Screen name={NavPaths.Init} component={Init} />
-      <AppStack.Screen name={NavPaths.Auth.Self} component={Auth} />
-      <AppStack.Screen name={NavPaths.BottomTab.Self} component={BottomTabs} />
+      initialRouteName={AppPaths.Init}>
+      <AppStack.Screen name={AppPaths.Init} component={Init} />
+      <AppStack.Screen name={AppPaths.Auth} component={Auth} />
+      <AppStack.Screen name={AppPaths.BottomTab} component={BottomTabs} />
     </AppStack.Navigator>
   );
 };

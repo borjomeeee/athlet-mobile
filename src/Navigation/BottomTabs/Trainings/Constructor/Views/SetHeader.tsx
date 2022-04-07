@@ -11,6 +11,8 @@ import Animated, {
   SlideOutLeft,
   useAnimatedStyle,
   withTiming,
+  ZoomIn,
+  ZoomOut,
 } from 'react-native-reanimated';
 
 import OptionsIcon from 'src/Assets/Svg/Options';
@@ -20,6 +22,8 @@ import {
   useTrainingConstructorSetOptionsController,
 } from '../Hooks';
 import {OverlayRef} from 'src/Lib/Overlay/Types';
+import {useRecoilValue} from 'recoil';
+import {isEditingSelector} from '../Store';
 
 interface SetHeaderProps {
   positionId: string;
@@ -42,6 +46,8 @@ export const SetHeader: React.FC<SetHeaderProps> = ({
     useTrainingConstructorSetController(setId);
   const {handlePressOptions} = useTrainingConstructorSetOptionsController(ref);
   const {offsetY} = useDraggablePosition(positionId, exercisesPositions);
+
+  const isEditing = useRecoilValue(isEditingSelector);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{translateY: withTiming(offsetY.value)}],
@@ -70,15 +76,20 @@ export const SetHeader: React.FC<SetHeaderProps> = ({
             placeholder="Введите название сета ..."
             autoCapitalize="characters"
             onBlur={handleBlurSetTitle}
+            editable={isEditing}
           />
         </UI.View>
 
         <UI.VSpacer size={20} />
-        <OverlayWrapper overlayRef={ref} Component={renderOptionsOverlay}>
-          <UI.Pressable onPress={handlePressOptions}>
-            <OptionsIcon />
-          </UI.Pressable>
-        </OverlayWrapper>
+        {isEditing && (
+          <Animated.View entering={ZoomIn} exiting={ZoomOut}>
+            <OverlayWrapper overlayRef={ref} Component={renderOptionsOverlay}>
+              <UI.Pressable onPress={handlePressOptions}>
+                <OptionsIcon />
+              </UI.Pressable>
+            </OverlayWrapper>
+          </Animated.View>
+        )}
       </UI.View>
     </Animated.View>
   );

@@ -1,6 +1,6 @@
 import React from 'react';
 import {useRecoilValue} from 'recoil';
-import {trainingElementsStore} from '../Store';
+import {isEditingSelector, trainingElementsStore} from '../Store';
 
 import * as UI from 'src/Components';
 import {TrainingExercise} from './Exercise';
@@ -24,6 +24,7 @@ export const ElementsList: React.FC<ElementsListProps> = ({
   scrollViewRef,
   scrollY,
 }) => {
+  const isEditing = useRecoilValue(isEditingSelector);
   const elements = useRecoilValue(trainingElementsStore);
 
   const viewElements = React.useMemo(() => {
@@ -61,7 +62,7 @@ export const ElementsList: React.FC<ElementsListProps> = ({
         if (element.type === ConstructorElementType.SET_HEADER) {
           const id = getSetHeaderId(element.element.elementId);
           acc[id] = {
-            ...acc[id],
+            ...animatedExercisesPositions.value[id],
             id,
             type: ConstructorElementType.SET_HEADER,
             offsetY,
@@ -74,7 +75,7 @@ export const ElementsList: React.FC<ElementsListProps> = ({
         } else if (element.type === ConstructorElementType.SET_FOOTER) {
           const id = getSetFooterId(element.element.elementId);
           acc[id] = {
-            ...acc[id],
+            ...animatedExercisesPositions.value[id],
             id,
             type: ConstructorElementType.SET_FOOTER,
             offsetY,
@@ -86,7 +87,7 @@ export const ElementsList: React.FC<ElementsListProps> = ({
           offsetY += SET_FOOTER_HEIGHT;
         } else if (element.type === ConstructorElementType.EXERCISE) {
           acc[element.element.elementId] = {
-            ...acc[element.element.elementId],
+            ...animatedExercisesPositions.value[element.element.elementId],
             id: element.element.elementId,
             type: ConstructorElementType.EXERCISE,
             offsetY,
@@ -101,9 +102,9 @@ export const ElementsList: React.FC<ElementsListProps> = ({
 
         return acc;
       },
-      {...animatedExercisesPositions.value},
+      {} as ExercisesPositions,
     );
-  }, [viewElements, animatedExercisesPositions]);
+  }, [viewElements, animatedExercisesPositions, isEditing]);
 
   return (
     <UI.View>

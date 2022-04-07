@@ -1,16 +1,28 @@
 import React from 'react';
 
 import {StackActions, useNavigation} from '@react-navigation/native';
-import {NavPaths} from 'src/Navigation/Paths';
+import {BottomTabTrainingsPaths} from 'src/Navigation/Paths';
 
 export const useTrainingListController = () => {
   const navigation = useNavigation();
 
   const handlePressCreateTraining = React.useCallback(() => {
-    navigation.dispatch(
-      StackActions.push(NavPaths.BottomTab.Trainings.Constructor),
-    );
+    navigation.dispatch(StackActions.push(BottomTabTrainingsPaths.Constructor));
   }, [navigation]);
 
   return {handlePressCreateTraining};
+};
+
+export const useTrainingListTrainingElementController = (id: string) => {
+  const navigation = useNavigation();
+
+  const handlePress = React.useCallback(() => {
+    navigation.dispatch(
+      StackActions.push(BottomTabTrainingsPaths.Constructor, {
+        trainingId: id,
+      }),
+    );
+  }, [id, navigation]);
+
+  return {handlePress};
 };

@@ -1,28 +1,21 @@
-export const NavPaths = {
-  Init: 'init',
+export enum AppPaths {
+  Init = 'init',
 
-  Auth: {
-    Self: 'auth',
+  Auth = 'auth',
+  BottomTab = 'tabs',
+}
 
-    SignIn: 'auth/sign-in',
-    SignUp: 'auth/sign-up',
-  },
+export enum AuthPaths {
+  SignIn = 'auth/sign-in',
+  SignUp = 'auth/sign-up',
+}
 
-  BottomTab: {
-    Self: 'tabs',
+export enum BottomTabPaths {
+  Home = 'tabs/home',
+  Trainings = 'tabs/trainings',
+}
 
-    Home: {
-      Self: 'tabs/home',
-    },
-
-    Trainings: {
-      Self: 'tabs/trainings',
-      List: 'tabs/trainings/list',
-      Constructor: 'tabs/trainings/constructor',
-    },
-
-    Account: {
-      Self: 'tabs/account',
-    },
-  },
-};
+export enum BottomTabTrainingsPaths {
+  List = 'tabs/trainings/list',
+  Constructor = 'tabs/trainings/constructor',
+}

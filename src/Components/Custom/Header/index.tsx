@@ -14,6 +14,8 @@ export const Header = ({options, route, navigation}: StackHeaderProps) => {
   const title = getHeaderTitle(options, route.name);
   const canGoBack = React.useMemo(() => navigation.canGoBack(), [navigation]);
 
+  const Right = options.headerRight as React.FC;
+
   return (
     <View style={s(`row container pt:${top} h:${top + 50} aic bgc:white`)}>
       {canGoBack && (
@@ -25,7 +27,7 @@ export const Header = ({options, route, navigation}: StackHeaderProps) => {
       <View style={s(`fill`)}>
         <Text style={s(`P8 medium tac`)}>{title}</Text>
       </View>
-      {canGoBack && <VSpacer size={24} />}
+      {canGoBack && Right ? <Right /> : <VSpacer size={24} />}
     </View>
   );
 };

@@ -5,27 +5,33 @@ import * as UI from 'src/Components';
 import {Training} from 'src/Store/Models/Training';
 
 import dayjs from 'dayjs';
+import {useTrainingListTrainingElementController} from '../Hooks';
 
 interface TrainingElementProps {
-  trainining: Training;
+  training: Training;
 }
-export const TrainingElement: React.FC<TrainingElementProps> = ({
-  trainining,
-}) => {
+export const TrainingElement: React.FC<TrainingElementProps> = ({training}) => {
+  const {handlePress} = useTrainingListTrainingElementController(training.id);
+
   const formattedCreationDate = React.useMemo(
-    () => dayjs(trainining.createdAt).format('DD/MM/YYYY'),
-    [trainining.createdAt],
+    () => dayjs(training.createdAt).format('DD/MM/YYYY'),
+    [training.createdAt],
   );
 
   return (
-    <UI.View
+    <UI.PressableItem
+      onPress={handlePress}
       style={s(
         `btw:1 bbw:1 bc:ultraLightGray container pt:13 pb:15`,
         `bgc:white`,
       )}>
-      <UI.Text style={s(`P7 medium`)}>{trainining.title}</UI.Text>
-      <UI.HSpacer size={7} />
-      <UI.Text style={s(`P8`)}>Дата создания - {formattedCreationDate}</UI.Text>
-    </UI.View>
+      <>
+        <UI.Text style={s(`P7 medium`)}>{training.title}</UI.Text>
+        <UI.HSpacer size={7} />
+        <UI.Text style={s(`P8`)}>
+          Дата создания - {formattedCreationDate}
+        </UI.Text>
+      </>
+    </UI.PressableItem>
   );
 };

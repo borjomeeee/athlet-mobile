@@ -3,7 +3,7 @@ import {StackActions, useNavigation} from '@react-navigation/core';
 
 import * as UI from 'src/Components';
 import {useAuthService} from './Auth';
-import {NavPaths} from 'src/Navigation/Paths';
+import {AppPaths} from 'src/Navigation/Paths';
 import {
   BadApiResponseError,
   BadNetworkConnectionError,
@@ -21,7 +21,7 @@ export const useAppController = () => {
 
   const handleAuthorizationError = React.useCallback(() => {
     LocalStorage.deleteJwt();
-    navigation.dispatch(StackActions.replace(NavPaths.Auth.Self));
+    navigation.dispatch(StackActions.replace(AppPaths.Auth));
   }, [navigation]);
 
   const defaultHandleError = React.useCallback(

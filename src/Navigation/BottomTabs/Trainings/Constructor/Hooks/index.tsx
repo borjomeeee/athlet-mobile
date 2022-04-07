@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {useNavigation} from '@react-navigation/core';
+import {useNavigation, useRoute} from '@react-navigation/core';
 
 import * as UI from 'src/Components';
 import {AddElementBottomSheet} from '../Views/AddElementBottomSheet';
@@ -14,10 +14,23 @@ import {
 import {ElementType} from 'src/Store/Models/Training';
 import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
 import {OverlayRef} from 'src/Lib/Overlay/Types';
+import {RouteProp} from '@react-navigation/native';
+import {TrainingsStackParamList} from '../..';
+import {BottomTabTrainingsPaths} from 'src/Navigation/Paths';
+import {ScreenState} from '../Types';
+import {HeaderOptions} from '../Views/HeaderOptions';
+import Animated from 'react-native-reanimated';
 
 export const useTrainingConstructorController = () => {
-  const {addElement, resetElements, resetTitle, replaceExercises} =
-    useTrainingConstructorStore();
+  const {
+    addElement,
+    resetElements,
+    setTitle,
+    resetTitle,
+    replaceExercises,
+    setScreenState,
+    setTrainingId,
+  } = useTrainingConstructorStore();
   const {show: showAddElement, hide: hideAddElement} = useModal('add-element');
   const {show: showSelectExercise} = useModal(
     'trainingConstructor__selectExercise',
@@ -49,6 +62,21 @@ export const useTrainingConstructorController = () => {
     addElement({type: ElementType.SET, elements: [], restAfterComplete: 15});
   }, [hideAddElement, addElement]);
 
+  const handleChangeTitle = React.useCallback(
+    (newTitle: string) => {
+      setTitle(newTitle);
+    },
+    [setTitle],
+  );
+
+  const handlePressCancelEditingMode = React.useCallback(() => {
+    setScreenState(ScreenState.VIEWING);
+  }, [setScreenState]);
+
+  const handlePressGoToEditMode = React.useCallback(() => {
+    setScreenState(ScreenState.EDITING);
+  }, [setScreenState]);
+
   const reset = React.useCallback(() => {
     resetElements();
     resetTitle();
@@ -58,8 +86,14 @@ export const useTrainingConstructorController = () => {
     handlePressAddElement,
     handlePressAddExercise,
     handlePressAddSet,
+    handleChangeTitle,
+    handlePressGoToEditMode,
+    handlePressCancelEditingMode,
 
     replaceExercises,
+
+    setScreenState,
+    setTrainingId,
 
     reset,
   };
@@ -181,6 +215,16 @@ export const useTrainingConstructorSetOptionsController = (
   return {handlePressOptions};
 };
 
+export const useTrainingConstructorHeaderOptionsController = (
+  ref: React.RefObject<OverlayRef>,
+) => {
+  const handlePressOptions = React.useCallback(() => {
+    ref.current?.show();
+  }, [ref]);
+
+  return {handlePressOptions};
+};
+
 export const useTrainingConstructorSetRestController = (id: string) => {
   const {changeSetRest} = useTrainingConstructorStore();
 
@@ -204,7 +248,31 @@ export const useTrainingConstructorSetRestController = (id: string) => {
 export const useTrainingConstructorHeader = () => {
   const navigation = useNavigation();
 
-  React.useEffect(() => {
-    navigation.setOptions({title: ''});
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      title: '',
+      headerRight: () => <HeaderOptions />,
+    });
   }, [navigation]);
+};
+
+type ProfileScreenRouteProp = RouteProp<
+  TrainingsStackParamList,
+  BottomTabTrainingsPaths.Constructor
+>;
+
+export const useTrainingConstructorNavigationEffect = () => {
+  const route = useRoute<ProfileScreenRouteProp>();
+  const {setScreenState, setTrainingId} = useTrainingConstructorController();
+
+  React.useEffect(() => {
+    const params = route.params;
+
+    if (params?.trainingId) {
+      setScreenState(ScreenState.VIEWING);
+      setTrainingId(params.trainingId);
+    }
+  }, [route, setScreenState, setTrainingId]);
+
+  React.useEffect;
 };

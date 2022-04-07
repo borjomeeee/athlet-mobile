@@ -9,6 +9,7 @@ import {
   modalsVisibileStoreFamily,
 } from 'src/Store/Modals';
 import s from '@borjomeeee/rn-styles';
+import {Id} from 'src/Utils/Id';
 
 export const useModalRouter = () => {
   const setModals = useSetRecoilState(modalsStore);
@@ -20,7 +21,7 @@ export const useModalRouter = () => {
         ? {id?: string; props: T & {id?: string}}
         : {id?: string; props?: undefined},
     ) => {
-      const {id = Date.now().toString(), props = {}} = options;
+      const {id = Id.generate(), props = {}} = options;
       setModals(showedModals => [
         ...showedModals.filter(i => i.id !== options.id),
         {

@@ -11,6 +11,8 @@ import Animated, {
   useAnimatedRef,
   useAnimatedStyle,
   withTiming,
+  ZoomIn,
+  ZoomOut,
 } from 'react-native-reanimated';
 import {Pressable} from 'src/Components';
 import {useTrainingConstructorExerciseController} from '../Hooks';
@@ -23,6 +25,8 @@ import {useDraggableController} from '../Hooks/Draggable';
 import {LayoutChangeEvent} from 'react-native';
 
 import RemoveIcon from 'src/Assets/Svg/Remove';
+import {useRecoilValue} from 'recoil';
+import {isEditingSelector} from '../Store';
 
 interface ExerciseViewProps {
   title: string;
@@ -44,27 +48,39 @@ export const ExerciseView: React.FC<ExerciseViewProps> = React.memo(
     restInfo,
     valueInfo,
   }) => {
+    const isEditing = useRecoilValue(isEditingSelector);
+
     return (
       <UI.PressableItem
         style={s(`bgc:white pv:8 ofv pr:20 pl:12`, `bbw:1 btw:1 bc:#DADADA`)}
-        onPress={handlePress}>
+        onPress={handlePress}
+        disabled={!isEditing}>
         <UI.View style={s(`row aic`)}>
-          <UI.Pressable onPress={handlePressRemove}>
-            <RemoveIcon />
-          </UI.Pressable>
+          {isEditing && (
+            <Animated.View entering={ZoomIn} exiting={ZoomOut}>
+              <UI.Pressable onPress={handlePressRemove}>
+                <RemoveIcon />
+              </UI.Pressable>
+            </Animated.View>
+          )}
+
           <UI.VSpacer size={8} />
-          <UI.View style={s(`fill`)}>
+          <Animated.View style={s(`fill`)} layout={Layout}>
             <UI.Text>{title}</UI.Text>
-            <Pressable style={s(`asfs`)} onPress={handlePressRest}>
+            <Pressable
+              style={s(`asfs`)}
+              onPress={handlePressRest}
+              disabled={!isEditing}>
               <UI.Text style={s(`P8 medium c:gray`)}>
                 Отдых - {restInfo}
               </UI.Text>
             </Pressable>
-          </UI.View>
-          <UI.View>
+          </Animated.View>
+          <Animated.View layout={Layout}>
             <UI.Text>{valueInfo}</UI.Text>
-          </UI.View>
-          <UI.VSpacer size={28} />
+          </Animated.View>
+
+          {isEditing && <UI.VSpacer size={28} />}
         </UI.View>
       </UI.PressableItem>
     );
@@ -95,6 +111,7 @@ export const Exercise: React.FC<ExerciseProps> = React.memo(
     scrollViewRef,
     scrollY,
   }) => {
+    const isEditing = useRecoilValue(isEditingSelector);
     const animatedRef = useAnimatedRef<Animated.View>();
 
     const id = React.useMemo(() => exercise.elementId, [exercise]);
@@ -171,11 +188,16 @@ export const Exercise: React.FC<ExerciseProps> = React.memo(
           {...{handlePress, handlePressRest, handlePressRemove}}
         />
 
-        <GestureDetector gesture={draggingGesture}>
-          <UI.View style={s(`abs r:20 t:0 b:0 jcc`)}>
-            <DragIcon />
-          </UI.View>
-        </GestureDetector>
+        {isEditing && (
+          <GestureDetector gesture={draggingGesture}>
+            <Animated.View
+              style={s(`abs r:20 t:0 b:0 jcc`)}
+              entering={ZoomIn}
+              exiting={ZoomOut}>
+              <DragIcon />
+            </Animated.View>
+          </GestureDetector>
+        )}
       </Animated.View>
     );
   },

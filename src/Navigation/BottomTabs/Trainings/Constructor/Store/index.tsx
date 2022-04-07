@@ -1,6 +1,8 @@
 import React from 'react';
 import {
   atom,
+  DefaultValue,
+  selector,
   useRecoilValue,
   useResetRecoilState,
   useSetRecoilState,
@@ -9,18 +11,42 @@ import {
   ElementType,
   ExerciseElement,
   SetElement,
+  Training,
 } from 'src/Store/Models/Training';
 import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
+import {myTrainingsStore} from 'src/Store/Trainings';
+import {Id} from 'src/Utils/Id';
 import {getKeyFabricForDomain} from 'src/Utils/Recoil';
 import {
   ConstructorExercise,
   ConstructorSet,
   ExercisesPositions,
+  ScreenState,
 } from '../Types';
 import {isSetFooter, isSetHeader, parseSetHeaderId} from '../Utils';
 
 const createKey = getKeyFabricForDomain('training constructor');
-export const trainingTitle = atom({
+
+export const trainingIdStore = atom<string | undefined>({
+  key: createKey('trainingId'),
+  default: undefined,
+});
+
+export const screenStateStore = atom({
+  key: createKey('state'),
+  default: ScreenState.EDITING,
+});
+
+export const isEditingSelector = selector({
+  key: createKey('isEditing'),
+  get: ({get}) => get(screenStateStore) === ScreenState.EDITING,
+});
+
+export const isCreatingSelector = selector({
+  key: createKey('isCreating'),
+  get: ({get}) => !get(trainingIdStore),
+});
+export const trainingTitleStore = atom({
   key: createKey('trainingTitle'),
   default: '',
 });
@@ -32,12 +58,38 @@ export const trainingElementsStore = atom<TrainingElementWithId[]>({
   default: [],
 });
 
+export const trainingIdSelector = selector<string>({
+  key: createKey('trainingIdSelector'),
+  get: () => 'undefined',
+
+  set: ({get, set}, trainingId) => {
+    if (trainingId instanceof DefaultValue) {
+      return;
+    }
+
+    const myTrainings = get(myTrainingsStore);
+    const trainingWithId = myTrainings[trainingId];
+    if (!trainingWithId) {
+      return;
+    }
+
+    set(trainingIdStore, trainingId);
+    set(trainingTitleStore, trainingWithId.title);
+    set(trainingElementsStore, getElementsFromTraining(trainingWithId));
+  },
+});
+
 export const useTrainingConstructorStore = () => {
-  const _setTitle = useSetRecoilState(trainingTitle);
+  const _setTitle = useSetRecoilState(trainingTitleStore);
   const setElements = useSetRecoilState(trainingElementsStore);
 
-  const resetTitle = useResetRecoilState(trainingTitle);
+  const setTrainingId = useSetRecoilState(trainingIdSelector);
+  const setScreenState = useSetRecoilState(screenStateStore);
+
+  const resetTitle = useResetRecoilState(trainingTitleStore);
   const resetElements = useResetRecoilState(trainingElementsStore);
+  const resetTrainingId = useResetRecoilState(trainingIdStore);
+  const resetScreenState = useResetRecoilState(screenStateStore);
 
   const setTitle = React.useCallback(
     (text: string) => {
@@ -51,10 +103,10 @@ export const useTrainingConstructorStore = () => {
       setElements(currentElements => [
         ...currentElements,
         element.type === ElementType.EXERCISE
-          ? {...element, elementId: Date.now().toString()}
+          ? {...element, elementId: Id.generate()}
           : {
               ...element,
-              elementId: Date.now().toString(),
+              elementId: Id.generate(),
               title: `СЕТ ${
                 currentElements.filter(elem => TrainingUtils.isSet(elem))
                   .length + 1
@@ -82,7 +134,7 @@ export const useTrainingConstructorStore = () => {
                   ...set.elements,
                   {
                     ...exercise,
-                    elementId: Date.now().toString(),
+                    elementId: Id.generate(),
                     order: set.elements.length,
                     setId,
                   },
@@ -337,6 +389,8 @@ export const useTrainingConstructorStore = () => {
 
     resetTitle,
     resetElements,
+    resetTrainingId,
+    resetScreenState,
 
     addElement,
     removeElement,
@@ -356,6 +410,9 @@ export const useTrainingConstructorStore = () => {
     changeSetRest,
 
     replaceExercises,
+
+    setTrainingId,
+    setScreenState,
   };
 };
 
@@ -424,4 +481,25 @@ function findSet(elements: TrainingElementWithId[], setId: string) {
   }
 
   return set;
+}
+
+function getElementsFromTraining(training: Training): TrainingElementWithId[] {
+  const elements: TrainingElementWithId[] = [];
+  training.elements.forEach(trElem => {
+    if (TrainingUtils.isSet(trElem)) {
+      const exercises: ConstructorExercise[] = [];
+      for (const exercise of trElem.elements) {
+        exercises.push({...exercise, elementId: Id.generate()});
+      }
+
+      elements.push({
+        ...trElem,
+        elementId: Id.generate(),
+        elements: exercises,
+      });
+    } else {
+      elements.push({...trElem, elementId: Id.generate()});
+    }
+  });
+  return elements;
 }

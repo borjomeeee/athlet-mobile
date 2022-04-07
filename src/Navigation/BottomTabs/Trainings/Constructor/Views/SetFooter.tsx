@@ -21,6 +21,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import {useDraggablePosition} from '../Hooks/Draggable';
+import {useRecoilValue} from 'recoil';
+import {isEditingSelector} from '../Store';
 
 interface SetFooterProps {
   positionId: string;
@@ -41,6 +43,8 @@ export const SetFooter: React.FC<SetFooterProps> = ({
 
   const {handlePressAddExercise} = useTrainingConstructorSetController(setId);
   const {handlePressEditRest} = useTrainingConstructorSetRestController(setId);
+
+  const isEditing = useRecoilValue(isEditingSelector);
 
   const formattedRest = React.useMemo(() => {
     const restStr = TimeUtils.getFormattedTimeForTraining(restAfterComplete);
@@ -68,7 +72,7 @@ export const SetFooter: React.FC<SetFooterProps> = ({
         </UI.Text>
       </UI.Pressable>
       <UI.View style={s(`h:${SET_FOOTER_REST_BLOCK_HEIGHT} aic jcc`)}>
-        <UI.Pressable onPress={handlePressEditRest}>
+        <UI.Pressable onPress={handlePressEditRest} disabled={!isEditing}>
           <UI.Text style={s(`P8 medium c:gray`)}>{formattedRest}</UI.Text>
         </UI.Pressable>
       </UI.View>

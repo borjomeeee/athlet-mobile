@@ -1,3 +1,4 @@
+import React from 'react';
 import * as UI from 'src/Components';
 import {StackNavigationOptions} from '@react-navigation/stack';
 
@@ -7,5 +8,5 @@ export const trainingsStackOptions: StackNavigationOptions = {
 
 export const constructorScreenOptions: StackNavigationOptions = {
   headerShown: true,
-  header: UI.Header,
+  header: props => <UI.Header {...props} />,
 };

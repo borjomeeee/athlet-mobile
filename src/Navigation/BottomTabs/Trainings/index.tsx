@@ -3,23 +3,28 @@ import React from 'react';
 import {List} from './List';
 import {Constructor} from './Constructor';
 
-import {NavPaths} from 'src/Navigation/Paths';
+import {BottomTabTrainingsPaths} from 'src/Navigation/Paths';
 import {
   constructorScreenOptions,
   trainingsStackOptions,
 } from './navigationOptions';
 
 import {createStackNavigator} from '@react-navigation/stack';
-
-const Stack = createStackNavigator();
+export type TrainingsStackParamList = {
+  [BottomTabTrainingsPaths.Constructor]: {
+    trainingId?: string;
+  };
+  [BottomTabTrainingsPaths.List]: undefined;
+};
+const Stack = createStackNavigator<TrainingsStackParamList>();
 export const TrainingsStack = () => {
   return (
     <Stack.Navigator
       screenOptions={trainingsStackOptions}
-      initialRouteName={NavPaths.BottomTab.Trainings.List}>
-      <Stack.Screen name={NavPaths.BottomTab.Trainings.List} component={List} />
+      initialRouteName={BottomTabTrainingsPaths.List}>
+      <Stack.Screen name={BottomTabTrainingsPaths.List} component={List} />
       <Stack.Screen
-        name={NavPaths.BottomTab.Trainings.Constructor}
+        name={BottomTabTrainingsPaths.Constructor}
         component={Constructor}
         options={constructorScreenOptions}
       />

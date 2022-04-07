@@ -66,7 +66,7 @@ function keyExtractor(item: Training) {
 }
 
 function renderItem({item}: ListRenderItemInfo<Training>) {
-  return <TrainingElement trainining={item} />;
+  return <TrainingElement training={item} />;
 }
 
 function ListHeaderComponent() {
