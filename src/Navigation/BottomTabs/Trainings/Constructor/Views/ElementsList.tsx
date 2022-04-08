@@ -56,6 +56,10 @@ export const ElementsList: React.FC<ElementsListProps> = ({
   const animatedExercisesPositions = useSharedValue<ExercisesPositions>({});
 
   React.useLayoutEffect(() => {
+    if (!isEditing) {
+      return;
+    }
+
     let offsetY = 0;
     animatedExercisesPositions.value = viewElements.reduce(
       (acc, element, order) => {

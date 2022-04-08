@@ -15,6 +15,7 @@ import {OverlayProvider} from 'src/Lib/Overlay';
 
 configureStyles();
 
+// TODO: move constructor controllers to views
 const App = () => {
   const [dev, setDev] = React.useState(Config.fakeApiEnabled);
   React.useEffect(() => {

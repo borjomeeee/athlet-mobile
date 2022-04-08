@@ -34,26 +34,38 @@ export const Constructor = () => {
   React.useEffect(() => () => reset(), [reset]);
 
   return (
-    <Animated.ScrollView
-      ref={ref}
-      style={s(`fill bgc:layout`)}
-      contentContainerStyle={s(`pb:100`)}
-      scrollEventThrottle={16}
-      scrollEnabled={true}
-      onScroll={handleScroll}>
-      <Animated.View style={s(`fill`)} layout={Layout}>
-        <Header />
+    <>
+      <UI.View style={s(`fill bgc:#ff0000`)}>
+        <UI.View style={s(`abs t:0 b:0 r:0 l:0`)}>
+          <UI.View style={s(`fill bgc:white`)} />
+          <UI.View style={s(`fill bgc:layout`)} />
+        </UI.View>
 
-        <UI.HSpacer size={8} />
-        <ElementsList scrollViewRef={ref} scrollY={scrollY} />
-        <UI.HSpacer size={20} />
+        <Animated.ScrollView
+          ref={ref}
+          style={s(`fill`)}
+          contentContainerStyle={s(`pb:100 bgc:layout`)}
+          scrollEventThrottle={16}
+          scrollEnabled={true}
+          onScroll={handleScroll}>
+          <Animated.View style={s(`fill`)} layout={Layout}>
+            <Header />
 
-        <Animated.View style={s(`zi:1`)} layout={Layout}>
-          <AddElementButton />
-          <UI.HSpacer size={20} />
+            <UI.HSpacer size={8} />
+            <ElementsList scrollViewRef={ref} scrollY={scrollY} />
+            <UI.HSpacer size={20} />
+
+            <Animated.View style={s(`zi:-1`)} layout={Layout}>
+              <AddElementButton />
+              <UI.HSpacer size={20} />
+            </Animated.View>
+          </Animated.View>
+        </Animated.ScrollView>
+
+        <UI.View style={s(`abs r:0 l:0 b:20`)}>
           <Submit />
-        </Animated.View>
-      </Animated.View>
-    </Animated.ScrollView>
+        </UI.View>
+      </UI.View>
+    </>
   );
 };

@@ -14,6 +14,8 @@ import {
 } from '../Const';
 import {AnimatedExercisesPositions} from '../Types';
 import Animated, {
+  FadeIn,
+  FadeOut,
   Layout,
   SlideInRight,
   SlideOutLeft,
@@ -61,16 +63,21 @@ export const SetFooter: React.FC<SetFooterProps> = ({
       exiting={SlideOutLeft}
       style={animatedStyle}
       layout={Layout}>
-      <UI.Pressable
-        style={s(
-          `container h:${SET_FOOTER_ADD_EXERCISE_BUTTON_HEIGHT} bgc:white jcc`,
-          `bbw:1 bc:ultraLightGray`,
-        )}
-        onPress={handlePressAddExercise}>
-        <UI.Text style={s(`P7 c:ultraLightGray`)}>
-          Добавить упражнение ...
-        </UI.Text>
-      </UI.Pressable>
+      {isEditing && (
+        <Animated.View entering={FadeIn} exiting={FadeOut} layout={Layout}>
+          <UI.Pressable
+            style={s(
+              `container h:${SET_FOOTER_ADD_EXERCISE_BUTTON_HEIGHT} bgc:white jcc`,
+              `bbw:1 bc:ultraLightGray`,
+            )}
+            onPress={handlePressAddExercise}>
+            <UI.Text style={s(`P7 c:ultraLightGray`)}>
+              Добавить упражнение ...
+            </UI.Text>
+          </UI.Pressable>
+        </Animated.View>
+      )}
+
       <UI.View style={s(`h:${SET_FOOTER_REST_BLOCK_HEIGHT} aic jcc`)}>
         <UI.Pressable onPress={handlePressEditRest} disabled={!isEditing}>
           <UI.Text style={s(`P8 medium c:gray`)}>{formattedRest}</UI.Text>

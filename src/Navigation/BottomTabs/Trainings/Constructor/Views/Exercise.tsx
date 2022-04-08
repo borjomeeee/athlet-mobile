@@ -71,9 +71,7 @@ export const ExerciseView: React.FC<ExerciseViewProps> = React.memo(
               style={s(`asfs`)}
               onPress={handlePressRest}
               disabled={!isEditing}>
-              <UI.Text style={s(`P8 medium c:gray`)}>
-                Отдых - {restInfo}
-              </UI.Text>
+              <UI.Text style={s(`P8 medium c:gray`)}>{restInfo}</UI.Text>
             </Pressable>
           </Animated.View>
           <Animated.View layout={Layout}>
@@ -126,10 +124,11 @@ export const Exercise: React.FC<ExerciseProps> = React.memo(
     } = useDraggableController(id, exercisesPositions, scrollViewRef, scrollY);
 
     const formattedRest = React.useMemo(() => {
-      return (
-        TimeUtils.getFormattedTimeForTraining(exercise.restAfterComplete) ||
-        'Без отдыха'
+      const restStr = TimeUtils.getFormattedTimeForTraining(
+        exercise.restAfterComplete,
       );
+
+      return restStr ? `Отдых - ${restStr}` : 'Без отдыха';
     }, [exercise]);
 
     const value = React.useMemo(() => {
