@@ -307,7 +307,7 @@ export const useTrainingConstructorStore = () => {
     [setElements],
   );
 
-  const processSetTitle = React.useCallback(
+  const resetIfEmptySetTitle = React.useCallback(
     (id: string) => {
       setElements(currentElements => {
         let setsCount = 0;
@@ -349,12 +349,15 @@ export const useTrainingConstructorStore = () => {
         while (index !== positionsArray.length) {
           const position = positionsArray[index];
           if (isSetHeader(position.id)) {
-            currentSet = {
-              ...elementsById[parseSetHeaderId(position.id)],
-              elements: [],
-            } as ConstructorSet;
+            const set = elementsById[parseSetHeaderId(position.id)];
+            if (set) {
+              currentSet = {
+                ...set,
+                elements: [],
+              } as ConstructorSet;
 
-            newElementsStore.push(currentSet);
+              newElementsStore.push(currentSet);
+            }
 
             index++;
             continue;
@@ -367,12 +370,14 @@ export const useTrainingConstructorStore = () => {
             continue;
           }
 
-          if (currentSet) {
-            currentSet.elements.push(
-              elementsById[position.id] as ConstructorExercise,
-            );
-          } else {
-            newElementsStore.push(elementsById[position.id]);
+          if (elementsById[position.id]) {
+            if (currentSet) {
+              currentSet.elements.push(
+                elementsById[position.id] as ConstructorExercise,
+              );
+            } else {
+              newElementsStore.push(elementsById[position.id]);
+            }
           }
 
           index++;
@@ -404,7 +409,7 @@ export const useTrainingConstructorStore = () => {
     removeExercise,
 
     changeSetTitle,
-    processSetTitle,
+    resetIfEmptySetTitle,
 
     changeExerciseRest,
     changeSetRest,

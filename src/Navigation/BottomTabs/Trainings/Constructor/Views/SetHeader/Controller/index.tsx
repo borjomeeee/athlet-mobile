@@ -2,7 +2,7 @@ import React from 'react';
 import {useTrainingConstructorStore} from '../../../Store';
 
 export const useSetHeaderController = (id: string) => {
-  const {changeSetTitle, processSetTitle} = useTrainingConstructorStore();
+  const {changeSetTitle, resetIfEmptySetTitle} = useTrainingConstructorStore();
 
   const handleChangeSetTitle = React.useCallback(
     (title: string) => {
@@ -12,8 +12,8 @@ export const useSetHeaderController = (id: string) => {
   );
 
   const handleBlurSetTitle = React.useCallback(() => {
-    processSetTitle(id);
-  }, [processSetTitle, id]);
+    resetIfEmptySetTitle(id);
+  }, [resetIfEmptySetTitle, id]);
 
   return {handleChangeSetTitle, handleBlurSetTitle};
 };
