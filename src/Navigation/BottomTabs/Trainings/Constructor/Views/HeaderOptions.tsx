@@ -8,16 +8,11 @@ import {isCreatingSelector, isEditingSelector} from '../Store';
 import {OverlayWrapper} from 'src/Lib/Overlay';
 import {OverlayRef} from 'src/Lib/Overlay/Types';
 import s from '@borjomeeee/rn-styles';
-import {
-  useTrainingConstructorController,
-  useTrainingConstructorHeaderOptionsController,
-} from '../Hooks';
+import {useTrainingConstructorController} from '../Hooks';
 export const HeaderOptions = () => {
   const overlayRef = React.useRef<OverlayRef>(null);
 
   const {handlePressCancelEditingMode} = useTrainingConstructorController();
-  const {handlePressOptions} =
-    useTrainingConstructorHeaderOptionsController(overlayRef);
 
   const isCreating = useRecoilValue(isCreatingSelector);
   const isEditing = useRecoilValue(isEditingSelector);
@@ -39,9 +34,7 @@ export const HeaderOptions = () => {
   return (
     <Animated.View entering={ZoomIn} exiting={ZoomOut}>
       <OverlayWrapper overlayRef={overlayRef} Component={HeaderOptionsOverlay}>
-        <UI.Pressable onPress={handlePressOptions}>
-          <HeaderOptionsIcon />
-        </UI.Pressable>
+        <HeaderOptionsIcon />
       </OverlayWrapper>
     </Animated.View>
   );

@@ -13,7 +13,7 @@ import {
   useResetRecoilState,
   useSetRecoilState,
 } from 'recoil';
-import {View} from 'src/Components';
+import {Pressable, View} from 'src/Components';
 import {getKeyFabricForDomain} from 'src/Utils/Recoil';
 import {OverlayRef} from './Types';
 
@@ -42,14 +42,18 @@ export const useOverlay = () => {
 };
 
 interface OverlayWrapperProps {
-  overlayRef: React.RefObject<OverlayRef>;
+  overlayRef?: React.RefObject<OverlayRef>;
   Component: React.FC;
+
+  disabled?: boolean;
 }
 export const OverlayWrapper: React.FC<OverlayWrapperProps> = ({
   children,
 
-  overlayRef,
+  overlayRef = React.createRef(),
   Component,
+
+  disabled,
 }) => {
   const animatedRef = useAnimatedRef<Animated.View>();
   const {show: showOverlay} = useOverlay();
@@ -78,7 +82,17 @@ export const OverlayWrapper: React.FC<OverlayWrapperProps> = ({
     ),
   );
 
-  return <Animated.View ref={animatedRef}>{children}</Animated.View>;
+  const handlePress = React.useCallback(() => {
+    overlayRef.current?.show();
+  }, [overlayRef]);
+
+  return (
+    <Animated.View ref={animatedRef}>
+      <Pressable onPress={handlePress} disabled={disabled}>
+        {children}
+      </Pressable>
+    </Animated.View>
+  );
 };
 
 interface OverlayInstanceProps {

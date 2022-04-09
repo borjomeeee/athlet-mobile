@@ -10,7 +10,7 @@ import {SelectableItem} from './Views/SelectableItem';
 
 import SetIcon from 'src/Assets/Svg/Set';
 import GymIcon from 'src/Assets/Svg/Gym';
-import {useTrainingConstructorController} from '../../Hooks';
+import {useAddElementBottomSheetController} from './Controller';
 
 interface AddElementBottomSheetProps {
   id: string;
@@ -18,9 +18,10 @@ interface AddElementBottomSheetProps {
 export const AddElementBottomSheet: React.FC<AddElementBottomSheetProps> = ({
   id,
 }) => {
-  const {handlePressAddExercise, handlePressAddSet} =
-    useTrainingConstructorController();
   const {bottom} = useSafeAreaInsets();
+  const {handlePressAddExercise, handlePressAddSet} =
+    useAddElementBottomSheetController();
+
   const {
     animatedHandleHeight,
     animatedSnapPoints,

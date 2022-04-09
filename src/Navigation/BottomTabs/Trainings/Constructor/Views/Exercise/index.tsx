@@ -15,18 +15,18 @@ import Animated, {
   ZoomOut,
 } from 'react-native-reanimated';
 import {Pressable} from 'src/Components';
-import {useTrainingConstructorExerciseController} from '../Hooks';
 
-import {AnimatedExercisesPositions, ConstructorExercise} from '../Types';
+import {AnimatedExercisesPositions, ConstructorExercise} from '../../Types';
 
 import DragIcon from 'src/Assets/Svg/Drag';
 import {GestureDetector} from 'react-native-gesture-handler';
-import {useDraggableController} from '../Hooks/Draggable';
+import {useDraggableController} from '../../Hooks/Draggable';
 import {LayoutChangeEvent} from 'react-native';
 
 import RemoveIcon from 'src/Assets/Svg/Remove';
 import {useRecoilValue} from 'recoil';
-import {isEditingSelector} from '../Store';
+import {isEditingSelector} from '../../Store';
+import {useTrainingExerciseController} from './Controller';
 
 interface ExerciseViewProps {
   title: string;
@@ -207,7 +207,7 @@ export const TrainingExercise: React.FC<ExerciseProps> = ({
   ...props
 }) => {
   const {handlePress, handlePressEditRest, handlePressRemove} =
-    useTrainingConstructorExerciseController(exercise.elementId);
+    useTrainingExerciseController(exercise.elementId);
 
   return (
     <Exercise

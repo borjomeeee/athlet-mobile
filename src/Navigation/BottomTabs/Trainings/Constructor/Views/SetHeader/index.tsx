@@ -2,9 +2,9 @@ import React from 'react';
 
 import s from '@borjomeeee/rn-styles';
 import * as UI from 'src/Components';
-import {SET_HEADER_HEIGHT} from '../Const';
-import {AnimatedExercisesPositions} from '../Types';
-import {useDraggablePosition} from '../Hooks/Draggable';
+import {SET_HEADER_HEIGHT} from '../../Const';
+import {AnimatedExercisesPositions} from '../../Types';
+import {useDraggablePosition} from '../../Hooks/Draggable';
 import Animated, {
   Layout,
   SlideInRight,
@@ -17,13 +17,12 @@ import Animated, {
 
 import OptionsIcon from 'src/Assets/Svg/Options';
 import {OverlayWrapper} from 'src/Lib/Overlay';
-import {
-  useTrainingConstructorSetController,
-  useTrainingConstructorSetOptionsController,
-} from '../Hooks';
-import {OverlayRef} from 'src/Lib/Overlay/Types';
 import {useRecoilValue} from 'recoil';
-import {isEditingSelector} from '../Store';
+import {isEditingSelector} from '../../Store';
+import {
+  useSetHeaderController,
+  useSetHeaderOptionsController,
+} from './Controller';
 
 interface SetHeaderProps {
   positionId: string;
@@ -40,11 +39,9 @@ export const SetHeader: React.FC<SetHeaderProps> = ({
   positionId,
   exercisesPositions,
 }) => {
-  const ref = React.useRef<OverlayRef>(null);
-
   const {handleChangeSetTitle, handleBlurSetTitle} =
-    useTrainingConstructorSetController(setId);
-  const {handlePressOptions} = useTrainingConstructorSetOptionsController(ref);
+    useSetHeaderController(setId);
+
   const {offsetY} = useDraggablePosition(positionId, exercisesPositions);
 
   const isEditing = useRecoilValue(isEditingSelector);
@@ -83,10 +80,8 @@ export const SetHeader: React.FC<SetHeaderProps> = ({
         <UI.VSpacer size={20} />
         {isEditing && (
           <Animated.View entering={ZoomIn} exiting={ZoomOut}>
-            <OverlayWrapper overlayRef={ref} Component={renderOptionsOverlay}>
-              <UI.Pressable onPress={handlePressOptions}>
-                <OptionsIcon />
-              </UI.Pressable>
+            <OverlayWrapper Component={renderOptionsOverlay}>
+              <OptionsIcon />
             </OverlayWrapper>
           </Animated.View>
         )}
@@ -103,7 +98,7 @@ const SetHeaderOptions: React.FC<SetHeaderOptionsProps> = ({id}) => {
     handlePressRemoveSet,
     handlePressSwapWithNext,
     handlePressSwapWithPrevious,
-  } = useTrainingConstructorSetController(id);
+  } = useSetHeaderOptionsController(id);
 
   return (
     <UI.View>

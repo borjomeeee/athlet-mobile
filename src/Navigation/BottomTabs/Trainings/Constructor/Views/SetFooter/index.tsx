@@ -3,16 +3,12 @@ import React from 'react';
 import s from '@borjomeeee/rn-styles';
 import * as UI from 'src/Components';
 
-import {
-  useTrainingConstructorSetController,
-  useTrainingConstructorSetRestController,
-} from '../Hooks';
 import {TimeUtils} from 'src/Store/ModelsUtils/Time';
 import {
   SET_FOOTER_ADD_EXERCISE_BUTTON_HEIGHT,
   SET_FOOTER_REST_BLOCK_HEIGHT,
-} from '../Const';
-import {AnimatedExercisesPositions} from '../Types';
+} from '../../Const';
+import {AnimatedExercisesPositions} from '../../Types';
 import Animated, {
   FadeIn,
   FadeOut,
@@ -22,9 +18,10 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated';
-import {useDraggablePosition} from '../Hooks/Draggable';
+import {useDraggablePosition} from '../../Hooks/Draggable';
 import {useRecoilValue} from 'recoil';
-import {isEditingSelector} from '../Store';
+import {isEditingSelector} from '../../Store';
+import {useSetFooterController} from './Controller';
 
 interface SetFooterProps {
   positionId: string;
@@ -43,8 +40,8 @@ export const SetFooter: React.FC<SetFooterProps> = ({
 }) => {
   const {offsetY} = useDraggablePosition(positionId, exercisesPositions);
 
-  const {handlePressAddExercise} = useTrainingConstructorSetController(setId);
-  const {handlePressEditRest} = useTrainingConstructorSetRestController(setId);
+  const {handlePressAddExercise, handlePressEditRest} =
+    useSetFooterController(setId);
 
   const isEditing = useRecoilValue(isEditingSelector);
 

@@ -2,17 +2,12 @@ import s from '@borjomeeee/rn-styles';
 import React from 'react';
 import {useRecoilValue} from 'recoil';
 import * as UI from 'src/Components';
-import {useTrainingConstructorController} from '../Hooks';
-import {isEditingSelector} from '../Store';
+import {isEditingSelector} from '../../Store';
+import {useSubmitController} from './Controller';
 
 export const Submit = () => {
   const isEditing = useRecoilValue(isEditingSelector);
-  const {setScreenState} = useTrainingConstructorController();
-
-  const handlePressSubmit = React.useCallback(() => {
-    setScreenState(currVal => +!currVal);
-  }, [setScreenState]);
-
+  const {handlePressSubmit} = useSubmitController();
   return (
     <UI.View style={s(`container`)}>
       <UI.Button
