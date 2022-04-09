@@ -80,7 +80,7 @@ export const trainingIdSelector = selector<string>({
 });
 
 export const useTrainingConstructorStore = () => {
-  const _setTitle = useSetRecoilState(trainingTitleStore);
+  const setTitle = useSetRecoilState(trainingTitleStore);
   const setElements = useSetRecoilState(trainingElementsStore);
 
   const setTrainingId = useSetRecoilState(trainingIdSelector);
@@ -91,11 +91,11 @@ export const useTrainingConstructorStore = () => {
   const resetTrainingId = useResetRecoilState(trainingIdStore);
   const resetScreenState = useResetRecoilState(screenStateStore);
 
-  const setTitle = React.useCallback(
+  const setTitleHandler = React.useCallback(
     (text: string) => {
-      _setTitle(text.trim());
+      setTitle(text.trim());
     },
-    [_setTitle],
+    [setTitle],
   );
 
   const addElement = React.useCallback(
@@ -385,7 +385,7 @@ export const useTrainingConstructorStore = () => {
   );
 
   return {
-    setTitle,
+    setTitle: setTitleHandler,
 
     resetTitle,
     resetElements,

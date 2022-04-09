@@ -63,7 +63,6 @@ export const useDraggableController = (
     },
   );
 
-  // TODO: measure when componen height changed
   const layout = React.useCallback(
     (height: number) => {
       runOnUI(() => {
@@ -81,6 +80,10 @@ export const useDraggableController = (
     },
     [id, exercisesPositions, wasMeasured],
   );
+
+  React.useEffect(() => {
+    wasMeasured.value = false;
+  }, [id, wasMeasured]);
 
   useAnimatedReaction(
     () => {
@@ -157,7 +160,11 @@ export const useDraggableController = (
           Extrapolate.CLAMP,
         );
 
-        runOnJS(scrollToDown)(startScrollY, scrollSpeed, -100);
+        runOnJS(scroll)({
+          scrollY: startScrollY,
+          speed: scrollSpeed,
+          value: -100,
+        });
       } else if (e.absoluteY - windowHeight > -120) {
         cancelAnimation(startScrollY);
 
@@ -168,7 +175,11 @@ export const useDraggableController = (
           Extrapolate.CLAMP,
         );
 
-        runOnJS(scrollToDown)(startScrollY, scrollSpeed, 100);
+        runOnJS(scroll)({
+          scrollY: startScrollY,
+          speed: scrollSpeed,
+          value: 100,
+        });
       }
 
       gestureAbsoluteY.value = e.absoluteY;
@@ -210,17 +221,21 @@ export const useDraggableController = (
   };
 };
 
-function scrollToDown(
-  scrollY: Animated.SharedValue<number>,
-  speed: Animated.SharedValue<number>,
-  value: number,
-) {
+function scroll({
+  scrollY,
+  speed,
+  value,
+}: {
+  scrollY: Animated.SharedValue<number>;
+  speed: Animated.SharedValue<number>;
+  value: number;
+}) {
   scrollY.value = withTiming(
     scrollY.value + value,
     {easing: Easing.linear, duration: speed.value},
     finished => {
       if (finished) {
-        runOnJS(scrollToDown)(scrollY, speed, value);
+        runOnJS(scroll)({scrollY, speed, value});
       }
     },
   );
