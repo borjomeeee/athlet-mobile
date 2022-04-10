@@ -12,19 +12,41 @@ export const myTrainingsStore = atom<TrainingsStore>({
 });
 
 export const useTrainingStore = () => {
-  const _setMyTrainings = useSetRecoilState(myTrainingsStore);
+  const setMyTrainings = useSetRecoilState(myTrainingsStore);
 
-  const setMyTrainings = React.useCallback(
+  const replaceMyTrainings = React.useCallback(
     (trainings: Training[]) => {
       const dict: TrainingsStore = {};
       trainings.forEach(training => (dict[training.id] = training));
-      _setMyTrainings(dict);
+      setMyTrainings(dict);
     },
-    [_setMyTrainings],
+    [setMyTrainings],
+  );
+
+  const addTraining = React.useCallback(
+    (training: Training) => {
+      setMyTrainings(currentTrainings => ({
+        ...currentTrainings,
+        [training.id]: training,
+      }));
+    },
+    [setMyTrainings],
+  );
+
+  const replaceTraining = React.useCallback(
+    (id: string, training: Training) => {
+      setMyTrainings(currentTrainings => ({
+        ...currentTrainings,
+        [id]: training,
+      }));
+    },
+    [setMyTrainings],
   );
 
   return {
-    setMyTrainings,
+    replaceMyTrainings,
+    addTraining,
+    replaceTraining,
   };
 };
 

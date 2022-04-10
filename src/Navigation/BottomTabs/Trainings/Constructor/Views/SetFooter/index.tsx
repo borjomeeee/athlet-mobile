@@ -75,11 +75,13 @@ export const SetFooter: React.FC<SetFooterProps> = ({
         </Animated.View>
       )}
 
-      <UI.View style={s(`h:${SET_FOOTER_REST_BLOCK_HEIGHT} aic jcc`)}>
+      <Animated.View
+        style={s(`h:${SET_FOOTER_REST_BLOCK_HEIGHT} aic jcc`)}
+        layout={Layout}>
         <UI.Pressable onPress={handlePressEditRest} disabled={!isEditing}>
           <UI.Text style={s(`P8 medium c:gray`)}>{formattedRest}</UI.Text>
         </UI.Pressable>
-      </UI.View>
+      </Animated.View>
     </Animated.View>
   );
 };

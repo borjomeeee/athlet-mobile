@@ -34,6 +34,8 @@ export const useAppController = () => {
           return;
         }
         showBadApiResponse(UI.BadApiResponse, {});
+      } else {
+        showBadApiResponse(UI.BadApiResponse, {});
       }
     },
     [showBadNetworkConnection, showBadApiResponse, handleAuthorizationError],

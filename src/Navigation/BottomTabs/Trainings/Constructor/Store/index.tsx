@@ -58,12 +58,12 @@ export const trainingElementsStore = atom<TrainingElementWithId[]>({
   default: [],
 });
 
-export const trainingIdSelector = selector<string>({
+export const trainingIdSelector = selector<string | undefined>({
   key: createKey('trainingIdSelector'),
-  get: () => 'undefined',
+  get: () => undefined,
 
   set: ({get, set}, trainingId) => {
-    if (trainingId instanceof DefaultValue) {
+    if (trainingId instanceof DefaultValue || trainingId === undefined) {
       return;
     }
 

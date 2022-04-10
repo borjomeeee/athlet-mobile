@@ -17,6 +17,8 @@ export const useTrainingConstructorController = () => {
     resetElements,
     setTitle,
     resetTitle,
+    resetTrainingId,
+    resetScreenState,
     setScreenState,
     setTrainingId,
     replaceExercises,
@@ -45,7 +47,9 @@ export const useTrainingConstructorController = () => {
   const reset = React.useCallback(() => {
     resetElements();
     resetTitle();
-  }, [resetElements, resetTitle]);
+    resetTrainingId();
+    resetScreenState();
+  }, [resetElements, resetTitle, resetTrainingId, resetScreenState]);
 
   const initWithTraining = React.useCallback(
     (trainingId: string) => {
@@ -93,6 +97,4 @@ export const useTrainingConstructorNavigationEffect = () => {
       initWithTraining(params.trainingId);
     }
   }, [route, initWithTraining]);
-
-  React.useEffect;
 };

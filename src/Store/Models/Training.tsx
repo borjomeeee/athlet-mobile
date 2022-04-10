@@ -107,3 +107,5 @@ export const TrainingScheme = z.object({
 
 export type TrainingApi = z.input<typeof TrainingScheme>;
 export type Training = z.output<typeof TrainingScheme>;
+
+export type CreatingTraining = Pick<Training, 'title' | 'elements'>;
