@@ -16,7 +16,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import {Pressable} from 'src/Components';
 
-import {AnimatedExercisesPositions, ConstructorExercise} from '../../Types';
+import {AnimatedExercisesPositions} from '../../Types';
 
 import DragIcon from 'src/Assets/Svg/Drag';
 import {GestureDetector} from 'react-native-gesture-handler';
@@ -27,6 +27,7 @@ import RemoveIcon from 'src/Assets/Svg/Remove';
 import {useRecoilValue} from 'recoil';
 import {isEditingSelector} from '../../Store';
 import {useTrainingExerciseController} from './Controller';
+import {ExerciseWithId} from '../../Store/Types';
 
 interface ExerciseViewProps {
   title: string;
@@ -88,7 +89,7 @@ export const ExerciseView: React.FC<ExerciseViewProps> = React.memo(
 interface ExerciseProps {
   exercisesPositions: AnimatedExercisesPositions;
 
-  exercise: ConstructorExercise;
+  exercise: ExerciseWithId;
 
   handlePressRest?: () => void;
   handlePress?: () => void;

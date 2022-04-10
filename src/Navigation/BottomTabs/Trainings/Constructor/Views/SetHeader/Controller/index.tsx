@@ -1,12 +1,11 @@
 import React from 'react';
 import {
   useTrainingConstructorSet,
-  useTrainingConstructorStore,
-  useTrainingConstructorStoreNew,
+  useTrainingConstructorHistoryStore,
 } from '../../../Store';
 
 export const useSetHeaderController = (id: string) => {
-  const {replaceSet} = useTrainingConstructorStoreNew();
+  const {replaceSet} = useTrainingConstructorHistoryStore();
 
   const {set} = useTrainingConstructorSet(id);
   const handleChangeSetTitle = React.useCallback((title: string) => {
@@ -22,8 +21,8 @@ export const useSetHeaderController = (id: string) => {
 };
 
 export const useSetHeaderOptionsController = (id: string) => {
-  const {swapWithNext, swapWithPrev} = useTrainingConstructorStoreNew();
-  const {removeSet} = useTrainingConstructorStoreNew();
+  const {swapWithNext, swapWithPrev} = useTrainingConstructorHistoryStore();
+  const {removeSet} = useTrainingConstructorHistoryStore();
 
   const handlePressRemoveSet = React.useCallback(() => {
     removeSet(id);

@@ -6,6 +6,7 @@ import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated';
+import {useRecoilValue} from 'recoil';
 
 import * as UI from 'src/Components';
 import {
@@ -13,6 +14,7 @@ import {
   useTrainingConstructorHeader,
   useTrainingConstructorNavigationEffect,
 } from './Hooks';
+import {currentTrainingSelector} from './Store';
 import {AddElementButton} from './Views/AddElementButton';
 import {ElementsList} from './Views/ElementsList';
 import {Header} from './Views/Header';
@@ -26,12 +28,17 @@ export const Constructor = () => {
     e => (scrollY.value = e.contentOffset.y),
   );
 
-  const {reset} = useTrainingConstructorController();
+  const currentTraining = useRecoilValue(currentTrainingSelector);
+  const {reset, handleChangeTitle} = useTrainingConstructorController();
 
   useTrainingConstructorNavigationEffect();
   useTrainingConstructorHeader();
 
   React.useEffect(() => () => reset(), [reset]);
+  React.useEffect(
+    () => currentTraining && handleChangeTitle(currentTraining.title),
+    [currentTraining, handleChangeTitle],
+  );
 
   return (
     <>

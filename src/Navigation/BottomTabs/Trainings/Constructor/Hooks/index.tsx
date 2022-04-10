@@ -4,16 +4,16 @@ import {useNavigation, useRoute} from '@react-navigation/core';
 
 import {
   useTrainingConstructorStore,
-  useTrainingConstructorStoreNew,
+  useTrainingConstructorHistoryStore,
 } from '../Store';
 import {RouteProp} from '@react-navigation/native';
 import {TrainingsStackParamList} from '../../index';
 import {BottomTabTrainingsPaths} from 'src/Navigation/Paths';
-import {ScreenState} from '../Types';
 import {HeaderOptions} from '../Views/HeaderOptions';
 import {useModal} from 'src/Lib/ModalRouter';
 import {AddElementBottomSheet} from '../Views/AddElementBottomSheet';
 import {Modals} from '../Const';
+import {ScreenState} from '../Store/Types';
 
 export const useTrainingConstructorController = () => {
   const {
@@ -25,7 +25,7 @@ export const useTrainingConstructorController = () => {
     setScreenState,
     setTrainingId,
   } = useTrainingConstructorStore();
-  const {reorder} = useTrainingConstructorStoreNew();
+  const {reorder} = useTrainingConstructorHistoryStore();
   const {show: showAddElement} = useModal(Modals.AddElement);
 
   const handlePressAddElement = React.useCallback(() => {

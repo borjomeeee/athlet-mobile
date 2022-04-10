@@ -2,11 +2,11 @@ import React from 'react';
 import {useModal} from 'src/Lib/ModalRouter';
 import * as UI from 'src/Components';
 import {ExerciseUtils} from 'src/Store/ModelsUtils/Exercise';
-import {useTrainingConstructorStoreNew} from '../../../Store';
+import {useTrainingConstructorHistoryStore} from '../../../Store';
 import {Modals} from '../../../Const';
 
 export const useAddElementBottomSheetController = () => {
-  const {addExercise, addSet} = useTrainingConstructorStoreNew();
+  const {addExercise, addSet} = useTrainingConstructorHistoryStore();
 
   const {hide: hideAddElement} = useModal(Modals.AddElement);
   const {show: showSelectExercise} = useModal(Modals.SelectExercise);

@@ -4,14 +4,14 @@ import {useAppController} from 'src/Services/App';
 import {useTrainingsService} from 'src/Services/Trainings';
 import {
   constructorElementsSelector,
-  trainingIdStore,
-  screenTrainingTitleStore,
+  trainingIdAtom,
+  currentTrainingTitleSelector,
 } from '../../../Store';
 
 export const useSubmitController = () => {
-  const trainingId = useRecoilValue(trainingIdStore);
+  const trainingId = useRecoilValue(trainingIdAtom);
 
-  const trainingTitle = useRecoilValue(screenTrainingTitleStore);
+  const trainingTitle = useRecoilValue(currentTrainingTitleSelector);
   const elements = useRecoilValue(constructorElementsSelector);
 
   const {createTraining, updateTraining} = useTrainingsService();

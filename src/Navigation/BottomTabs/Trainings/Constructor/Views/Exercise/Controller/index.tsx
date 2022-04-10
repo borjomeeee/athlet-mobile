@@ -5,11 +5,12 @@ import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
 import {Modals} from '../../../Const';
 import {
   useTrainingConstructorExercise,
-  useTrainingConstructorStoreNew,
+  useTrainingConstructorHistoryStore,
 } from '../../../Store';
 
 export const useTrainingExerciseController = (id: string) => {
-  const {removeExercise, replaceExercise} = useTrainingConstructorStoreNew();
+  const {removeExercise, replaceExercise} =
+    useTrainingConstructorHistoryStore();
 
   const {show: showEditRest} = useModal(Modals.EditRest);
   const {show: showEditExercise} = useModal(Modals.EditExercise);

@@ -1,10 +1,5 @@
 import Animated from 'react-native-reanimated';
-import {ExerciseElement, SetElement} from 'src/Store/Models/Training';
-
-export enum ScreenState {
-  VIEWING,
-  EDITING,
-}
+import {ExerciseWithId, SetWithId} from './Store/Types';
 
 export enum ConstructorElementType {
   EXERCISE = 'exercise',
@@ -29,30 +24,16 @@ export type ExercisesPositions = {
 export type AnimatedExercisesPositions =
   Animated.SharedValue<ExercisesPositions>;
 
-export type ConstructorExercise = ExerciseElement & {elementId: string};
-export type ConstructorSetExercise = ConstructorExercise;
-
-export type ConstructorSet = Omit<SetElement, 'elements'> & {
-  elementId: string;
-  elements: ConstructorSetExercise[];
-};
-
-export type ConstructorElement = {
-  [ConstructorElementType.EXERCISE]: ConstructorExercise;
-  [ConstructorElementType.SET_FOOTER]: ConstructorSet;
-  [ConstructorElementType.SET_HEADER]: ConstructorSet;
-};
-
 export type ConstructorElementViewList = (
   | {
       type: ConstructorElementType.EXERCISE;
-      element: ConstructorExercise;
+      element: ExerciseWithId;
     }
   | {
       type:
         | ConstructorElementType.SET_FOOTER
         | ConstructorElementType.SET_HEADER;
-      element: Omit<ConstructorSet, 'elements'>;
+      element: Omit<SetWithId, 'elements'>;
     }
 )[];
 

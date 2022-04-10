@@ -1,5 +1,10 @@
 import {ExerciseElement, SetElement} from 'src/Store/Models/Training';
 
+export enum ScreenState {
+  VIEWING,
+  EDITING,
+}
+
 export type ExerciseWithId = ExerciseElement & {elementId: string};
 export type SetExerciseWithId = ExerciseWithId & {setId: string};
 export type SetWithId = Omit<SetElement, 'elements'> & {
@@ -10,6 +15,8 @@ export type ConstructorElement = SetWithId | ExerciseWithId;
 
 export enum HistoryActionType {
   ADD_EXERCISE = 'add-exercise',
+  ADD_EXERCISE_TO_SET = 'add-exercise-to-set',
+
   REMOVE_EXERCISE = 'remove-exercise',
   REPLACE_EXERCISE = 'replace-exercise',
 
@@ -25,6 +32,10 @@ export enum HistoryActionType {
 
 export type HistoryActionPayload = {
   [HistoryActionType.ADD_EXERCISE]: {exercise: ExerciseWithId};
+  [HistoryActionType.ADD_EXERCISE_TO_SET]: {
+    setId: string;
+    exercise: SetExerciseWithId;
+  };
   [HistoryActionType.REMOVE_EXERCISE]: {id: string};
 
   [HistoryActionType.ADD_SET]: {set: SetWithId};
