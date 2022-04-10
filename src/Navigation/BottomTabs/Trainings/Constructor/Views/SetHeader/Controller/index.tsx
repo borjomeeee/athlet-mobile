@@ -1,38 +1,41 @@
 import React from 'react';
-import {useTrainingConstructorStore} from '../../../Store';
+import {
+  useTrainingConstructorSet,
+  useTrainingConstructorStore,
+  useTrainingConstructorStoreNew,
+} from '../../../Store';
 
 export const useSetHeaderController = (id: string) => {
-  const {changeSetTitle, resetIfEmptySetTitle} = useTrainingConstructorStore();
+  const {replaceSet} = useTrainingConstructorStoreNew();
 
-  const handleChangeSetTitle = React.useCallback(
-    (title: string) => {
-      changeSetTitle(id, title);
-    },
-    [changeSetTitle, id],
-  );
+  const {set} = useTrainingConstructorSet(id);
+  const handleChangeSetTitle = React.useCallback((title: string) => {
+    // TODO: hmmm
+    return;
+  }, []);
 
   const handleBlurSetTitle = React.useCallback(() => {
-    resetIfEmptySetTitle(id);
-  }, [resetIfEmptySetTitle, id]);
+    // TODO: remove
+  }, []);
 
   return {handleChangeSetTitle, handleBlurSetTitle};
 };
 
 export const useSetHeaderOptionsController = (id: string) => {
-  const {removeElement, swapElementWithNext, swapElementWithPrevious} =
-    useTrainingConstructorStore();
+  const {swapWithNext, swapWithPrev} = useTrainingConstructorStoreNew();
+  const {removeSet} = useTrainingConstructorStoreNew();
 
   const handlePressRemoveSet = React.useCallback(() => {
-    removeElement(id);
-  }, [id, removeElement]);
+    removeSet(id);
+  }, [id, removeSet]);
 
   const handlePressSwapWithPrevious = React.useCallback(() => {
-    swapElementWithPrevious(id);
-  }, [swapElementWithPrevious, id]);
+    swapWithPrev(id);
+  }, [swapWithPrev, id]);
 
   const handlePressSwapWithNext = React.useCallback(() => {
-    swapElementWithNext(id);
-  }, [swapElementWithNext, id]);
+    swapWithNext(id);
+  }, [swapWithNext, id]);
 
   return {
     handlePressRemoveSet,

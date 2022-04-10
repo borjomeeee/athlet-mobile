@@ -2,12 +2,11 @@ import React from 'react';
 import {useModal} from 'src/Lib/ModalRouter';
 import * as UI from 'src/Components';
 import {ExerciseUtils} from 'src/Store/ModelsUtils/Exercise';
-import {useTrainingConstructorStore} from '../../../Store';
-import {ElementType} from 'src/Store/Models/Training';
+import {useTrainingConstructorStoreNew} from '../../../Store';
 import {Modals} from '../../../Const';
 
 export const useAddElementBottomSheetController = () => {
-  const {addElement} = useTrainingConstructorStore();
+  const {addExercise, addSet} = useTrainingConstructorStoreNew();
 
   const {hide: hideAddElement} = useModal(Modals.AddElement);
   const {show: showSelectExercise} = useModal(Modals.SelectExercise);
@@ -20,17 +19,17 @@ export const useAddElementBottomSheetController = () => {
         showEditExercise(UI.EditExercise, {
           exercise: ExerciseUtils.getExerciseElementFromBase(exercise),
           onEdit: editedExercise => {
-            addElement(editedExercise);
+            addExercise(editedExercise);
           },
         });
       },
     });
-  }, [hideAddElement, showSelectExercise, showEditExercise, addElement]);
+  }, [hideAddElement, showSelectExercise, showEditExercise, addExercise]);
 
   const handlePressAddSet = React.useCallback(() => {
     hideAddElement();
-    addElement({type: ElementType.SET, elements: [], restAfterComplete: 15});
-  }, [hideAddElement, addElement]);
+    addSet();
+  }, [hideAddElement, addSet]);
 
   return {handlePressAddExercise, handlePressAddSet};
 };

@@ -2,9 +2,12 @@ import React from 'react';
 
 import {useNavigation, useRoute} from '@react-navigation/core';
 
-import {useTrainingConstructorStore} from '../Store';
+import {
+  useTrainingConstructorStore,
+  useTrainingConstructorStoreNew,
+} from '../Store';
 import {RouteProp} from '@react-navigation/native';
-import {TrainingsStackParamList} from '../..';
+import {TrainingsStackParamList} from '../../index';
 import {BottomTabTrainingsPaths} from 'src/Navigation/Paths';
 import {ScreenState} from '../Types';
 import {HeaderOptions} from '../Views/HeaderOptions';
@@ -14,15 +17,15 @@ import {Modals} from '../Const';
 
 export const useTrainingConstructorController = () => {
   const {
-    resetElements,
     setTitle,
     resetTitle,
     resetTrainingId,
     resetScreenState,
+    resetHistory,
     setScreenState,
     setTrainingId,
-    replaceExercises,
   } = useTrainingConstructorStore();
+  const {reorder} = useTrainingConstructorStoreNew();
   const {show: showAddElement} = useModal(Modals.AddElement);
 
   const handlePressAddElement = React.useCallback(() => {
@@ -38,18 +41,21 @@ export const useTrainingConstructorController = () => {
 
   const handlePressCancelEditingMode = React.useCallback(() => {
     setScreenState(ScreenState.VIEWING);
-  }, [setScreenState]);
+
+    resetHistory();
+    resetTitle();
+  }, [setScreenState, resetHistory, resetTitle]);
 
   const handlePressGoToEditMode = React.useCallback(() => {
     setScreenState(ScreenState.EDITING);
   }, [setScreenState]);
 
   const reset = React.useCallback(() => {
-    resetElements();
     resetTitle();
     resetTrainingId();
     resetScreenState();
-  }, [resetElements, resetTitle, resetTrainingId, resetScreenState]);
+    resetHistory();
+  }, [resetTitle, resetTrainingId, resetScreenState, resetHistory]);
 
   const initWithTraining = React.useCallback(
     (trainingId: string) => {
@@ -64,7 +70,7 @@ export const useTrainingConstructorController = () => {
     handleChangeTitle,
     handlePressGoToEditMode,
     handlePressCancelEditingMode,
-    replaceExercises,
+    reorder,
     initWithTraining,
     reset,
   };
@@ -88,6 +94,7 @@ type ProfileScreenRouteProp = RouteProp<
 
 export const useTrainingConstructorNavigationEffect = () => {
   const route = useRoute<ProfileScreenRouteProp>();
+
   const {initWithTraining} = useTrainingConstructorController();
 
   React.useEffect(() => {

@@ -5,12 +5,11 @@ import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
 import {Modals} from '../../../Const';
 import {
   useTrainingConstructorExercise,
-  useTrainingConstructorStore,
+  useTrainingConstructorStoreNew,
 } from '../../../Store';
 
 export const useTrainingExerciseController = (id: string) => {
-  const {replaceExercise, changeExerciseRest, removeExercise} =
-    useTrainingConstructorStore();
+  const {removeExercise, replaceExercise} = useTrainingConstructorStoreNew();
 
   const {show: showEditRest} = useModal(Modals.EditRest);
   const {show: showEditExercise} = useModal(Modals.EditExercise);
@@ -24,7 +23,7 @@ export const useTrainingExerciseController = (id: string) => {
 
     showEditExercise(UI.EditExercise, {
       onEdit: newExercise => {
-        replaceExercise(id, newExercise);
+        replaceExercise(id, {...newExercise, elementId: id});
       },
       exercise: exercise,
     });
@@ -36,10 +35,14 @@ export const useTrainingExerciseController = (id: string) => {
     }
 
     showEditRest(UI.SelectRest, {
-      onSelect: rest => changeExerciseRest(id, rest),
+      onSelect: rest =>
+        replaceExercise(id, {
+          ...exercise,
+          restAfterComplete: rest,
+        }),
       defaultRest: exercise.restAfterComplete,
     });
-  }, [showEditRest, exercise, id, changeExerciseRest]);
+  }, [showEditRest, exercise, id, replaceExercise]);
 
   const handlePressRemove = React.useCallback(() => {
     removeExercise(id);

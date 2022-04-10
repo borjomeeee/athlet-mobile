@@ -34,7 +34,7 @@ export const useDraggableController = (
   scrollViewRef: React.RefObject<Animated.ScrollView>,
   scrollY: Animated.SharedValue<number>,
 ) => {
-  const {replaceExercises} = useTrainingConstructorController();
+  const {reorder} = useTrainingConstructorController();
   const {offsetY} = useDraggablePosition(id, exercisesPositions);
 
   const {height: windowHeight} = useWindowDimensions();
@@ -194,7 +194,12 @@ export const useDraggableController = (
         isFinished => {
           if (isFinished) {
             isDragging.value = false;
-            runOnJS(replaceExercises)(exercisesPositions.value);
+
+            const ids = Object.values(exercisesPositions.value)
+              .sort((val1, val2) => val1.order - val2.order)
+              .map(val => val.id);
+
+            runOnJS(reorder)(ids);
           }
         },
       );

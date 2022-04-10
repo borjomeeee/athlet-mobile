@@ -3,16 +3,16 @@ import {useRecoilValue} from 'recoil';
 import {useAppController} from 'src/Services/App';
 import {useTrainingsService} from 'src/Services/Trainings';
 import {
-  trainingElementsStore,
+  constructorElementsSelector,
   trainingIdStore,
-  trainingTitleStore,
+  screenTrainingTitleStore,
 } from '../../../Store';
 
 export const useSubmitController = () => {
   const trainingId = useRecoilValue(trainingIdStore);
 
-  const trainingTitle = useRecoilValue(trainingTitleStore);
-  const trainingElements = useRecoilValue(trainingElementsStore);
+  const trainingTitle = useRecoilValue(screenTrainingTitleStore);
+  const elements = useRecoilValue(constructorElementsSelector);
 
   const {createTraining, updateTraining} = useTrainingsService();
   const {defaultHandleError} = useAppController();
@@ -20,13 +20,13 @@ export const useSubmitController = () => {
   const handlePressCreateTraining = React.useCallback(async () => {
     const [_, err] = await createTraining({
       title: trainingTitle,
-      elements: trainingElements,
+      elements: elements,
     });
 
     if (err) {
       defaultHandleError(err);
     }
-  }, [defaultHandleError, createTraining, trainingTitle, trainingElements]);
+  }, [defaultHandleError, createTraining, trainingTitle, elements]);
 
   const handlePressUpdateTraining = React.useCallback(async () => {
     if (!trainingId) {
@@ -35,19 +35,13 @@ export const useSubmitController = () => {
 
     const [_, err] = await updateTraining(trainingId, {
       title: trainingTitle,
-      elements: trainingElements,
+      elements: elements,
     });
 
     if (err) {
       defaultHandleError(err);
     }
-  }, [
-    trainingId,
-    defaultHandleError,
-    updateTraining,
-    trainingTitle,
-    trainingElements,
-  ]);
+  }, [trainingId, defaultHandleError, updateTraining, trainingTitle, elements]);
 
   return {handlePressCreateTraining, handlePressUpdateTraining};
 };

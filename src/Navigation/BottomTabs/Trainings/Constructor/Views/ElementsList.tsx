@@ -1,6 +1,6 @@
 import React from 'react';
 import {useRecoilValue} from 'recoil';
-import {isEditingSelector, trainingElementsStore} from '../Store';
+import {isEditingSelector, constructorElementsSelector} from '../Store';
 
 import * as UI from 'src/Components';
 import {TrainingExercise} from './Exercise';
@@ -25,7 +25,7 @@ export const ElementsList: React.FC<ElementsListProps> = ({
   scrollY,
 }) => {
   const isEditing = useRecoilValue(isEditingSelector);
-  const elements = useRecoilValue(trainingElementsStore);
+  const elements = useRecoilValue(constructorElementsSelector);
 
   const viewElements = React.useMemo(() => {
     const data: ConstructorElementViewList = [];
@@ -81,6 +81,7 @@ export const ElementsList: React.FC<ElementsListProps> = ({
           acc[id] = {
             ...animatedExercisesPositions.value[id],
             id,
+
             type: ConstructorElementType.SET_FOOTER,
             offsetY,
             height: SET_FOOTER_HEIGHT,

@@ -3,11 +3,11 @@ import s from '@borjomeeee/rn-styles';
 
 import * as UI from 'src/Components';
 import {useRecoilValue} from 'recoil';
-import {isEditingSelector, trainingTitleStore} from '../Store';
+import {isEditingSelector, screenTrainingTitleStore} from '../Store';
 import {useTrainingConstructorController} from '../Hooks';
 
 export const Header = () => {
-  const trainingTitle = useRecoilValue(trainingTitleStore);
+  const trainingTitle = useRecoilValue(screenTrainingTitleStore);
   const isEditing = useRecoilValue(isEditingSelector);
 
   const {handleChangeTitle} = useTrainingConstructorController();

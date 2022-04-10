@@ -4,14 +4,14 @@ import {ExerciseUtils} from 'src/Store/ModelsUtils/Exercise';
 import * as UI from 'src/Components';
 import {
   useTrainingConstructorSet,
-  useTrainingConstructorStore,
+  useTrainingConstructorStoreNew,
 } from '../../../Store';
 import {Modals} from '../../../Const';
 
 export const useSetFooterController = (id: string) => {
   const {set} = useTrainingConstructorSet(id);
+  const {addExerciseToSet, replaceSet} = useTrainingConstructorStoreNew();
 
-  const {addExerciseToSet, changeSetRest} = useTrainingConstructorStore();
   const {show: showSelectExercise} = useModal(Modals.SelectExercise);
   const {show: showEditExercise} = useModal(Modals.EditExercise);
 
@@ -38,10 +38,10 @@ export const useSetFooterController = (id: string) => {
     }
 
     showEditRest(UI.SelectRest, {
-      onSelect: rest => changeSetRest(id, rest),
+      onSelect: rest => replaceSet(id, {...set, restAfterComplete: rest}),
       defaultRest: set.restAfterComplete,
     });
-  }, [showEditRest, set, id, changeSetRest]);
+  }, [showEditRest, set, id, replaceSet]);
 
   return {handlePressAddExercise, handlePressEditRest};
 };
