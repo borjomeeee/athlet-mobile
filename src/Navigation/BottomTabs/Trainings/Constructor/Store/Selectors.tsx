@@ -55,7 +55,7 @@ export const isCreatingSelector = selector({
 export const constructorElementsSelector = selector({
   key: createKey('constructor elements'),
   get: ({get}) => {
-    let elements = get(currentTrainingElementsSelector);
+    let elements = [...get(currentTrainingElementsSelector)];
 
     const actionHistory = get(actionHistoryAtom);
     actionHistory.forEach(action => {
@@ -126,8 +126,13 @@ export const constructorElementsSelector = selector({
                 ),
               };
             }
+
+            return element;
           }
-          return element;
+
+          return element.elementId === action.payload.id
+            ? action.payload.exercise
+            : element;
         });
       } else if (HistoryUtils.is(action, HistoryActionType.REPLACE_SET)) {
         elements = elements.map(element =>

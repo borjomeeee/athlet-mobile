@@ -78,10 +78,10 @@ export const useTrainingConstructorHistoryStore = () => {
   );
 
   const replaceExercise = React.useCallback(
-    (id: string, exercise: ExerciseWithId) => {
+    (id: string, exercise: Omit<ExerciseWithId, 'elementId'>) => {
       addToHistory({
         type: HistoryActionType.REPLACE_EXERCISE,
-        payload: {id, exercise},
+        payload: {id, exercise: {...exercise, elementId: id} as ExerciseWithId},
       });
     },
     [addToHistory],
