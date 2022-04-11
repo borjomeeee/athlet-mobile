@@ -14,7 +14,7 @@ import {
   useTrainingConstructorHeader,
   useTrainingConstructorNavigationEffect,
 } from './Hooks';
-import {currentTrainingSelector} from './Store';
+import {currentTrainingSelector, isEditingSelector} from './Store';
 import {AddElementButton} from './Views/AddElementButton';
 import {ElementsList} from './Views/ElementsList';
 import {Header} from './Views/Header';
@@ -28,6 +28,7 @@ export const Constructor = () => {
     e => (scrollY.value = e.contentOffset.y),
   );
 
+  const isEditing = useRecoilValue(isEditingSelector);
   const currentTraining = useRecoilValue(currentTrainingSelector);
   const {reset, handleChangeTitle} = useTrainingConstructorController();
 
@@ -35,10 +36,11 @@ export const Constructor = () => {
   useTrainingConstructorHeader();
 
   React.useEffect(() => () => reset(), [reset]);
-  React.useEffect(
-    () => currentTraining && handleChangeTitle(currentTraining.title),
-    [currentTraining, handleChangeTitle],
-  );
+  React.useEffect(() => {
+    if (!isEditing && currentTraining) {
+      handleChangeTitle(currentTraining.title);
+    }
+  }, [isEditing, currentTraining, handleChangeTitle]);
 
   return (
     <>
