@@ -50,4 +50,33 @@ export class ExerciseUtils {
   static isGymExercise(exercise: ExerciseElement): exercise is GymExercise {
     return exercise.completionType === ExerciseCompletionType.GYM;
   }
+
+  static equals(exercise1: ExerciseElement, exercise2: ExerciseElement) {
+    if (
+      exercise1.id !== exercise2.id ||
+      exercise1.title !== exercise2.title ||
+      exercise1.restAfterComplete !== exercise2.restAfterComplete
+    ) {
+      return false;
+    }
+
+    if (
+      ExerciseUtils.isRepsExercise(exercise1) &&
+      ExerciseUtils.isRepsExercise(exercise2)
+    ) {
+      return exercise1.reps === exercise2.reps;
+    } else if (
+      ExerciseUtils.isTimeExercise(exercise1) &&
+      ExerciseUtils.isTimeExercise(exercise2)
+    ) {
+      return exercise1.time === exercise2.time;
+    } else if (
+      ExerciseUtils.isGymExercise(exercise1) &&
+      ExerciseUtils.isGymExercise(exercise2)
+    ) {
+      return exercise1.reps === exercise2.reps && exercise1.kg === exercise2.kg;
+    }
+
+    return false;
+  }
 }

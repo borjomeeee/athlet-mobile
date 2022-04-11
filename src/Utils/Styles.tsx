@@ -1,11 +1,15 @@
 import {configureStylesheet, configureVariables} from '@borjomeeee/rn-styles';
 
 export const Colors = {
+  dark: '#24292F',
+
   white: '#ffffff',
   blue: '#007AFF',
   red: '#FF0000',
   black: '#000000',
+
   green: '#2DA44E',
+  darkGreen: '#10772E',
 
   ultraLightGray: '#DADADA',
   lightGray: '#DCDCDC',

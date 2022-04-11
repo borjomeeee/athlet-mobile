@@ -10,6 +10,8 @@ import {
 } from 'src/Store/Modals';
 import s from '@borjomeeee/rn-styles';
 import {Id} from 'src/Utils/Id';
+import Animated from 'react-native-reanimated';
+import {Keyboard} from 'react-native';
 
 export const useModalRouter = () => {
   const setModals = useSetRecoilState(modalsStore);
@@ -68,6 +70,8 @@ export const useModal = (id: string) => {
 
   const show = React.useCallback(
     <T,>(Component: React.FC<T>, props: Omit<T, 'id'>) => {
+      Keyboard.dismiss();
+
       setIsVisible(true);
       showModal<T>(Component, {id, props} as any);
     },
@@ -97,12 +101,12 @@ export const ModalRouter = () => {
   const modals = useRecoilValue(modalsStore);
 
   return (
-    <>
+    <UI.View style={s(`abs t:0 l:0 r:0 b:0`)} pointerEvents="box-none">
       {modals.map(({id, props, Component}) => (
-        <UI.View key={id} style={s(`abs t:0 r:0 l:0 b:0`)}>
+        <Animated.View key={id} style={s(`abs t:0 r:0 l:0 b:0`)}>
           <Component id={id} {...props} />
-        </UI.View>
+        </Animated.View>
       ))}
-    </>
+    </UI.View>
   );
 };

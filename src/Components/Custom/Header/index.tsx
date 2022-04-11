@@ -8,26 +8,35 @@ import {Text, View, VSpacer} from 'src/Components/Common';
 import BackArrowIcon from 'src/Assets/Svg/BackArrow';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {Pressable} from 'src/Components/Pressable';
+import {useNavigation} from '@react-navigation/core';
+
+export const BackButton: React.FC<
+  React.ComponentProps<typeof Pressable>
+> = props => {
+  const navigation = useNavigation();
+  return (
+    <Pressable onPress={navigation.goBack} {...props}>
+      <BackArrowIcon />
+    </Pressable>
+  );
+};
 
 export const Header = ({options, route, navigation}: StackHeaderProps) => {
   const {top} = useSafeAreaInsets();
   const title = getHeaderTitle(options, route.name);
   const canGoBack = React.useMemo(() => navigation.canGoBack(), [navigation]);
 
-  const Right = options.headerRight as React.FC;
+  const Right = options.headerRight as React.FC | undefined;
+  const Left = options.headerLeft as React.FC | undefined;
 
   return (
     <View style={s(`row container pt:${top} h:${top + 50} aic bgc:white`)}>
-      {canGoBack && (
-        <Pressable onPress={navigation.goBack}>
-          <BackArrowIcon />
-        </Pressable>
-      )}
+      {Left ? <Left /> : <BackButton />}
       <VSpacer size={20} />
       <View style={s(`fill`)}>
         <Text style={s(`P8 medium tac`)}>{title}</Text>
       </View>
-      {canGoBack && Right ? <Right /> : <VSpacer size={24} />}
+      {(Left || canGoBack) && Right ? <Right /> : <VSpacer size={24} />}
     </View>
   );
 };

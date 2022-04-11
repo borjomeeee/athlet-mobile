@@ -5,6 +5,9 @@ import {useNavigation, useRoute} from '@react-navigation/core';
 import {
   useTrainingConstructorStore,
   useTrainingConstructorHistoryStore,
+  constructorElementsSelector,
+  currentTrainingSelector,
+  screenTrainingTitleAtom,
 } from '../Store';
 import {RouteProp} from '@react-navigation/native';
 import {TrainingsStackParamList} from '../../index';
@@ -14,6 +17,10 @@ import {useModal} from 'src/Lib/ModalRouter';
 import {AddElementBottomSheet} from '../Views/AddElementBottomSheet';
 import {Modals} from '../Const';
 import {ScreenState} from '../Store/Types';
+import {ConfirmResetChanges} from '../Modals/ConfirmResetChanges';
+import {BackButton} from '../Views/BackButton';
+import {useRecoilValue} from 'recoil';
+import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
 
 export const useTrainingConstructorController = () => {
   const {
@@ -39,17 +46,6 @@ export const useTrainingConstructorController = () => {
     [setTitle],
   );
 
-  const handlePressCancelEditingMode = React.useCallback(() => {
-    setScreenState(ScreenState.VIEWING);
-
-    resetHistory();
-    resetTitle();
-  }, [setScreenState, resetHistory, resetTitle]);
-
-  const handlePressGoToEditMode = React.useCallback(() => {
-    setScreenState(ScreenState.EDITING);
-  }, [setScreenState]);
-
   const reset = React.useCallback(() => {
     resetTitle();
     resetTrainingId();
@@ -68,12 +64,60 @@ export const useTrainingConstructorController = () => {
   return {
     handlePressAddElement,
     handleChangeTitle,
-    handlePressGoToEditMode,
-    handlePressCancelEditingMode,
     reorder,
     initWithTraining,
     reset,
   };
+};
+
+export const useTrainingConstructorChangesController = () => {
+  const {resetHistory, resetTitle} = useTrainingConstructorStore();
+  const {show: showConfirmResetChanges} = useModal(Modals.ConfirmResetChanges);
+
+  const constructorTrainingTitle = useRecoilValue(screenTrainingTitleAtom);
+  const constructorElements = useRecoilValue(constructorElementsSelector);
+  const currentTraining = useRecoilValue(currentTrainingSelector);
+
+  const requestResetChanges = React.useCallback(() => {
+    return new Promise<boolean>(res => {
+      if (!currentTraining) {
+        return res(true);
+      }
+
+      if (
+        TrainingUtils.equals(
+          {
+            title: constructorTrainingTitle,
+            elements: constructorElements,
+          },
+          currentTraining,
+        )
+      ) {
+        return res(true);
+      }
+
+      showConfirmResetChanges(ConfirmResetChanges, {
+        onAccept: () => {
+          resetTitle();
+          resetHistory();
+
+          res(true);
+        },
+        onCancel: () => {
+          res(false);
+        },
+      });
+    });
+  }, [
+    resetHistory,
+    resetTitle,
+    showConfirmResetChanges,
+    constructorTrainingTitle,
+    constructorElements,
+    currentTraining,
+  ]);
+
+  return {requestResetChanges};
 };
 
 export const useTrainingConstructorHeader = () => {
@@ -82,6 +126,8 @@ export const useTrainingConstructorHeader = () => {
   React.useLayoutEffect(() => {
     navigation.setOptions({
       title: '',
+
+      headerLeft: () => <BackButton />,
       headerRight: () => <HeaderOptions />,
     });
   }, [navigation]);
