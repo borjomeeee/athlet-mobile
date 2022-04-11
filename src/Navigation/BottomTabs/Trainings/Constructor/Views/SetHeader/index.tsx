@@ -66,7 +66,7 @@ export const SetHeader: React.FC<SetHeaderProps> = ({
           `h:${SET_HEADER_HEIGHT} row aic ph:16`,
         )}>
         <UI.View style={s(`fill`)}>
-          <UI.Input
+          {/* <UI.Input
             style={s(`P8 bold c:#57606A uppercase`)}
             onChangeText={handleChangeSetTitle}
             value={title}
@@ -74,7 +74,8 @@ export const SetHeader: React.FC<SetHeaderProps> = ({
             autoCapitalize="characters"
             onBlur={handleBlurSetTitle}
             editable={isEditing}
-          />
+          /> */}
+          <UI.Text style={s(`P8 bold c:#57606A uppercase`)}>{title}</UI.Text>
         </UI.View>
 
         <UI.VSpacer size={20} />

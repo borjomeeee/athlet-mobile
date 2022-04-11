@@ -3,9 +3,12 @@ import {useLayout} from '@react-native-community/hooks';
 import React from 'react';
 import {useWindowDimensions} from 'react-native';
 import Animated, {
+  FadeInUp,
   FadeOut,
+  FadeOutUp,
   useAnimatedRef,
   ZoomInEasyUp,
+  ZoomOutEasyUp,
 } from 'react-native-reanimated';
 import {
   atom,
@@ -13,7 +16,7 @@ import {
   useResetRecoilState,
   useSetRecoilState,
 } from 'recoil';
-import {Pressable, View} from 'src/Components';
+import {Pressable, ShadowView, View} from 'src/Components';
 import {getKeyFabricForDomain} from 'src/Utils/Recoil';
 import {OverlayRef} from './Types';
 
@@ -122,15 +125,16 @@ export const OverlayInstance: React.FC<OverlayInstanceProps> = ({
 
   return (
     <Animated.View
-      style={s(
-        `abs bgc:#fff br:12 p:8 shadow`,
-        `t:${pageY + parentHeight} l:${left} o:${+(contentLayout.height > 0)}`,
-      )}
-      entering={ZoomInEasyUp.duration(200)}
-      exiting={FadeOut.duration(200)}>
-      <View onLayout={onLayout}>
-        <Component />
-      </View>
+      style={s(`abs t:${pageY + parentHeight} l:${left}`)}
+      entering={FadeInUp}
+      exiting={FadeOutUp}>
+      <ShadowView dx={0} dy={1} blur={3} color="#1B1F2412">
+        <ShadowView dx={0} dy={8} blur={24} color="#424A5312">
+          <View style={s(`br:12 p:8 bgc:#fff`)} onLayout={onLayout}>
+            <Component />
+          </View>
+        </ShadowView>
+      </ShadowView>
     </Animated.View>
   );
 };

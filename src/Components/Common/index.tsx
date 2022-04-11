@@ -7,3 +7,4 @@ export * from './FlatList';
 export * from './BottomSheet';
 export * from './AnimatedHeightBox';
 export * from './SelectWheel';
+export * from './ShadowView';

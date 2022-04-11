@@ -5,11 +5,13 @@ import s from '@borjomeeee/rn-styles';
 import {ExerciseUtils} from 'src/Store/ModelsUtils/Exercise';
 import {TimeUtils} from 'src/Store/ModelsUtils/Time';
 import Animated, {
+  interpolateColor,
   Layout,
   SlideInRight,
   SlideOutLeft,
   useAnimatedRef,
   useAnimatedStyle,
+  useDerivedValue,
   withTiming,
   ZoomIn,
   ZoomOut,
@@ -28,6 +30,11 @@ import {useRecoilValue} from 'recoil';
 import {isEditingSelector} from '../../Store';
 import {useTrainingExerciseController} from './Controller';
 import {ExerciseWithId} from '../../Store/Types';
+import {
+  useValue as useSkiaValue,
+  useDerivedValue as useSkiaDerivedValue,
+  useSharedValueEffect,
+} from '@shopify/react-native-skia';
 
 interface ExerciseViewProps {
   title: string;
@@ -157,14 +164,28 @@ export const Exercise: React.FC<ExerciseProps> = React.memo(
           },
         ],
 
-        shadowColor: '#000',
-        shadowOpacity: withTiming(isPressed.value ? 0.1 : 0, {duration: 100}),
-        shadowRadius: 6.27,
-
-        elevation: 10,
         zIndex: isPressed.value ? 100 : 1,
       };
     });
+
+    const animatedIsPressed = useDerivedValue(() =>
+      withTiming(+isPressed.value),
+    );
+    const color = useSkiaValue('#00000000');
+
+    useSharedValueEffect(() => {
+      const newColor = interpolateColor(
+        animatedIsPressed.value,
+        [0, 1],
+        ['#00000000', '#00000030'],
+      );
+
+      if (typeof newColor === 'string') {
+        color.current = newColor;
+      }
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+    }, [animatedIsPressed]);
 
     const handleLayout = React.useCallback(
       (e: LayoutChangeEvent) => {
@@ -181,12 +202,14 @@ export const Exercise: React.FC<ExerciseProps> = React.memo(
         entering={SlideInRight}
         exiting={SlideOutLeft}
         layout={Layout}>
-        <ExerciseView
-          title={exercise.title}
-          restInfo={formattedRest}
-          valueInfo={value}
-          {...{handlePress, handlePressRest, handlePressRemove}}
-        />
+        <UI.ShadowView dx={10} dy={10} blur={10} color={color}>
+          <ExerciseView
+            title={exercise.title}
+            restInfo={formattedRest}
+            valueInfo={value}
+            {...{handlePress, handlePressRest, handlePressRemove}}
+          />
+        </UI.ShadowView>
 
         {isEditing && (
           <GestureDetector gesture={draggingGesture}>
