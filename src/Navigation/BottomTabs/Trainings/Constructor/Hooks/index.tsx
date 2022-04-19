@@ -16,22 +16,14 @@ import {HeaderOptions} from '../Views/HeaderOptions';
 import {useModal} from 'src/Lib/ModalRouter';
 import {AddElementBottomSheet} from '../Views/AddElementBottomSheet';
 import {Modals} from '../Const';
-import {ScreenState} from '../Store/Types';
 import {ConfirmResetChanges} from '../Modals/ConfirmResetChanges';
 import {BackButton} from '../Views/BackButton';
 import {useRecoilValue} from 'recoil';
 import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
 
 export const useTrainingConstructorController = () => {
-  const {
-    setTitle,
-    resetTitle,
-    resetTrainingId,
-    resetScreenState,
-    resetHistory,
-    setScreenState,
-    setTrainingId,
-  } = useTrainingConstructorStore();
+  const {setTitle, initWithTrainingId, resetAll} =
+    useTrainingConstructorStore();
   const {reorder} = useTrainingConstructorHistoryStore();
   const {show: showAddElement} = useModal(Modals.AddElement);
 
@@ -46,32 +38,16 @@ export const useTrainingConstructorController = () => {
     [setTitle],
   );
 
-  const reset = React.useCallback(() => {
-    resetTitle();
-    resetTrainingId();
-    resetScreenState();
-    resetHistory();
-  }, [resetTitle, resetTrainingId, resetScreenState, resetHistory]);
-
-  const initWithTraining = React.useCallback(
-    (trainingId: string) => {
-      setScreenState(ScreenState.VIEWING);
-      setTrainingId(trainingId);
-    },
-    [setScreenState, setTrainingId],
-  );
-
   return {
     handlePressAddElement,
     handleChangeTitle,
     reorder,
-    initWithTraining,
-    reset,
+    initWithTrainingId,
+    reset: resetAll,
   };
 };
 
 export const useTrainingConstructorChangesController = () => {
-  const {resetHistory, resetTitle} = useTrainingConstructorStore();
   const {show: showConfirmResetChanges} = useModal(Modals.ConfirmResetChanges);
 
   const constructorTrainingTitle = useRecoilValue(screenTrainingTitleAtom);
@@ -98,9 +74,6 @@ export const useTrainingConstructorChangesController = () => {
 
       showConfirmResetChanges(ConfirmResetChanges, {
         onAccept: () => {
-          resetTitle();
-          resetHistory();
-
           res(true);
         },
         onCancel: () => {
@@ -109,8 +82,6 @@ export const useTrainingConstructorChangesController = () => {
       });
     });
   }, [
-    resetHistory,
-    resetTitle,
     showConfirmResetChanges,
     constructorTrainingTitle,
     constructorElements,
@@ -141,13 +112,13 @@ type ProfileScreenRouteProp = RouteProp<
 export const useTrainingConstructorNavigationEffect = () => {
   const route = useRoute<ProfileScreenRouteProp>();
 
-  const {initWithTraining} = useTrainingConstructorController();
+  const {initWithTrainingId} = useTrainingConstructorController();
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     const params = route.params;
 
     if (params?.trainingId) {
-      initWithTraining(params.trainingId);
+      initWithTrainingId(params.trainingId);
     }
-  }, [route, initWithTraining]);
+  }, [route, initWithTrainingId]);
 };

@@ -8,7 +8,7 @@ import {
   trainingIdAtom,
 } from './Atoms';
 import {constructorElementsSelector} from './Selectors';
-import {SetWithId} from './Types';
+import {ScreenState, SetWithId} from './Types';
 import {findExercise} from './Utils';
 
 export * from './Atoms';
@@ -27,6 +27,32 @@ export const useTrainingConstructorStore = () => {
 
   const resetHistory = useResetRecoilState(actionHistoryAtom);
 
+  const initWithTrainingId = React.useCallback(
+    (trainingId: string) => {
+      setScreenState(ScreenState.VIEWING);
+      setTrainingId(trainingId);
+    },
+    [setScreenState, setTrainingId],
+  );
+
+  const swithToViewMode = React.useCallback(() => {
+    setScreenState(ScreenState.VIEWING);
+
+    resetTitle();
+    resetHistory();
+  }, [setScreenState, resetTitle, resetHistory]);
+
+  const switchToEditMode = React.useCallback(() => {
+    setScreenState(ScreenState.EDITING);
+  }, [setScreenState]);
+
+  const resetAll = React.useCallback(() => {
+    resetTitle();
+    resetTrainingId();
+    resetScreenState();
+    resetHistory();
+  }, [resetTitle, resetTrainingId, resetScreenState, resetHistory]);
+
   const setTitleHandler = React.useCallback(
     (text: string) => {
       setTitle(text.trim());
@@ -36,14 +62,12 @@ export const useTrainingConstructorStore = () => {
 
   return {
     setTitle: setTitleHandler,
+    resetAll,
 
-    resetTitle,
-    resetTrainingId,
-    resetScreenState,
-    resetHistory,
+    initWithTrainingId,
 
-    setTrainingId,
-    setScreenState,
+    swithToViewMode,
+    switchToEditMode,
   };
 };
 

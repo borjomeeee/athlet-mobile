@@ -8,10 +8,10 @@ import {
 import {SetWithId, ExerciseWithId} from './Types';
 
 import {constructorElementsSelector} from './Selectors';
-import {screenTrainingTitleAtom} from './Atoms';
 import {
   useTrainingConstructorHistoryStore,
   useTrainingConstructorStore,
+  screenTrainingTitleAtom,
 } from './index';
 
 const firstElement: ExerciseElement = {

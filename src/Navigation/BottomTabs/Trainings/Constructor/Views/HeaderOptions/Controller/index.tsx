@@ -1,29 +1,28 @@
 import React from 'react';
 import {useTrainingConstructorChangesController} from '../../../Hooks';
 import {useTrainingConstructorStore} from '../../../Store';
-import {ScreenState} from '../../../Store/Types';
 
 export const useHeaderOptionsController = () => {
-  const {setScreenState} = useTrainingConstructorStore();
+  const {swithToViewMode} = useTrainingConstructorStore();
   const {requestResetChanges} = useTrainingConstructorChangesController();
 
   const handlePressCancelEditingMode = React.useCallback(async () => {
     const isConfirmed = await requestResetChanges();
 
     if (isConfirmed) {
-      setScreenState(ScreenState.VIEWING);
+      swithToViewMode();
     }
-  }, [setScreenState, requestResetChanges]);
+  }, [requestResetChanges, swithToViewMode]);
 
   return {handlePressCancelEditingMode};
 };
 
 export const useHeaderOptionsOverlayController = () => {
-  const {setScreenState} = useTrainingConstructorStore();
+  const {switchToEditMode} = useTrainingConstructorStore();
 
   const handlePressGoToEditMode = React.useCallback(() => {
-    setScreenState(ScreenState.EDITING);
-  }, [setScreenState]);
+    switchToEditMode();
+  }, [switchToEditMode]);
 
   return {handlePressGoToEditMode};
 };

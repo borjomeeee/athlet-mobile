@@ -21,8 +21,8 @@ export const useSetHeaderController = (id: string) => {
 };
 
 export const useSetHeaderOptionsController = (id: string) => {
-  const {swapWithNext, swapWithPrev} = useTrainingConstructorHistoryStore();
-  const {removeSet} = useTrainingConstructorHistoryStore();
+  const {swapWithNext, swapWithPrev, removeSet} =
+    useTrainingConstructorHistoryStore();
 
   const handlePressRemoveSet = React.useCallback(() => {
     removeSet(id);

@@ -24,7 +24,7 @@ export const useTrainingExerciseController = (id: string) => {
 
     showEditExercise(UI.EditExercise, {
       onEdit: newExercise => {
-        replaceExercise(id, {...newExercise, elementId: id});
+        replaceExercise(id, newExercise);
       },
       exercise: exercise,
     });

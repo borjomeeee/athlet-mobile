@@ -1,5 +1,4 @@
 import React from 'react';
-import Animated, {ZoomIn, ZoomOut} from 'react-native-reanimated';
 import {useRecoilValue} from 'recoil';
 
 import * as UI from 'src/Components';
@@ -20,26 +19,21 @@ export const HeaderOptions = () => {
   const isCreating = useRecoilValue(isCreatingSelector);
   const isEditing = useRecoilValue(isEditingSelector);
 
-  if (isEditing) {
-    if (isCreating) {
-      return null;
-    }
-
-    return (
-      <Animated.View entering={ZoomIn} exiting={ZoomOut}>
+  return (
+    <UI.View>
+      {isEditing && !isCreating && (
         <UI.Pressable onPress={handlePressCancelEditingMode}>
           <UI.Text style={s(`c:red`)}>Cancel</UI.Text>
         </UI.Pressable>
-      </Animated.View>
-    );
-  }
-
-  return (
-    <Animated.View entering={ZoomIn} exiting={ZoomOut}>
-      <OverlayWrapper overlayRef={overlayRef} Component={HeaderOptionsOverlay}>
-        <HeaderOptionsIcon />
-      </OverlayWrapper>
-    </Animated.View>
+      )}
+      {!isEditing && (
+        <OverlayWrapper
+          overlayRef={overlayRef}
+          Component={HeaderOptionsOverlay}>
+          <HeaderOptionsIcon />
+        </OverlayWrapper>
+      )}
+    </UI.View>
   );
 };
 
