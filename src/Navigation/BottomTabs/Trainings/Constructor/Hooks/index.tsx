@@ -23,7 +23,7 @@ import {BackButton} from '../Views/BackButton';
 import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
 import {useGetRecoilState} from 'src/Utils/Recoil';
 import {useRecoilValue} from 'recoil';
-import {myTrainingById} from 'src/Store/Trainings';
+import {useTraining} from 'src/Store/Trainings';
 import {useTrainingsService} from 'src/Services/Trainings';
 
 export const useTrainingConstructorController = () => {
@@ -192,9 +192,8 @@ export const useTrainingConstructorInitialTraining = () => {
     useTrainingConstructorController();
 
   const initialTrainingId = useRecoilValue(initialTrainingIdAtom);
-  const myTrainingWithInitialTrainingId = useRecoilValue(
-    myTrainingById(initialTrainingId),
-  );
+  const {training: trainingWithInitialTrainingId} =
+    useTraining(initialTrainingId);
 
   React.useEffect(() => {
     if (initialTrainingId) {
@@ -204,13 +203,9 @@ export const useTrainingConstructorInitialTraining = () => {
   }, [initialTrainingId, getMyTrainings]);
 
   React.useEffect(() => {
-    if (myTrainingWithInitialTrainingId) {
-      setInitialTraining(myTrainingWithInitialTrainingId);
+    if (trainingWithInitialTrainingId) {
+      setInitialTraining(trainingWithInitialTrainingId);
       return () => resetInitialTraining();
     }
-  }, [
-    setInitialTraining,
-    myTrainingWithInitialTrainingId,
-    resetInitialTraining,
-  ]);
+  }, [setInitialTraining, trainingWithInitialTrainingId, resetInitialTraining]);
 };

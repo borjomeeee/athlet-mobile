@@ -1,5 +1,5 @@
 import React from 'react';
-import {atom, selector, selectorFamily, useSetRecoilState} from 'recoil';
+import {atom, selector, useRecoilValue, useSetRecoilState} from 'recoil';
 import {getKeyFabricForDomain} from 'src/Utils/Recoil';
 import {Training} from './Models/Training';
 
@@ -50,6 +50,11 @@ export const useTrainingStore = () => {
   };
 };
 
+export const useTraining = (id: string | undefined) => {
+  const trainings = useRecoilValue(myTrainingsStore);
+  return {training: id ? trainings[id] : undefined};
+};
+
 export const myTrainingsIds = selector({
   key: createKey('myTrainings__ids'),
   get: ({get}) => Object.keys(get(myTrainingsStore)),
@@ -58,18 +63,4 @@ export const myTrainingsIds = selector({
 export const myTrainingsList = selector({
   key: createKey('myTrainings__list'),
   get: ({get}) => Object.values(get(myTrainingsStore)),
-});
-
-export const myTrainingById = selectorFamily({
-  key: createKey('myTrainingById'),
-  get:
-    (id: string | undefined) =>
-    ({get}) => {
-      const trainingsWithSameId = get(myTrainingsList).filter(
-        training => training.id === id,
-      );
-      if (trainingsWithSameId.length > 0) {
-        return trainingsWithSameId[0];
-      }
-    },
 });
