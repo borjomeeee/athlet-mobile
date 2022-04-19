@@ -1,0 +1,32 @@
+diff --git a/node_modules/recoil/es/recoil.js b/node_modules/recoil/es/recoil.js
+index d44f72b..b11094a 100644
+--- a/node_modules/recoil/es/recoil.js
++++ b/node_modules/recoil/es/recoil.js
+@@ -5800,9 +5800,9 @@ const {
+ 
+ function useGetRecoilValueInfo() {
+   const storeRef = useStoreRef$4();
+-  return ({
++  return react.useCallback(({
+     key
+-  }) => peekNodeInfo$2(storeRef.current, storeRef.current.getState().currentTree, key);
++  }) => peekNodeInfo$2(storeRef.current, storeRef.current.getState().currentTree, key), [storeRef]);
+ }
+ 
+ var Recoil_useGetRecoilValueInfo = useGetRecoilValueInfo;
+diff --git a/node_modules/recoil/native/recoil.js b/node_modules/recoil/native/recoil.js
+index b53c8aa..9735f0f 100644
+--- a/node_modules/recoil/native/recoil.js
++++ b/node_modules/recoil/native/recoil.js
+@@ -5801,9 +5801,9 @@ const {
+ 
+ function useGetRecoilValueInfo() {
+   const storeRef = useStoreRef$4();
+-  return ({
++  return react.useCallback(({
+     key
+-  }) => peekNodeInfo$2(storeRef.current, storeRef.current.getState().currentTree, key);
++  }) => peekNodeInfo$2(storeRef.current, storeRef.current.getState().currentTree, key), [storeRef]);
+ }
+ 
+ var Recoil_useGetRecoilValueInfo = useGetRecoilValueInfo;
