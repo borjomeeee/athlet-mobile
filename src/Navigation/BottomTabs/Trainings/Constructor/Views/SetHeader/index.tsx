@@ -56,8 +56,8 @@ export const SetHeader: React.FC<SetHeaderProps> = ({
 
   return (
     <Animated.View
-      entering={SlideInRight}
-      exiting={SlideOutLeft}
+      entering={isEditing ? SlideInRight : undefined}
+      exiting={isEditing ? SlideOutLeft : undefined}
       style={animatedStyle}
       layout={Layout}>
       <UI.View

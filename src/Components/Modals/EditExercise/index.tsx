@@ -5,12 +5,11 @@ import {
 } from '@gorhom/bottom-sheet';
 import React from 'react';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {BottomSheetModal, HSpacer, Text} from 'src/Components/Common';
+import {BottomSheetModal, HSpacer, View} from 'src/Components/Common';
 import {ExerciseCompletionType} from 'src/Store/Models/Training';
 import {useEditExerciseController} from './Hooks';
 import {CompletionType} from './Views/CompletionType';
 
-import * as UI from 'src/Components';
 import {
   SelectGymWheel,
   SelectRepsWheel,
@@ -67,7 +66,7 @@ export const EditExercise: React.FC<EditExerciseProps> = ({id, exercise}) => {
 
         <HSpacer size={30} />
 
-        <UI.View style={s(`aic`)}>
+        <View style={s(`aic`)}>
           {selectedCompletionType === ExerciseCompletionType.REPS && (
             <Animated.View entering={SlideInRight} exiting={SlideOutLeft}>
               <SelectReps id={id} />
@@ -85,7 +84,7 @@ export const EditExercise: React.FC<EditExerciseProps> = ({id, exercise}) => {
               <SelectGym id={id} />
             </Animated.View>
           )}
-        </UI.View>
+        </View>
 
         <HSpacer size={30} />
 

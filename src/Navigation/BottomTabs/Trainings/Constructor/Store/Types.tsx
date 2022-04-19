@@ -5,7 +5,9 @@ export enum ScreenState {
   EDITING,
 }
 
-export type ExerciseWithId = ExerciseElement & {elementId: string};
+export type ExerciseWithId = ExerciseElement & {
+  elementId: string;
+};
 export type SetExerciseWithId = ExerciseWithId & {setId: string};
 export type SetWithId = Omit<SetElement, 'elements'> & {
   elementId: string;

@@ -199,8 +199,9 @@ export const Exercise: React.FC<ExerciseProps> = React.memo(
         ref={animatedRef}
         style={animatedStyle}
         onLayout={handleLayout}
-        entering={SlideInRight}
-        exiting={SlideOutLeft}
+        // TODO: animation not working
+        entering={isEditing ? SlideInRight : undefined}
+        exiting={isEditing ? SlideOutLeft : undefined}
         layout={Layout}>
         <UI.ShadowView dx={10} dy={10} blur={10} color={color}>
           <ExerciseView

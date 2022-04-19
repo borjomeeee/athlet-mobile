@@ -56,8 +56,8 @@ export const SetFooter: React.FC<SetFooterProps> = ({
 
   return (
     <Animated.View
-      entering={SlideInRight}
-      exiting={SlideOutLeft}
+      entering={isEditing ? SlideInRight : undefined}
+      exiting={isEditing ? SlideOutLeft : undefined}
       style={animatedStyle}
       layout={Layout}>
       {isEditing && (

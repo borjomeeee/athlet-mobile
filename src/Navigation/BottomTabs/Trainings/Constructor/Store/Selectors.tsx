@@ -1,12 +1,10 @@
 import {selector} from 'recoil';
-import {Training} from 'src/Store/Models/Training';
 import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
-import {myTrainingsStore} from 'src/Store/Trainings';
 import {
   actionHistoryAtom,
   createKey,
   screenStateAtom,
-  trainingIdAtom,
+  initialTrainingAtom,
 } from './Atoms';
 import {HistoryActionType, ScreenState} from './Types';
 import {
@@ -15,29 +13,15 @@ import {
   reorder,
 } from './Utils';
 
-export const currentTrainingSelector = selector({
-  key: createKey('currentTraining'),
-  get: ({get}) => {
-    const trainingId = get(trainingIdAtom);
-
-    if (!trainingId) {
-      return;
-    }
-
-    const myTrainings = get(myTrainingsStore);
-    return myTrainings[trainingId] as Training | undefined;
-  },
-});
-
-export const currentTrainingTitleSelector = selector({
+export const initialTrainingTitleSelector = selector({
   key: createKey('training title'),
-  get: ({get}) => get(currentTrainingSelector)?.title || '',
+  get: ({get}) => get(initialTrainingAtom)?.title,
 });
 
-export const currentTrainingElementsSelector = selector({
+export const initialTrainingElementsSelector = selector({
   key: createKey('training elements'),
   get: ({get}) => {
-    const training = get(currentTrainingSelector);
+    const training = get(initialTrainingAtom);
     return training ? getConstructorElementsFromTraining(training) : [];
   },
 });
@@ -49,13 +33,13 @@ export const isEditingSelector = selector({
 
 export const isCreatingSelector = selector({
   key: createKey('isCreating'),
-  get: ({get}) => !get(trainingIdAtom),
+  get: ({get}) => !get(initialTrainingAtom),
 });
 
 export const constructorElementsSelector = selector({
   key: createKey('constructor elements'),
   get: ({get}) => {
-    let elements = [...get(currentTrainingElementsSelector)];
+    let elements = [...get(initialTrainingElementsSelector)];
 
     const actionHistory = get(actionHistoryAtom);
     actionHistory.forEach(action => {
@@ -121,7 +105,10 @@ export const constructorElementsSelector = selector({
                 ...element,
                 elements: element.elements.map(exercise =>
                   exercise.elementId === id
-                    ? {...action.payload.exercise, setId: element.elementId}
+                    ? {
+                        ...action.payload.exercise,
+                        setId: element.elementId,
+                      }
                     : exercise,
                 ),
               };

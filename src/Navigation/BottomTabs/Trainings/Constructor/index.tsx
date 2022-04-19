@@ -6,15 +6,14 @@ import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
 } from 'react-native-reanimated';
-import {useRecoilValue} from 'recoil';
 
 import * as UI from 'src/Components';
 import {
   useTrainingConstructorController,
   useTrainingConstructorHeader,
+  useTrainingConstructorInitialTraining,
   useTrainingConstructorNavigationEffect,
 } from './Hooks';
-import {currentTrainingSelector, isEditingSelector} from './Store';
 import {AddElementButton} from './Views/AddElementButton';
 import {ElementsList} from './Views/ElementsList';
 import {Header} from './Views/Header';
@@ -28,35 +27,24 @@ export const Constructor = () => {
     e => (scrollY.value = e.contentOffset.y),
   );
 
-  const isEditing = useRecoilValue(isEditingSelector);
-  const currentTraining = useRecoilValue(currentTrainingSelector);
-  const {reset, handleChangeTitle} = useTrainingConstructorController();
+  const {reset} = useTrainingConstructorController();
 
+  useTrainingConstructorInitialTraining();
   useTrainingConstructorNavigationEffect();
   useTrainingConstructorHeader();
 
   React.useEffect(() => () => reset(), [reset]);
-  React.useEffect(() => {
-    if (!isEditing && currentTraining) {
-      handleChangeTitle(currentTraining.title);
-    }
-  }, [isEditing, currentTraining, handleChangeTitle]);
 
   return (
     <>
-      <UI.View style={s(`fill bgc:#ff0000`)}>
-        <UI.View style={s(`abs t:0 b:0 r:0 l:0`)}>
-          <UI.View style={s(`fill bgc:white`)} />
-          <UI.View style={s(`fill bgc:layout`)} />
-        </UI.View>
-
+      <UI.View style={s(`fill bgc:layout`)}>
         <Animated.ScrollView
           ref={ref}
           style={s(`fill`)}
-          contentContainerStyle={s(`pb:100 bgc:layout`)}
+          contentContainerStyle={s(`pb:100`)}
           scrollEventThrottle={16}
-          scrollEnabled={true}
-          onScroll={handleScroll}>
+          onScroll={handleScroll}
+          bounces={false}>
           <Animated.View style={s(`fill`)} layout={Layout}>
             <Header />
 

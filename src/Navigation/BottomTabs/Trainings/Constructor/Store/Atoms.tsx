@@ -1,12 +1,17 @@
 import {atom} from 'recoil';
+import {Training} from 'src/Store/Models/Training';
 import {getKeyFabricForDomain} from 'src/Utils/Recoil';
 
 import {HistoryAction, ScreenState} from './Types';
 
 export const createKey = getKeyFabricForDomain('training constructor');
 
-export const trainingIdAtom = atom<string | undefined>({
-  key: createKey('trainingId'),
+export const initialTrainingIdAtom = atom<string | undefined>({
+  key: createKey('initialTrainingId'),
+  default: undefined,
+});
+export const initialTrainingAtom = atom<Training | undefined>({
+  key: createKey('initialTraining'),
   default: undefined,
 });
 

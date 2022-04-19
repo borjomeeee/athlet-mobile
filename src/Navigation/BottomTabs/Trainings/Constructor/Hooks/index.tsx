@@ -6,8 +6,10 @@ import {
   useTrainingConstructorStore,
   useTrainingConstructorHistoryStore,
   constructorElementsSelector,
-  currentTrainingSelector,
   screenTrainingTitleAtom,
+  isEditingSelector,
+  initialTrainingAtom,
+  initialTrainingIdAtom,
 } from '../Store';
 import {RouteProp} from '@react-navigation/native';
 import {TrainingsStackParamList} from '../../index';
@@ -18,12 +20,22 @@ import {AddElementBottomSheet} from '../Views/AddElementBottomSheet';
 import {Modals} from '../Const';
 import {ConfirmResetChanges} from '../Modals/ConfirmResetChanges';
 import {BackButton} from '../Views/BackButton';
-import {useRecoilValue} from 'recoil';
 import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
+import {useGetRecoilState} from 'src/Utils/Recoil';
+import {useRecoilValue} from 'recoil';
+import {myTrainingById} from 'src/Store/Trainings';
+import {useTrainingsService} from 'src/Services/Trainings';
 
 export const useTrainingConstructorController = () => {
-  const {setTitle, initWithTrainingId, resetAll} =
-    useTrainingConstructorStore();
+  const {
+    setTitle,
+    resetAll,
+    swithToViewMode,
+    setInitialTraining,
+    resetInitialTraining,
+
+    setInitialTrainingId,
+  } = useTrainingConstructorStore();
   const {reorder} = useTrainingConstructorHistoryStore();
   const {show: showAddElement} = useModal(Modals.AddElement);
 
@@ -38,11 +50,24 @@ export const useTrainingConstructorController = () => {
     [setTitle],
   );
 
+  const initWithTrainingId = React.useCallback(
+    (trainingId: string) => {
+      setInitialTrainingId(trainingId);
+      swithToViewMode();
+    },
+    [setInitialTrainingId, swithToViewMode],
+  );
+
   return {
     handlePressAddElement,
     handleChangeTitle,
-    reorder,
+
+    setInitialTraining,
+    resetInitialTraining,
+
     initWithTrainingId,
+
+    reorder,
     reset: resetAll,
   };
 };
@@ -50,13 +75,25 @@ export const useTrainingConstructorController = () => {
 export const useTrainingConstructorChangesController = () => {
   const {show: showConfirmResetChanges} = useModal(Modals.ConfirmResetChanges);
 
-  const constructorTrainingTitle = useRecoilValue(screenTrainingTitleAtom);
-  const constructorElements = useRecoilValue(constructorElementsSelector);
-  const currentTraining = useRecoilValue(currentTrainingSelector);
+  const getConstructorTrainingTitle = useGetRecoilState(
+    screenTrainingTitleAtom,
+  );
+  const getConstructorElements = useGetRecoilState(constructorElementsSelector);
+  const getInitialTraining = useGetRecoilState(initialTrainingAtom);
+
+  const getIsEditing = useGetRecoilState(isEditingSelector);
 
   const requestResetChanges = React.useCallback(() => {
     return new Promise<boolean>(res => {
-      if (!currentTraining) {
+      if (!getIsEditing()) {
+        return res(true);
+      }
+
+      const initialTraining = getInitialTraining();
+      const constructorTrainingTitle = getConstructorTrainingTitle();
+      const constructorElements = getConstructorElements();
+
+      if (!initialTraining) {
         return res(true);
       }
 
@@ -66,7 +103,7 @@ export const useTrainingConstructorChangesController = () => {
             title: constructorTrainingTitle,
             elements: constructorElements,
           },
-          currentTraining,
+          initialTraining,
         )
       ) {
         return res(true);
@@ -83,9 +120,10 @@ export const useTrainingConstructorChangesController = () => {
     });
   }, [
     showConfirmResetChanges,
-    constructorTrainingTitle,
-    constructorElements,
-    currentTraining,
+    getConstructorTrainingTitle,
+    getConstructorElements,
+    getInitialTraining,
+    getIsEditing,
   ]);
 
   return {requestResetChanges};
@@ -114,11 +152,41 @@ export const useTrainingConstructorNavigationEffect = () => {
 
   const {initWithTrainingId} = useTrainingConstructorController();
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     const params = route.params;
 
     if (params?.trainingId) {
-      initWithTrainingId(params.trainingId);
+      initWithTrainingId(params?.trainingId);
     }
   }, [route, initWithTrainingId]);
+};
+
+export const useTrainingConstructorInitialTraining = () => {
+  const {getMyTrainings} = useTrainingsService();
+
+  const {setInitialTraining, resetInitialTraining} =
+    useTrainingConstructorController();
+
+  const initialTrainingId = useRecoilValue(initialTrainingIdAtom);
+  const myTrainingWithInitialTrainingId = useRecoilValue(
+    myTrainingById(initialTrainingId),
+  );
+
+  React.useEffect(() => {
+    if (initialTrainingId) {
+      // TODO: replace to load specific training
+      getMyTrainings();
+    }
+  }, [initialTrainingId, getMyTrainings]);
+
+  React.useEffect(() => {
+    if (myTrainingWithInitialTrainingId) {
+      setInitialTraining(myTrainingWithInitialTrainingId);
+      return () => resetInitialTraining();
+    }
+  }, [
+    setInitialTraining,
+    myTrainingWithInitialTrainingId,
+    resetInitialTraining,
+  ]);
 };

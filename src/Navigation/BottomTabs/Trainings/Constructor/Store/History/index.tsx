@@ -27,7 +27,10 @@ export const useTrainingConstructorHistoryStore = () => {
       addToHistory({
         type: HistoryActionType.ADD_EXERCISE,
         payload: {
-          exercise: {...exercise, elementId: Id.generate()} as ExerciseWithId,
+          exercise: {
+            ...exercise,
+            elementId: Id.generate(),
+          } as ExerciseWithId,
         },
       });
     },
