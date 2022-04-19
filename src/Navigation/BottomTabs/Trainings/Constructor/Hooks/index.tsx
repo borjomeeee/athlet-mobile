@@ -83,32 +83,41 @@ export const useTrainingConstructorChangesController = () => {
 
   const getIsEditing = useGetRecoilState(isEditingSelector);
 
+  const hasTrainingChanged = React.useCallback(() => {
+    if (!getIsEditing()) {
+      return false;
+    }
+
+    const initialTraining = getInitialTraining();
+    const constructorTrainingTitle = getConstructorTrainingTitle();
+    const constructorElements = getConstructorElements();
+
+    if (!initialTraining) {
+      return false;
+    }
+
+    if (
+      TrainingUtils.equals(
+        {
+          title: constructorTrainingTitle,
+          elements: constructorElements,
+        },
+        initialTraining,
+      )
+    ) {
+      return false;
+    }
+
+    return true;
+  }, [
+    getConstructorTrainingTitle,
+    getConstructorElements,
+    getInitialTraining,
+    getIsEditing,
+  ]);
+
   const requestResetChanges = React.useCallback(() => {
     return new Promise<boolean>(res => {
-      if (!getIsEditing()) {
-        return res(true);
-      }
-
-      const initialTraining = getInitialTraining();
-      const constructorTrainingTitle = getConstructorTrainingTitle();
-      const constructorElements = getConstructorElements();
-
-      if (!initialTraining) {
-        return res(true);
-      }
-
-      if (
-        TrainingUtils.equals(
-          {
-            title: constructorTrainingTitle,
-            elements: constructorElements,
-          },
-          initialTraining,
-        )
-      ) {
-        return res(true);
-      }
-
       showConfirmResetChanges(ConfirmResetChanges, {
         onAccept: () => {
           res(true);
@@ -118,15 +127,9 @@ export const useTrainingConstructorChangesController = () => {
         },
       });
     });
-  }, [
-    showConfirmResetChanges,
-    getConstructorTrainingTitle,
-    getConstructorElements,
-    getInitialTraining,
-    getIsEditing,
-  ]);
+  }, [showConfirmResetChanges]);
 
-  return {requestResetChanges};
+  return {requestResetChanges, hasTrainingChanged};
 };
 
 export const useTrainingConstructorHeader = () => {
@@ -148,9 +151,12 @@ type ProfileScreenRouteProp = RouteProp<
 >;
 
 export const useTrainingConstructorNavigationEffect = () => {
+  const navigation = useNavigation();
   const route = useRoute<ProfileScreenRouteProp>();
 
   const {initWithTrainingId} = useTrainingConstructorController();
+  const {requestResetChanges, hasTrainingChanged} =
+    useTrainingConstructorChangesController();
 
   React.useEffect(() => {
     const params = route.params;
@@ -159,6 +165,24 @@ export const useTrainingConstructorNavigationEffect = () => {
       initWithTrainingId(params?.trainingId);
     }
   }, [route, initWithTrainingId]);
+
+  React.useEffect(
+    () =>
+      navigation.addListener('beforeRemove', async e => {
+        const isChanged = hasTrainingChanged();
+        if (!isChanged) {
+          return;
+        }
+
+        e.preventDefault();
+
+        const isConfirmed = await requestResetChanges();
+        if (isConfirmed) {
+          navigation.dispatch(e.data.action);
+        }
+      }),
+    [navigation, hasTrainingChanged, requestResetChanges],
+  );
 };
 
 export const useTrainingConstructorInitialTraining = () => {

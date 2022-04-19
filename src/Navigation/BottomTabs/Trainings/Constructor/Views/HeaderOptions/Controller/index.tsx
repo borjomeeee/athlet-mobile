@@ -4,15 +4,22 @@ import {useTrainingConstructorStore} from '../../../Store';
 
 export const useHeaderOptionsController = () => {
   const {swithToViewMode} = useTrainingConstructorStore();
-  const {requestResetChanges} = useTrainingConstructorChangesController();
+  const {hasTrainingChanged, requestResetChanges} =
+    useTrainingConstructorChangesController();
 
   const handlePressCancelEditingMode = React.useCallback(async () => {
-    const isConfirmed = await requestResetChanges();
+    const isChanged = hasTrainingChanged();
 
-    if (isConfirmed) {
+    if (isChanged) {
+      const isConfirmed = await requestResetChanges();
+
+      if (isConfirmed) {
+        swithToViewMode();
+      }
+    } else {
       swithToViewMode();
     }
-  }, [requestResetChanges, swithToViewMode]);
+  }, [hasTrainingChanged, requestResetChanges, swithToViewMode]);
 
   return {handlePressCancelEditingMode};
 };

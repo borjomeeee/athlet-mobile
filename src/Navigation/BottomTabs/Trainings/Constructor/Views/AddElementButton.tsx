@@ -6,7 +6,7 @@ import * as UI from 'src/Components';
 import {useTrainingConstructorController} from '../Hooks';
 import {isEditingSelector} from '../Store';
 
-export const AddElementButton = () => {
+export const AddElementButton = React.memo(() => {
   const isEditing = useRecoilValue(isEditingSelector);
   const {handlePressAddElement} = useTrainingConstructorController();
 
@@ -25,4 +25,4 @@ export const AddElementButton = () => {
       )}
     </Animated.View>
   );
-};
+});

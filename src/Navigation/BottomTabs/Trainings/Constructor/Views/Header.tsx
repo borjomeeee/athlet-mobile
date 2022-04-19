@@ -6,7 +6,7 @@ import {useRecoilValue} from 'recoil';
 import {isEditingSelector, screenTrainingTitleAtom} from '../Store';
 import {useTrainingConstructorController} from '../Hooks';
 
-export const Header = () => {
+export const Header = React.memo(() => {
   const trainingTitle = useRecoilValue(screenTrainingTitleAtom);
   const isEditing = useRecoilValue(isEditingSelector);
 
@@ -30,4 +30,4 @@ export const Header = () => {
       <UI.HSpacer size={15} />
     </UI.View>
   );
-};
+});
