@@ -36,5 +36,11 @@ export const useTrainingsRepository = () => {
     [],
   );
 
-  return {downloadMyTrainings, createTraining, updateTraining};
+  const removeTraining = React.useCallback((id: string) => {
+    return httpClient
+      .delete({url: ApiPaths.trainingAction(id)})
+      .then(parseDefaultApiResponse);
+  }, []);
+
+  return {downloadMyTrainings, createTraining, updateTraining, removeTraining};
 };

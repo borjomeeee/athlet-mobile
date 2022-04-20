@@ -104,6 +104,20 @@ export class FakeApiFabric {
             return makeBadResponse(DefaultResponse.NOT_FOUND);
           },
         );
+
+        // delete training
+        this.delete(
+          attachPath(baseUrl, ApiPaths.trainingAction(':id')),
+          (schema, request) => {
+            const {updateTraining} = config.responses;
+
+            const {id} = request.params;
+
+            // eslint-disable-next-line @typescript-eslint/no-shadow
+            schema.db.trainings.remove(id);
+            return makeResponse(updateTraining);
+          },
+        );
       },
     });
   }

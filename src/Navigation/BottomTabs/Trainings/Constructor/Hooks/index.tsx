@@ -11,6 +11,8 @@ import {
   initialTrainingAtom,
   initialTrainingIdAtom,
 } from '../Store';
+
+import * as UI from 'src/Components';
 import {RouteProp} from '@react-navigation/native';
 import {TrainingsStackParamList} from '../../index';
 import {BottomTabTrainingsPaths} from 'src/Navigation/Paths';
@@ -118,7 +120,14 @@ export const useTrainingConstructorChangesController = () => {
 
   const requestResetChanges = React.useCallback(() => {
     return new Promise<boolean>(res => {
-      showConfirmResetChanges(ConfirmResetChanges, {
+      showConfirmResetChanges(UI.ConfirmDialog, {
+        title: 'Отмена создания тренировки',
+        description:
+          'Вы действительно хотите выйти из режима создания тренировки?',
+
+        acceptText: 'Да, хочу',
+        cancelText: 'Отмена',
+
         onAccept: () => {
           res(true);
         },

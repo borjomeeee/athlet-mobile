@@ -43,10 +43,23 @@ export const useTrainingStore = () => {
     [setMyTrainings],
   );
 
+  const deleteTraining = React.useCallback(
+    (id: string) => {
+      setMyTrainings(currentTrainings => {
+        const newCurrentTrainings = {...currentTrainings};
+        delete newCurrentTrainings[id];
+
+        return newCurrentTrainings;
+      });
+    },
+    [setMyTrainings],
+  );
+
   return {
     replaceMyTrainings,
     addTraining,
     replaceTraining,
+    deleteTraining,
   };
 };
 

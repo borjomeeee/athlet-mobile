@@ -4,11 +4,13 @@ import {CreatingTraining} from 'src/Store/Models/Training';
 import {useTrainingStore} from 'src/Store/Trainings';
 
 export const useTrainingsService = () => {
-  const {replaceMyTrainings, addTraining, replaceTraining} = useTrainingStore();
+  const {replaceMyTrainings, addTraining, replaceTraining, deleteTraining} =
+    useTrainingStore();
   const {
     downloadMyTrainings,
     createTraining: apiCreateTraining,
     updateTraining: apiUpdateTraining,
+    removeTraining: apiRemoveTraining,
   } = useTrainingsRepository();
 
   const getMyTrainings = useFlow(
@@ -42,5 +44,14 @@ export const useTrainingsService = () => {
     'trainingService__updateTraining',
   );
 
-  return {getMyTrainings, createTraining, updateTraining};
+  const removeTraining = useFlow(
+    async (id: string) => {
+      await apiRemoveTraining(id);
+      deleteTraining(id);
+    },
+    [apiRemoveTraining, deleteTraining],
+    'trainingService__deleteTraining',
+  );
+
+  return {getMyTrainings, createTraining, updateTraining, removeTraining};
 };
