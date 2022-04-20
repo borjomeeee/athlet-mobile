@@ -11,6 +11,8 @@ import {useTrainingsService} from 'src/Services/Trainings';
 import {useGetRecoilState} from 'src/Utils/Recoil';
 import {useNavigation} from '@react-navigation/core';
 import {useAppController} from 'src/Services/App';
+import {useConfirmDialog} from 'src/Hooks/ConfirmDialog';
+import {Modals} from '../../../Const';
 
 export const useHeaderOptionsController = () => {
   const {swithToViewMode} = useTrainingConstructorStore();
@@ -43,28 +45,7 @@ export const useHeaderOptionsOverlayController = () => {
 
   const getTrainingId = useGetRecoilState(initialTrainingIdAtom);
 
-  const {show: showConfirmDelete} = useModal(
-    'trainingConstructor__deleteTraining',
-  );
-
-  const requestDeleteTraining = React.useCallback(() => {
-    return new Promise<boolean>(res => {
-      showConfirmDelete(UI.ConfirmDialog, {
-        title: 'Удаление тренировки',
-        description: 'Вы действительно хотите удалить тренировку?',
-
-        acceptText: 'Да, хочу',
-        cancelText: 'Отмена',
-
-        onAccept: () => {
-          res(true);
-        },
-        onCancel: () => {
-          res(false);
-        },
-      });
-    });
-  }, [showConfirmDelete]);
+  const {requestConfirm} = useConfirmDialog(Modals.ConfirmDelete);
 
   const handlePressGoToEditMode = React.useCallback(() => {
     switchToEditMode();
@@ -76,7 +57,13 @@ export const useHeaderOptionsOverlayController = () => {
       return;
     }
 
-    const isConfirmed = await requestDeleteTraining();
+    const isConfirmed = await requestConfirm({
+      title: 'Удаление тренировки',
+      description: 'Вы действительно хотите удалить тренировку?',
+
+      acceptText: 'Да, хочу',
+      cancelText: 'Отмена',
+    });
 
     if (!isConfirmed) {
       return;
@@ -90,8 +77,8 @@ export const useHeaderOptionsOverlayController = () => {
     }
   }, [
     defaultHandleError,
-    requestDeleteTraining,
     removeTraining,
+    requestConfirm,
     getTrainingId,
     navigation,
   ]);

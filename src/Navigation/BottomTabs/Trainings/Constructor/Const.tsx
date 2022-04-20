@@ -12,4 +12,5 @@ export const Modals = {
   EditExercise: 'trainingConstructor__editExercise',
   EditRest: 'trainingConstructor__editRest',
   ConfirmResetChanges: 'trainingConstructor__confirmResetChanges',
+  ConfirmDelete: 'trainingConstructor__deleteTraining',
 };

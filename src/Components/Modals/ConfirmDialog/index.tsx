@@ -11,7 +11,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import * as UI from 'src/Components';
 import {useModalInternal} from 'src/Lib/ModalRouter';
 
-interface ConfirmDialogProps {
+export interface ConfirmDialogProps {
   id: string;
 
   title: string;

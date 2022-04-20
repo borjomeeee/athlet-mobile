@@ -12,7 +12,6 @@ import {
   initialTrainingIdAtom,
 } from '../Store';
 
-import * as UI from 'src/Components';
 import {RouteProp} from '@react-navigation/native';
 import {TrainingsStackParamList} from '../../index';
 import {BottomTabTrainingsPaths} from 'src/Navigation/Paths';
@@ -20,13 +19,13 @@ import {HeaderOptions} from '../Views/HeaderOptions';
 import {useModal} from 'src/Lib/ModalRouter';
 import {AddElementBottomSheet} from '../Views/AddElementBottomSheet';
 import {Modals} from '../Const';
-import {ConfirmResetChanges} from '../Modals/ConfirmResetChanges';
 import {BackButton} from '../Views/BackButton';
 import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
 import {useGetRecoilState} from 'src/Utils/Recoil';
 import {useRecoilValue} from 'recoil';
 import {useTraining} from 'src/Store/Trainings';
 import {useTrainingsService} from 'src/Services/Trainings';
+import {useConfirmDialog} from 'src/Hooks/ConfirmDialog';
 
 export const useTrainingConstructorController = () => {
   const {
@@ -75,7 +74,9 @@ export const useTrainingConstructorController = () => {
 };
 
 export const useTrainingConstructorChangesController = () => {
-  const {show: showConfirmResetChanges} = useModal(Modals.ConfirmResetChanges);
+  const {requestConfirm: requestResetConfirm} = useConfirmDialog(
+    Modals.ConfirmResetChanges,
+  );
 
   const getConstructorTrainingTitle = useGetRecoilState(
     screenTrainingTitleAtom,
@@ -119,24 +120,15 @@ export const useTrainingConstructorChangesController = () => {
   ]);
 
   const requestResetChanges = React.useCallback(() => {
-    return new Promise<boolean>(res => {
-      showConfirmResetChanges(UI.ConfirmDialog, {
-        title: 'Отмена создания тренировки',
-        description:
-          'Вы действительно хотите выйти из режима создания тренировки?',
+    return requestResetConfirm({
+      title: 'Отмена создания тренировки',
+      description:
+        'Вы действительно хотите выйти из режима создания тренировки?',
 
-        acceptText: 'Да, хочу',
-        cancelText: 'Отмена',
-
-        onAccept: () => {
-          res(true);
-        },
-        onCancel: () => {
-          res(false);
-        },
-      });
+      acceptText: 'Да, хочу',
+      cancelText: 'Отмена',
     });
-  }, [showConfirmResetChanges]);
+  }, [requestResetConfirm]);
 
   return {requestResetChanges, hasTrainingChanged};
 };
