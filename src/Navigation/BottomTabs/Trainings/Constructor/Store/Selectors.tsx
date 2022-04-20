@@ -9,6 +9,7 @@ import {
 import {HistoryActionType, ScreenState} from './Types';
 import {
   getConstructorElementsFromTraining,
+  getElementsByIdFromList,
   HistoryUtils,
   reorder,
 } from './Utils';
@@ -37,7 +38,7 @@ export const isCreatingSelector = selector({
 });
 
 export const constructorElementsSelector = selector({
-  key: createKey('constructor elements'),
+  key: createKey('constructorElements'),
   get: ({get}) => {
     let elements = [...get(initialTrainingElementsSelector)];
 
@@ -162,4 +163,9 @@ export const constructorElementsSelector = selector({
 
     return elements;
   },
+});
+
+export const constructorElementsByIdSelector = selector({
+  key: createKey('constructorElementsById'),
+  get: ({get}) => getElementsByIdFromList(get(constructorElementsSelector)),
 });

@@ -67,6 +67,7 @@ export function getElementsByIdFromList(elements: ConstructorElement[]) {
   return res;
 }
 
+// Deprecated
 export function findExercise(
   elements: ConstructorElement[],
   exerciseId: string,

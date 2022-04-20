@@ -1,7 +1,6 @@
 import React from 'react';
 import {useRecoilValue, useResetRecoilState, useSetRecoilState} from 'recoil';
 import {Training} from 'src/Store/Models/Training';
-import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
 import {useGetRecoilState} from 'src/Utils/Recoil';
 import {
   actionHistoryAtom,
@@ -10,9 +9,8 @@ import {
   screenStateAtom,
   screenTrainingTitleAtom,
 } from './Atoms';
-import {constructorElementsSelector} from './Selectors';
-import {ScreenState, SetWithId} from './Types';
-import {findExercise} from './Utils';
+import {constructorElementsByIdSelector} from './Selectors';
+import {ExerciseWithId, ScreenState, SetWithId} from './Types';
 
 export * from './Atoms';
 export * from './Selectors';
@@ -97,26 +95,11 @@ export const useTrainingConstructorStore = () => {
 };
 
 export const useTrainingConstructorExercise = (id: string) => {
-  const elements = useRecoilValue(constructorElementsSelector);
-
-  const exercise = React.useMemo(
-    () => findExercise(elements, id),
-    [elements, id],
-  );
-
-  return {exercise};
+  const elements = useRecoilValue(constructorElementsByIdSelector);
+  return {exercise: elements[id] as ExerciseWithId};
 };
 
 export const useTrainingConstructorSet = (id: string) => {
-  const elements = useRecoilValue(constructorElementsSelector);
-
-  const set = React.useMemo(
-    () =>
-      elements.find(el => TrainingUtils.isSet(el) && el.elementId === id) as
-        | SetWithId
-        | undefined,
-    [elements, id],
-  );
-
-  return {set};
+  const elements = useRecoilValue(constructorElementsByIdSelector);
+  return {set: elements[id] as SetWithId};
 };
