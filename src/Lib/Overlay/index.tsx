@@ -4,11 +4,8 @@ import React from 'react';
 import {useWindowDimensions} from 'react-native';
 import Animated, {
   FadeInUp,
-  FadeOut,
   FadeOutUp,
   useAnimatedRef,
-  ZoomInEasyUp,
-  ZoomOutEasyUp,
 } from 'react-native-reanimated';
 import {
   atom,
