@@ -2,6 +2,12 @@ import {createServer, Response} from 'miragejs';
 import {ApiPaths} from 'src/Api/Paths';
 import {attachPath} from 'src/Api/Utils';
 import {Config} from 'src/Config';
+import {
+  CreatingTraining,
+  Training,
+  TrainingApi,
+} from 'src/Store/Models/Training';
+import {Id} from 'src/Utils/Id';
 import {account, exercises, training} from './Data';
 import {DefaultResponse, IFakeApiConfig} from './Types';
 
@@ -13,7 +19,14 @@ export class FakeApiFabric {
     const baseUrl = Config.defaultApiProtocol + '://' + Config.defaultApiDomain;
 
     return createServer({
+      seeds(server) {
+        server.db.loadData({
+          trainings: [training],
+        });
+      },
+
       routes() {
+        // Auth
         this.post(attachPath(baseUrl, ApiPaths.signIn), () => {
           const {signIn} = config.responses;
           return makeResponse(signIn, account, {Authorization: ''});
@@ -34,15 +47,63 @@ export class FakeApiFabric {
           return makeResponse(checkAuth, account);
         });
 
-        this.get(attachPath(baseUrl, ApiPaths.getMyTrainings), () => {
+        // Trainings
+        this.get(attachPath(baseUrl, ApiPaths.getMyTrainings), schema => {
           const {getMyTrainings} = config.responses;
-          return makeResponse(getMyTrainings, [training]);
+          return makeResponse(getMyTrainings, schema.db.trainings);
         });
 
         this.get(attachPath(baseUrl, ApiPaths.getExercises), () => {
           const {getExercises} = config.responses;
           return makeResponse(getExercises, exercises);
         });
+
+        this.post(
+          attachPath(baseUrl, ApiPaths.createTraining),
+          (schema, request) => {
+            const {createTraining} = config.responses;
+
+            const data: CreatingTraining = JSON.parse(request.requestBody);
+            const newTraining: Training = {
+              ...data,
+
+              createdAt: new Date(),
+              updatedAt: new Date(),
+
+              id: Id.generate(),
+
+              author: {
+                id: account.id,
+                nickname: account.nickname || 'Undefined',
+              },
+            };
+
+            schema.db.trainings.insert(newTraining);
+            return makeResponse(createTraining, newTraining);
+          },
+        );
+
+        // update training
+        this.post(
+          attachPath(baseUrl, ApiPaths.trainingAction(':id')),
+          (schema, request) => {
+            const {updateTraining} = config.responses;
+
+            const {id} = request.params;
+            const data: CreatingTraining = JSON.parse(request.requestBody);
+
+            // eslint-disable-next-line @typescript-eslint/no-shadow
+            const training = schema.db.trainings.find(id);
+            if (training) {
+              const newTraining = {...training, ...data};
+              schema.db.trainings.update(+id, newTraining);
+
+              return makeResponse(updateTraining, newTraining);
+            }
+
+            return makeBadResponse(DefaultResponse.NOT_FOUND);
+          },
+        );
       },
     });
   }

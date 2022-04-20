@@ -11,6 +11,7 @@ export enum DefaultResponse {
 
   EMPTY_AUTH_TOKEN = 'empty-auth-token',
   BAD_AUTH_TOKEN = 'bad-auth-token',
+  NOT_FOUND = 'not-found',
 }
 
 export enum SignInResponse {
@@ -38,4 +39,7 @@ export interface IFakeApiResponses {
 
   getMyTrainings: DefaultResponse;
   getExercises: DefaultResponse;
+
+  createTraining: DefaultResponse;
+  updateTraining: DefaultResponse;
 }

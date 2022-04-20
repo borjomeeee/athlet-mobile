@@ -24,6 +24,8 @@ export const useTrainingsService = () => {
     async (training: CreatingTraining) => {
       const createdTraining = await apiCreateTraining(training);
       addTraining(createdTraining);
+
+      return createdTraining;
     },
     [apiCreateTraining, addTraining],
     'trainingService__createTraining',
@@ -33,6 +35,8 @@ export const useTrainingsService = () => {
     async (id: string, training: CreatingTraining) => {
       const updatedTraining = await apiUpdateTraining(id, training);
       replaceTraining(id, updatedTraining);
+
+      return updatedTraining;
     },
     [apiUpdateTraining, replaceTraining],
     'trainingService__updateTraining',

@@ -3,18 +3,22 @@ import {useRecoilValue} from 'recoil';
 import {useAppController} from 'src/Services/App';
 import {useTrainingsService} from 'src/Services/Trainings';
 import {useGetRecoilState} from 'src/Utils/Recoil';
+import {useTrainingConstructorController} from '../../../Hooks';
 import {
   constructorElementsSelector,
-  trainingIdAtom,
-  currentTrainingTitleSelector,
+  initialTrainingIdAtom,
+  screenTrainingTitleAtom,
+  useTrainingConstructorStore,
 } from '../../../Store';
 
 export const useSubmitController = () => {
-  const getTrainingId = useGetRecoilState(trainingIdAtom);
+  const getTrainingId = useGetRecoilState(initialTrainingIdAtom);
 
-  const getTrainingTitle = useGetRecoilState(currentTrainingTitleSelector);
+  const getTrainingTitle = useGetRecoilState(screenTrainingTitleAtom);
   const getElements = useGetRecoilState(constructorElementsSelector);
 
+  const {swithToViewMode} = useTrainingConstructorStore();
+  const {initWithTrainingId} = useTrainingConstructorController();
   const {createTraining, updateTraining} = useTrainingsService();
   const {defaultHandleError} = useAppController();
 
@@ -22,15 +26,27 @@ export const useSubmitController = () => {
     const trainingTitle = getTrainingTitle();
     const elements = getElements();
 
-    const [_, err] = await createTraining({
+    if (!trainingTitle) {
+      return;
+    }
+
+    const [createdTraining, err] = await createTraining({
       title: trainingTitle,
       elements: elements,
     });
 
     if (err) {
       defaultHandleError(err);
+    } else if (createdTraining) {
+      initWithTrainingId(createdTraining.id);
     }
-  }, [defaultHandleError, createTraining, getTrainingTitle, getElements]);
+  }, [
+    defaultHandleError,
+    createTraining,
+    getTrainingTitle,
+    getElements,
+    initWithTrainingId,
+  ]);
 
   const handlePressUpdateTraining = React.useCallback(async () => {
     const trainingId = getTrainingId();
@@ -38,7 +54,7 @@ export const useSubmitController = () => {
     const trainingTitle = getTrainingTitle();
     const elements = getElements();
 
-    if (!trainingId) {
+    if (!trainingId || !trainingTitle) {
       return;
     }
 
@@ -49,6 +65,8 @@ export const useSubmitController = () => {
 
     if (err) {
       defaultHandleError(err);
+    } else {
+      swithToViewMode();
     }
   }, [
     getTrainingId,
@@ -56,6 +74,7 @@ export const useSubmitController = () => {
     updateTraining,
     getTrainingTitle,
     getElements,
+    swithToViewMode,
   ]);
 
   return {handlePressCreateTraining, handlePressUpdateTraining};

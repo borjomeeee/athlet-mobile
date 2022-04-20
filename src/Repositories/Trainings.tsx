@@ -2,7 +2,6 @@ import React from 'react';
 import {httpClient} from 'src/Api';
 import {parseDefaultApiResponse} from 'src/Api/Helpers';
 import {ApiPaths} from 'src/Api/Paths';
-import {canBeNull} from 'src/Store/Models/Common';
 import {
   Training,
   CreatingTraining,
@@ -16,9 +15,7 @@ export const useTrainingsRepository = () => {
       .get({url: ApiPaths.getMyTrainings})
       .then(parseDefaultApiResponse)
       .then(data => ({
-        trainings: canBeNull(z.array(TrainingScheme))
-          .default([])
-          .parse(data.json) as Training[],
+        trainings: z.array(TrainingScheme).parse(data.json) as Training[],
       }));
   }, []);
 
@@ -26,7 +23,7 @@ export const useTrainingsRepository = () => {
     return httpClient
       .post({url: ApiPaths.createTraining, data: training})
       .then(parseDefaultApiResponse)
-      .then(data => canBeNull(TrainingScheme).parse(data.json) as Training);
+      .then(data => TrainingScheme.parse(data.json) as Training);
   }, []);
 
   const updateTraining = React.useCallback(
@@ -34,7 +31,7 @@ export const useTrainingsRepository = () => {
       return httpClient
         .post({url: ApiPaths.trainingAction(id), data: training})
         .then(parseDefaultApiResponse)
-        .then(data => canBeNull(TrainingScheme).parse(data.json) as Training);
+        .then(data => TrainingScheme.parse(data.json) as Training);
     },
     [],
   );
