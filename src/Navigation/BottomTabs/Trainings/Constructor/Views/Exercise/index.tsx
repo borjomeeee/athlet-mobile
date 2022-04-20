@@ -65,7 +65,9 @@ export const ExerciseView: React.FC<ExerciseViewProps> = React.memo(
         disabled={!isEditing}>
         <UI.View style={s(`row aic`)}>
           {isEditing && (
-            <Animated.View entering={ZoomIn} exiting={ZoomOut}>
+            <Animated.View
+            // entering={ZoomIn} exiting={ZoomOut}
+            >
               <UI.Pressable onPress={handlePressRemove}>
                 <RemoveIcon />
               </UI.Pressable>
@@ -200,8 +202,8 @@ export const Exercise: React.FC<ExerciseProps> = React.memo(
         style={animatedStyle}
         onLayout={handleLayout}
         // TODO: animation not working
-        entering={isEditing ? SlideInRight : undefined}
-        exiting={isEditing ? SlideOutLeft : undefined}
+        // entering={isNew.value ? SlideInRight : undefined}
+        // exiting={isNew.value ? SlideOutLeft : undefined}
         layout={Layout}>
         <UI.ShadowView dx={10} dy={10} blur={10} color={color}>
           <ExerciseView
@@ -216,8 +218,9 @@ export const Exercise: React.FC<ExerciseProps> = React.memo(
           <GestureDetector gesture={draggingGesture}>
             <Animated.View
               style={s(`abs r:20 t:0 b:0 jcc`)}
-              entering={ZoomIn}
-              exiting={ZoomOut}>
+              //  entering={ZoomIn}
+              //  exiting={ZoomOut}
+            >
               <DragIcon />
             </Animated.View>
           </GestureDetector>

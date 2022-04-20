@@ -56,12 +56,14 @@ export const SetFooter: React.FC<SetFooterProps> = ({
 
   return (
     <Animated.View
-      entering={isEditing ? SlideInRight : undefined}
-      exiting={isEditing ? SlideOutLeft : undefined}
+      // entering={isEditing ? SlideInRight : undefined}
+      // exiting={isEditing ? SlideOutLeft : undefined}
       style={animatedStyle}
       layout={Layout}>
       {isEditing && (
-        <Animated.View entering={FadeIn} exiting={FadeOut} layout={Layout}>
+        <Animated.View
+          // entering={FadeIn} exiting={FadeOut}
+          layout={Layout}>
           <UI.Pressable
             style={s(
               `container h:${SET_FOOTER_ADD_EXERCISE_BUTTON_HEIGHT} bgc:white jcc`,

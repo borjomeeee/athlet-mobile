@@ -56,8 +56,8 @@ export const SetHeader: React.FC<SetHeaderProps> = ({
 
   return (
     <Animated.View
-      entering={isEditing ? SlideInRight : undefined}
-      exiting={isEditing ? SlideOutLeft : undefined}
+      // entering={isEditing ? SlideInRight : undefined}
+      // exiting={isEditing ? SlideOutLeft : undefined}
       style={animatedStyle}
       layout={Layout}>
       <UI.View
@@ -80,7 +80,10 @@ export const SetHeader: React.FC<SetHeaderProps> = ({
 
         <UI.VSpacer size={20} />
         {isEditing && (
-          <Animated.View entering={ZoomIn} exiting={ZoomOut}>
+          <Animated.View
+          // entering={ZoomIn}
+          // exiting={ZoomOut}
+          >
             <OverlayWrapper Component={renderOptionsOverlay}>
               <OptionsIcon />
             </OverlayWrapper>
