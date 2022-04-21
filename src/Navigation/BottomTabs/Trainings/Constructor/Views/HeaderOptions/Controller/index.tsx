@@ -5,9 +5,7 @@ import {
   useTrainingConstructorStore,
 } from '../../../Store';
 
-import * as UI from 'src/Components';
-import {useModal} from 'src/Lib/ModalRouter';
-import {useTrainingsService} from 'src/Services/Trainings';
+import {useTrainingService} from 'src/Services/Trainings';
 import {useGetRecoilState} from 'src/Utils/Recoil';
 import {useNavigation} from '@react-navigation/core';
 import {useAppController} from 'src/Services/App';
@@ -39,7 +37,7 @@ export const useHeaderOptionsController = () => {
 export const useHeaderOptionsOverlayController = () => {
   const navigation = useNavigation();
 
-  const {removeTraining} = useTrainingsService();
+  const {removeTraining} = useTrainingService();
   const {switchToEditMode} = useTrainingConstructorStore();
   const {defaultHandleError} = useAppController();
 

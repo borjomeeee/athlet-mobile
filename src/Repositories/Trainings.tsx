@@ -19,6 +19,13 @@ export const useTrainingsRepository = () => {
       }));
   }, []);
 
+  const getTrainingById = React.useCallback((id: string) => {
+    return httpClient
+      .get({url: ApiPaths.trainingAction(id)})
+      .then(parseDefaultApiResponse)
+      .then(data => TrainingScheme.parse(data.json) as Training);
+  }, []);
+
   const createTraining = React.useCallback((training: CreatingTraining) => {
     return httpClient
       .post({url: ApiPaths.createTraining, data: training})
@@ -42,5 +49,11 @@ export const useTrainingsRepository = () => {
       .then(parseDefaultApiResponse);
   }, []);
 
-  return {downloadMyTrainings, createTraining, updateTraining, removeTraining};
+  return {
+    downloadMyTrainings,
+    getTrainingById,
+    createTraining,
+    updateTraining,
+    removeTraining,
+  };
 };

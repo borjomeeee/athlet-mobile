@@ -11,6 +11,7 @@ import {
 import {ApiResponse} from 'src/Api/Responses';
 import {LocalStorage} from 'src/Lib/LocalStorage';
 import {useModal} from 'src/Lib/ModalRouter';
+import {FlowAlreadyStartedError} from 'src/Hooks/Flow';
 
 export const useAppController = () => {
   const navigation = useNavigation();
@@ -26,7 +27,9 @@ export const useAppController = () => {
 
   const defaultHandleError = React.useCallback(
     (error: Error) => {
-      if (error instanceof BadNetworkConnectionError) {
+      if (error instanceof FlowAlreadyStartedError) {
+        return;
+      } else if (error instanceof BadNetworkConnectionError) {
         showBadNetworkConnection(UI.BadNetworkConnection, {});
       } else if (error instanceof BadApiResponseError) {
         if (error.reason === ApiResponse.AUTHORIZATION_ERROR) {

@@ -83,6 +83,24 @@ export class FakeApiFabric {
           },
         );
 
+        // get training
+        this.get(
+          attachPath(baseUrl, ApiPaths.trainingAction(':id')),
+          (schema, request) => {
+            const {updateTraining} = config.responses;
+
+            const {id} = request.params;
+
+            // eslint-disable-next-line @typescript-eslint/no-shadow
+            const training = schema.db.trainings.find(id);
+            if (training) {
+              return makeResponse(updateTraining, training);
+            }
+
+            return makeBadResponse(DefaultResponse.NOT_FOUND);
+          },
+        );
+
         // update training
         this.post(
           attachPath(baseUrl, ApiPaths.trainingAction(':id')),

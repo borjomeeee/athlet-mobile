@@ -24,8 +24,9 @@ import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
 import {useGetRecoilState} from 'src/Utils/Recoil';
 import {useRecoilValue} from 'recoil';
 import {useTraining} from 'src/Store/Trainings';
-import {useTrainingsService} from 'src/Services/Trainings';
+import {useTrainingService} from 'src/Services/Trainings';
 import {useConfirmDialog} from 'src/Hooks/ConfirmDialog';
+import {useAppController} from 'src/Services/App';
 
 export const useTrainingConstructorController = () => {
   const {
@@ -187,21 +188,29 @@ export const useTrainingConstructorNavigationEffect = () => {
 };
 
 export const useTrainingConstructorInitialTraining = () => {
-  const {getMyTrainings} = useTrainingsService();
+  const {loadTrainingById} = useTrainingService();
 
   const {setInitialTraining, resetInitialTraining} =
     useTrainingConstructorController();
+
+  const {defaultHandleError} = useAppController();
 
   const initialTrainingId = useRecoilValue(initialTrainingIdAtom);
   const {training: trainingWithInitialTrainingId} =
     useTraining(initialTrainingId);
 
   React.useEffect(() => {
-    if (initialTrainingId) {
-      // TODO: replace to load specific training
-      getMyTrainings();
+    async function loadTraining() {
+      if (initialTrainingId) {
+        const [_, err] = await loadTrainingById(initialTrainingId);
+
+        if (err) {
+          defaultHandleError(err);
+        }
+      }
     }
-  }, [initialTrainingId, getMyTrainings]);
+    loadTraining();
+  }, [initialTrainingId, loadTrainingById, defaultHandleError]);
 
   React.useEffect(() => {
     if (trainingWithInitialTrainingId) {

@@ -1,4 +1,5 @@
 import React from 'react';
+import {Id} from 'src/Utils/Id';
 import {Logger} from 'src/Utils/Logger';
 
 type FlowReturnType<T> = Promise<[Awaited<T>, undefined] | [undefined, Error]>;
@@ -18,7 +19,7 @@ const flowsStack: Record<string, true | undefined> = {};
 export const useFlow = <T extends (...args: any[]) => Promise<any> | any>(
   cb: T,
   deps: any[],
-  flowId: string,
+  flowId: string = Id.generate(),
 ) => {
   return React.useCallback(
     async (

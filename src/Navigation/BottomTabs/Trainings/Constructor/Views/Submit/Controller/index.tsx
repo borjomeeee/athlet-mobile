@@ -1,7 +1,6 @@
 import React from 'react';
-import {useRecoilValue} from 'recoil';
 import {useAppController} from 'src/Services/App';
-import {useTrainingsService} from 'src/Services/Trainings';
+import {useTrainingService, useTrainingsService} from 'src/Services/Trainings';
 import {useGetRecoilState} from 'src/Utils/Recoil';
 import {useTrainingConstructorController} from '../../../Hooks';
 import {
@@ -19,7 +18,9 @@ export const useSubmitController = () => {
 
   const {swithToViewMode} = useTrainingConstructorStore();
   const {initWithTrainingId} = useTrainingConstructorController();
-  const {createTraining, updateTraining} = useTrainingsService();
+
+  const {createTraining} = useTrainingsService();
+  const {updateTraining} = useTrainingService();
   const {defaultHandleError} = useAppController();
 
   const handlePressCreateTraining = React.useCallback(async () => {
