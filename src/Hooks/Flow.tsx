@@ -22,9 +22,7 @@ export const useFlow = <T extends (...args: any[]) => Promise<any> | any>(
   flowId: string = Id.generate(),
 ) => {
   return React.useCallback(
-    async (
-      ...args: Parameters<T>
-    ): Promise<FlowReturnType<ReturnType<typeof cb>>> => {
+    async (...args: Parameters<T>): FlowReturnType<ReturnType<typeof cb>> => {
       if (flowsStack[flowId]) {
         const e = new FlowAlreadyStartedError(flowId);
         Logger.error(e.message);

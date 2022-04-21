@@ -3,18 +3,19 @@ import React from 'react';
 import * as UI from 'src/Components';
 import {useRecoilState, useRecoilValue, useSetRecoilState} from 'recoil';
 import {
-  Modal,
-  modalsMapStore,
-  modalsStore,
-  modalsVisibileStoreFamily,
+  modalsIdsStore,
+  modalStore,
+  modalVisibilityStore,
+  useModalsStore,
 } from 'src/Store/Modals';
 import s from '@borjomeeee/rn-styles';
+
 import {Id} from 'src/Utils/Id';
 import Animated from 'react-native-reanimated';
 import {Keyboard} from 'react-native';
 
 export const useModalRouter = () => {
-  const setModals = useSetRecoilState(modalsStore);
+  const {addModal, removeModal, removeAll} = useModalsStore();
 
   const showModal = React.useCallback(
     <T,>(
@@ -24,49 +25,43 @@ export const useModalRouter = () => {
         : {id?: string; props?: undefined},
     ) => {
       const {id = Id.generate(), props = {}} = options;
-      setModals(showedModals => [
-        ...showedModals.filter(i => i.id !== options.id),
-        {
-          id,
-          props,
-          Component,
-        },
-      ]);
+      addModal({
+        id,
+        props,
+        Component,
+      });
     },
-    [setModals],
+    [addModal],
   );
 
   const dismissModal = React.useCallback(
     (id: string) => {
-      setModals(showedModals => showedModals.filter(i => i.id !== id));
+      removeModal(id);
     },
-    [setModals],
+    [removeModal],
   );
 
   const dismissAll = React.useCallback(() => {
-    setModals([]);
-  }, [setModals]);
+    removeAll();
+  }, [removeAll]);
 
   return {showModal, dismissModal, dismissAll};
 };
 
 export const useModalInternal = (id: string) => {
   const {dismissModal} = useModalRouter();
-  const [isVisible, setIsVisible] = useRecoilState(
-    modalsVisibileStoreFamily(id),
-  );
+  const isVisible = useRecoilValue(modalVisibilityStore(id));
 
   const _onClose = React.useCallback(() => {
     dismissModal(id);
-    setIsVisible(false);
-  }, [dismissModal, setIsVisible, id]);
+  }, [dismissModal, id]);
 
   return {isVisible, _onClose};
 };
 
 export const useModal = (id: string) => {
   const {showModal} = useModalRouter();
-  const setIsVisible = useSetRecoilState(modalsVisibileStoreFamily(id));
+  const setIsVisible = useSetRecoilState(modalVisibilityStore(id));
 
   const show = React.useCallback(
     <T,>(Component: React.FC<T>, props: Omit<T, 'id'>) => {
@@ -91,20 +86,32 @@ export const useModal = (id: string) => {
 export const useModalProps = <T extends Record<string, any> = any>(
   id: string,
 ): {props: Partial<T>} => {
-  const modals = useRecoilValue(modalsMapStore);
-  const modal = React.useMemo(() => modals[id] as Modal<T>, [modals, id]);
-
-  return {props: modal.props || {}};
+  const modal = useRecoilValue(modalStore(id));
+  return {props: modal?.props || {}};
 };
 
+interface ModalProps {
+  id: string;
+}
+export const Modal: React.FC<ModalProps> = React.memo(({id}) => {
+  const modal = useRecoilValue(modalStore(id));
+
+  if (!modal) {
+    return null;
+  }
+
+  const {props, Component} = modal;
+  return <Component id={id} {...props} />;
+});
+
 export const ModalRouter = () => {
-  const modals = useRecoilValue(modalsStore);
+  const modals = useRecoilValue(modalsIdsStore);
 
   return (
     <UI.View style={s(`abs t:0 l:0 r:0 b:0`)} pointerEvents="box-none">
-      {modals.map(({id, props, Component}) => (
+      {modals.map(id => (
         <Animated.View key={id} style={s(`abs t:0 r:0 l:0 b:0`)}>
-          <Component id={id} {...props} />
+          <Modal id={id} />
         </Animated.View>
       ))}
     </UI.View>

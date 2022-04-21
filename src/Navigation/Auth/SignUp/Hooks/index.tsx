@@ -5,7 +5,7 @@ import {useRecoilValue} from 'recoil';
 import {BadApiResponseError} from 'src/Api/Exceptions';
 import {ApiResponse} from 'src/Api/Responses';
 
-import {NavPaths} from 'src/Navigation/Paths';
+import {AuthPaths} from 'src/Navigation/Paths';
 import {useAppController} from 'src/Services/App';
 import {useAuthService} from 'src/Services/Auth';
 import {validateEmail} from 'src/Utils/Common';
@@ -72,26 +72,30 @@ export const useSignUpController = () => {
     }
 
     const [_, error] = await signUp(email, nickname, password);
-    if (error && error instanceof BadApiResponseError) {
-      switch (error.reason) {
-        case ApiResponse.INVALID_EMAIL:
-          setEmailError('Введите валидный email');
-          break;
-        case ApiResponse.INVALID_PASSWORD:
-          setPasswordError('Введите валидный пароль');
-          break;
-        case ApiResponse.INVALID_NICKANAME:
-          setNicknameError('Введите валидный никнейм');
-          break;
-        case ApiResponse.EMAIL_IS_BUSY:
-          setEmailError('Email занят');
-          break;
-        case ApiResponse.NICKNAME_IS_BUSY:
-          setNicknameError('Никнейм занят');
-          break;
-        default:
-          defaultHandleError(error);
-          break;
+    if (error) {
+      if (error instanceof BadApiResponseError) {
+        switch (error.reason) {
+          case ApiResponse.INVALID_EMAIL:
+            setEmailError('Введите валидный email');
+            break;
+          case ApiResponse.INVALID_PASSWORD:
+            setPasswordError('Введите валидный пароль');
+            break;
+          case ApiResponse.INVALID_NICKANAME:
+            setNicknameError('Введите валидный никнейм');
+            break;
+          case ApiResponse.EMAIL_IS_BUSY:
+            setEmailError('Email занят');
+            break;
+          case ApiResponse.NICKNAME_IS_BUSY:
+            setNicknameError('Никнейм занят');
+            break;
+          default:
+            defaultHandleError(error);
+            break;
+        }
+      } else {
+        defaultHandleError(error);
       }
     }
   }, [
@@ -108,7 +112,7 @@ export const useSignUpController = () => {
   ]);
 
   const handlePressGoToSignIn = React.useCallback(() => {
-    navigation.dispatch(StackActions.replace(NavPaths.Auth.SignIn));
+    navigation.dispatch(StackActions.replace(AuthPaths.SignIn));
   }, [navigation]);
 
   const resetForm = React.useCallback(() => {

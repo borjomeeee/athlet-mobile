@@ -10,6 +10,7 @@ import {
   useRecoilValue,
   useSetRecoilState,
   useResetRecoilState,
+  useRecoilSnapshot,
 } from 'recoil';
 
 export const getKeyFabricForDomain = (domain: string) => (key: string) =>
@@ -21,6 +22,20 @@ export const RecoilObserver: React.FC<{
 }> = ({node, onChange}) => {
   const value = useRecoilValue(node);
   React.useEffect(() => onChange(value), [onChange, value]);
+  return null;
+};
+
+export const DebugObserver = () => {
+  const snapshot = useRecoilSnapshot();
+  React.useEffect(() => {
+    console.debug(
+      `[${new Date().toISOString()}] The following atoms were modified:`,
+    );
+    for (const node of snapshot.getNodes_UNSTABLE({isModified: true})) {
+      console.debug(node.key, snapshot.getLoadable(node));
+    }
+  }, [snapshot]);
+
   return null;
 };
 

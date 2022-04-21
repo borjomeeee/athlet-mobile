@@ -45,7 +45,12 @@ export const useAppController = () => {
   );
 
   const init = React.useCallback(async () => {
-    const [_, error] = await checkAuth();
+    const [res, error] = await checkAuth();
+    if (!res) {
+      handleAuthorizationError();
+      return;
+    }
+
     if (error) {
       handleAuthorizationError();
       if (

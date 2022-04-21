@@ -2,11 +2,7 @@ import {createServer, Response} from 'miragejs';
 import {ApiPaths} from 'src/Api/Paths';
 import {attachPath} from 'src/Api/Utils';
 import {Config} from 'src/Config';
-import {
-  CreatingTraining,
-  Training,
-  TrainingApi,
-} from 'src/Store/Models/Training';
+import {CreatingTraining, Training} from 'src/Store/Models/Training';
 import {Id} from 'src/Utils/Id';
 import {account, exercises, training} from './Data';
 import {DefaultResponse, IFakeApiConfig} from './Types';
