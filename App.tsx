@@ -13,6 +13,7 @@ import {configureStyles} from 'src/Utils/Styles';
 import {ModalRouter} from 'src/Lib/ModalRouter';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {OverlayProvider} from 'src/Lib/Overlay';
+import {DebugObserver} from 'src/Utils/Recoil';
 
 configureStyles();
 
@@ -46,6 +47,8 @@ const App = () => {
           </OverlayProvider>
         </SafeAreaProvider>
       </NavigationContainer>
+
+      {Config.stateObserver && <DebugObserver />}
     </RecoilRoot>
   );
 };

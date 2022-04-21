@@ -10,6 +10,7 @@ import {LocalStorage} from 'src/Lib/LocalStorage';
 import {ApiResponse} from 'src/Api/Responses';
 import {User} from 'src/Store/Models/User';
 import {useExercisesService} from './Exercises';
+import {JwtTokenNotFoundError} from 'src/Utils/Exceptions';
 
 export const useAuthService = () => {
   const navigation = useNavigation();
@@ -39,10 +40,19 @@ export const useAuthService = () => {
 
   const checkAuth = useFlow(
     async () => {
-      const jwtToken = LocalStorage.getJwt();
+      try {
+        const jwtToken = LocalStorage.getJwt();
 
-      const {user} = await fetchCheckAuth(jwtToken);
-      _completeAuth(user, jwtToken);
+        const {user} = await fetchCheckAuth(jwtToken);
+        _completeAuth(user, jwtToken);
+
+        return true;
+      } catch (e) {
+        if (e instanceof JwtTokenNotFoundError) {
+          return false;
+        }
+        throw e;
+      }
     },
     [_completeAuth, fetchCheckAuth],
     'authService__checkAuth',

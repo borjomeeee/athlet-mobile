@@ -1,6 +1,11 @@
 import React from 'react';
-import {atom, atomFamily, selector, useSetRecoilState} from 'recoil';
-import {getKeyFabricForDomain} from 'src/Utils/Recoil';
+import {
+  atom,
+  atomFamily,
+  useRecoilCallback,
+  useRecoilTransaction_UNSTABLE,
+} from 'recoil';
+import {getKeyFabricForDomain, useGetRecoilState} from 'src/Utils/Recoil';
 
 const createKey = getKeyFabricForDomain('modals');
 
@@ -10,46 +15,51 @@ export interface Modal<T extends Record<string, any>> {
   Component: React.FC<T & {id?: string}>;
 }
 
-export interface ModalStore {
-  [key: string]: Modal<any> | undefined;
-}
-
-export const modalsStore = atom<Modal<any>[]>({
-  key: createKey('modals'),
+export const modalsIdsStore = atom<string[]>({
+  key: createKey('modalsIdsStore'),
   default: [],
 });
 
-export const modalsMapStore = selector({
-  key: createKey('modalsList'),
-  get: ({get}) => {
-    const modalsList = get(modalsStore);
-    const store: ModalStore = {};
-    modalsList.forEach(modal => (store[modal.id] = modal));
-    return store;
-  },
+export const modalStore = atomFamily<Modal<any> | undefined, string>({
+  key: createKey('modalStore'),
+  default: _ => undefined,
 });
 
-export const modalsVisibileStoreFamily = atomFamily({
-  key: createKey('modalsFamily__isVisible'),
-  default: false,
+export const modalVisibilityStore = atomFamily<boolean, string>({
+  key: createKey('modalVisibilityStore'),
+  default: _ => false,
 });
 
 export const useModalsStore = () => {
-  const setModals = useSetRecoilState(modalsStore);
+  const getModalsIds = useGetRecoilState(modalsIdsStore);
 
-  const addModal = React.useCallback(
-    <T,>(modal: Modal<T>) => {
-      setModals(modals => [...modals, modal]);
-    },
-    [setModals],
+  const addModal = useRecoilTransaction_UNSTABLE(
+    ({set}) =>
+      (modal: Modal<any>) => {
+        set(modalsIdsStore, prevIds => [...prevIds, modal.id]);
+
+        set(modalStore(modal.id), modal);
+        set(modalVisibilityStore(modal.id), true);
+      },
+    [],
   );
 
-  const removeModal = React.useCallback(
-    (id: string) => {
-      setModals(modals => modals.filter(modal => modal.id !== id));
-    },
-    [setModals],
+  const removeModal = useRecoilCallback(
+    ({set, reset}) =>
+      (modalId: string) => {
+        set(modalsIdsStore, prevIds => prevIds.filter(id => id !== modalId));
+        reset(modalStore(modalId));
+      },
+    [],
   );
 
-  return {addModal, removeModal};
+  const removeAll = useRecoilCallback(
+    () => () => {
+      const modalsIds = getModalsIds();
+      modalsIds.forEach(modalId => removeModal(modalId));
+    },
+    [removeModal],
+  );
+
+  return {addModal, removeModal, removeAll};
 };

@@ -8,6 +8,7 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useRecoilValue} from 'recoil';
 
 import * as UI from 'src/Components';
+import {useAppController} from 'src/Services/App';
 import {useTrainingsService} from 'src/Services/Trainings';
 import {Training} from 'src/Store/Models/Training';
 import {myTrainingsList} from 'src/Store/Trainings';
@@ -19,14 +20,19 @@ const BUTTON_PADDING_BOTTOM = 15;
 export const List = () => {
   const {getMyTrainings} = useTrainingsService();
   const {handlePressCreateTraining} = useTrainingListController();
-  const myTrainings = useRecoilValue(myTrainingsList);
+  const {defaultHandleError} = useAppController();
 
+  const myTrainings = useRecoilValue(myTrainingsList);
   const {onLayout, ...layout} = useLayout();
 
   useFocusEffect(
     React.useCallback(() => {
-      getMyTrainings();
-    }, [getMyTrainings]),
+      getMyTrainings().then(([_, err]) => {
+        if (err) {
+          defaultHandleError(err);
+        }
+      });
+    }, [getMyTrainings, defaultHandleError]),
   );
 
   return (

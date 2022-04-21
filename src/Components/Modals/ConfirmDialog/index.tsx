@@ -7,8 +7,9 @@ import Animated, {
   SlideOutDown,
 } from 'react-native-reanimated';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {HSpacer, Text, View, VSpacer} from 'src/Components/Common';
+import {GithubButton} from 'src/Components/Pressable';
 
-import * as UI from 'src/Components';
 import {useModalInternal} from 'src/Lib/ModalRouter';
 
 export interface ConfirmDialogProps {
@@ -53,33 +54,29 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
       entering={FadeIn}
       exiting={FadeOut}
       style={s(`fill bgc:#00000050`)}>
-      <UI.View style={s(`abs container b:0 r:0 l:0`)}>
+      <View style={s(`abs container b:0 r:0 l:0`)}>
         <Animated.View
           entering={SlideInDown}
           exiting={SlideOutDown}
           style={s(`br:10 pv:10 pr:20 pl:15 bgc:white`)}>
-          <UI.Text style={s(`medium`)}>{title}</UI.Text>
-          <UI.HSpacer size={15} />
-          <UI.Text>{description}</UI.Text>
-          <UI.HSpacer size={15} />
-          <UI.View style={s(`row asfe`)}>
-            <UI.GithubButton
+          <Text style={s(`medium`)}>{title}</Text>
+          <HSpacer size={15} />
+          <Text>{description}</Text>
+          <HSpacer size={15} />
+          <View style={s(`row asfe`)}>
+            <GithubButton
               onPress={handlePressCancel}
               label={cancelText}
               variant="secondary"
               mini
             />
-            <UI.VSpacer size={10} />
-            <UI.GithubButton
-              onPress={handlePressAccept}
-              label={acceptText}
-              mini
-            />
-          </UI.View>
+            <VSpacer size={10} />
+            <GithubButton onPress={handlePressAccept} label={acceptText} mini />
+          </View>
         </Animated.View>
 
-        <UI.HSpacer size={bottom + 100} />
-      </UI.View>
+        <HSpacer size={bottom + 100} />
+      </View>
     </Animated.View>
   );
 };
