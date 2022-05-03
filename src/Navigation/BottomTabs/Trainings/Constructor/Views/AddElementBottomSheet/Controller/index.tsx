@@ -4,6 +4,7 @@ import * as UI from 'src/Components';
 import {ExerciseUtils} from 'src/Store/ModelsUtils/Exercise';
 import {useTrainingConstructorHistoryStore} from '../../../Store';
 import {Modals} from '../../../Const';
+import {ExerciseCompletionType} from 'src/Store/Models/Training';
 
 export const useAddElementBottomSheetController = () => {
   const {addExercise, addSet} = useTrainingConstructorHistoryStore();
@@ -17,7 +18,11 @@ export const useAddElementBottomSheetController = () => {
     showSelectExercise(UI.SelectExercise, {
       onSelect: exercise => {
         showEditExercise(UI.EditExercise, {
-          exercise: ExerciseUtils.getExerciseElementFromBase(exercise),
+          exercise: ExerciseUtils.getExerciseElementFromBase(
+            exercise,
+            ExerciseCompletionType.REPS,
+          ),
+
           onEdit: editedExercise => {
             addExercise(editedExercise);
           },

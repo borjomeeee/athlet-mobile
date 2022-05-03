@@ -9,11 +9,14 @@ import {
 } from '../Models/Training';
 
 export class ExerciseUtils {
-  static getExerciseElementFromBase(exercise: Exercise): ExerciseElement {
-    switch (exercise.completionType) {
+  static getExerciseElementFromBase(
+    exercise: Exercise,
+    completionType: ExerciseCompletionType,
+  ): ExerciseElement {
+    switch (completionType) {
       case ExerciseCompletionType.REPS:
         return {
-          ...exercise,
+          baseExercise: exercise,
           completionType: ExerciseCompletionType.REPS,
           type: ElementType.EXERCISE,
           reps: 15,
@@ -21,7 +24,7 @@ export class ExerciseUtils {
         };
       case ExerciseCompletionType.TIME:
         return {
-          ...exercise,
+          baseExercise: exercise,
           completionType: ExerciseCompletionType.TIME,
           type: ElementType.EXERCISE,
           time: 30,
@@ -29,7 +32,7 @@ export class ExerciseUtils {
         };
       case ExerciseCompletionType.GYM:
         return {
-          ...exercise,
+          baseExercise: exercise,
           completionType: ExerciseCompletionType.GYM,
           type: ElementType.EXERCISE,
           reps: 10,
@@ -53,8 +56,8 @@ export class ExerciseUtils {
 
   static equals(exercise1: ExerciseElement, exercise2: ExerciseElement) {
     if (
-      exercise1.id !== exercise2.id ||
-      exercise1.title !== exercise2.title ||
+      exercise1.baseExercise.id !== exercise2.baseExercise.id ||
+      exercise1.baseExercise.title !== exercise2.baseExercise.title ||
       exercise1.restAfterComplete !== exercise2.restAfterComplete
     ) {
       return false;
