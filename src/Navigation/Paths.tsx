@@ -11,8 +11,8 @@ export enum AuthPaths {
 }
 
 export enum BottomTabPaths {
-  Home = 'tabs/home',
   Trainings = 'tabs/trainings',
+  Calendar = 'tabs/calendar',
 }
 
 export enum BottomTabTrainingsPaths {

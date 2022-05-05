@@ -14,6 +14,10 @@ import {ModalRouter} from 'src/Lib/ModalRouter';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {OverlayProvider} from 'src/Lib/Overlay';
 import {DebugObserver} from 'src/Utils/Recoil';
+import dayjs from 'dayjs';
+
+require('dayjs/locale/ru');
+dayjs.locale('ru');
 
 configureStyles();
 
