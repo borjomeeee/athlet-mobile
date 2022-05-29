@@ -4,7 +4,6 @@ import {useRecoilValue} from 'recoil';
 import {useModal, useModalProps} from 'src/Lib/ModalRouter';
 import {
   ElementType,
-  Exercise,
   ExerciseCompletionType,
   ExerciseElement,
 } from 'src/Store/Models/Training';
@@ -38,7 +37,7 @@ export const useEditExerciseController = (id: string) => {
   const {show} = useModal(`${id} -> editExercise__selectExercise`);
   const changeCurrentExercise = React.useCallback(
     (exercise: ExerciseElement) => {
-      setCurrentExercise(exercise);
+      setCurrentExercise(exercise.baseExercise);
       setCompletionType(exercise.completionType);
 
       switch (exercise.completionType) {
@@ -68,10 +67,9 @@ export const useEditExerciseController = (id: string) => {
     show(SelectExercise, {
       onSelect: exercise => {
         setCurrentExercise(exercise);
-        setCompletionType(exercise.completionType);
       },
     });
-  }, [show, setCurrentExercise, setCompletionType]);
+  }, [show, setCurrentExercise]);
 
   const reset = React.useCallback(() => {
     resetCurrentExercise();
@@ -127,31 +125,32 @@ export const useEditExerciseSubmitController = (id: string) => {
     switch (selectedCompletionType) {
       case ExerciseCompletionType.REPS:
         props.onEdit?.({
+          baseExercise: currentExercise,
           restAfterComplete: 15,
 
-          ...currentExercise,
+          completionType: selectedCompletionType,
           type: ElementType.EXERCISE,
-          completionType: ExerciseCompletionType.REPS,
+
           reps: selectedReps,
         });
         break;
       case ExerciseCompletionType.TIME:
         props.onEdit?.({
+          baseExercise: currentExercise,
           restAfterComplete: 15,
 
-          ...currentExercise,
           type: ElementType.EXERCISE,
-          completionType: ExerciseCompletionType.TIME,
+          completionType: selectedCompletionType,
           time: selectedTime,
         });
         break;
       case ExerciseCompletionType.GYM:
         props.onEdit?.({
+          baseExercise: currentExercise,
           restAfterComplete: 15,
 
-          ...currentExercise,
           type: ElementType.EXERCISE,
-          completionType: ExerciseCompletionType.GYM,
+          completionType: selectedCompletionType,
           reps: selectedGymReps,
           kg: selectedGymWeight,
         });

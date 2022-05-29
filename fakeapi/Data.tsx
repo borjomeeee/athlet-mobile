@@ -26,9 +26,13 @@ export const training: TrainingApi = {
 
   elements: [
     {
-      id: '1',
       type: ElementType.EXERCISE,
-      title: 'Подтягивания',
+
+      baseExercise: {
+        id: '1',
+        title: 'Подтягивания',
+      },
+
       completionType: ExerciseCompletionType.REPS,
       reps: 10,
       restAfterComplete: 10,
@@ -37,17 +41,25 @@ export const training: TrainingApi = {
       type: ElementType.SET,
       elements: [
         {
-          id: '1',
           type: ElementType.EXERCISE,
-          title: 'Подтягивания',
+
+          baseExercise: {
+            id: '1',
+            title: 'Подтягивания',
+          },
+
           completionType: ExerciseCompletionType.REPS,
           reps: 10,
           restAfterComplete: 1,
         },
         {
-          id: '1',
           type: ElementType.EXERCISE,
-          title: 'Подтягивания',
+
+          baseExercise: {
+            id: '1',
+            title: 'Подтягивания',
+          },
+
           completionType: ExerciseCompletionType.REPS,
           reps: 10,
           restAfterComplete: 0,
@@ -58,17 +70,25 @@ export const training: TrainingApi = {
       type: ElementType.SET,
       elements: [
         {
-          id: '1',
           type: ElementType.EXERCISE,
-          title: 'Подтягивания',
+
+          baseExercise: {
+            id: '1',
+            title: 'Подтягивания',
+          },
+
           completionType: ExerciseCompletionType.REPS,
           reps: 10,
           restAfterComplete: 10,
         },
         {
-          id: '1',
           type: ElementType.EXERCISE,
-          title: 'Подтягивания',
+
+          baseExercise: {
+            id: '1',
+            title: 'Подтягивания',
+          },
+
           completionType: ExerciseCompletionType.REPS,
           reps: 10,
           restAfterComplete: 10,
@@ -80,5 +100,5 @@ export const training: TrainingApi = {
 
 export const exercises: ExerciseApi[] = [
   {id: '1', title: 'Подтягивания'},
-  {id: '2', title: 'Бег', completionType: ExerciseCompletionType.TIME},
+  {id: '2', title: 'Бег'},
 ];

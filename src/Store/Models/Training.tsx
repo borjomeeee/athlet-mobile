@@ -13,6 +13,15 @@ export enum ElementType {
   SET = 'set',
 }
 export const ElementTypeScheme = z.nativeEnum(ElementType);
+
+export enum TrainingSource {
+  CONSTRUCTOR = 'constructor',
+  FORK = 'fork',
+  CALENDAR = 'calendar',
+}
+
+export const TrainingSourceScheme = z.nativeEnum(TrainingSource);
+
 export const ElementSheme = z.object({
   type: ElementTypeScheme,
 });
@@ -24,25 +33,32 @@ export enum ExerciseCompletionType {
   TIME = 'time',
   GYM = 'gym',
 }
-export const ElementCompletionTypeScheme = z.nativeEnum(ExerciseCompletionType);
+export const ExerciseCompletionTypeScheme = z.nativeEnum(
+  ExerciseCompletionType,
+);
+
+export const TrainingBaseExerciseScheme = z.object({
+  id: z.string(),
+  title: MayBeStringScheme.default('Undefined'),
+});
+export type TrainingBaseExercise = z.output<typeof TrainingBaseExerciseScheme>;
 
 export const ExerciseScheme = z.object({
   id: z.string(),
   title: MayBeStringScheme.default('Undefined'),
-  completionType: canBeNull(ElementCompletionTypeScheme).default(
-    ExerciseCompletionType.REPS,
-  ),
 });
 
 export type ExerciseApi = z.input<typeof ExerciseScheme>;
 export type Exercise = z.output<typeof ExerciseScheme>;
 
-export const TrainingExerciseScheme = ElementSheme.merge(ExerciseScheme).extend(
-  {
-    type: z.literal(ElementType.EXERCISE),
-    restAfterComplete: MayBeIntegerScheme.default(0),
-  },
-);
+export const TrainingExerciseScheme = ElementSheme.extend({
+  baseExercise: TrainingBaseExerciseScheme,
+
+  type: z.literal(ElementType.EXERCISE),
+  completionType: ExerciseCompletionTypeScheme,
+
+  restAfterComplete: MayBeIntegerScheme.default(0),
+});
 
 export type TrainingExercise = z.output<typeof TrainingExerciseScheme>;
 
@@ -103,6 +119,8 @@ export const TrainingScheme = z.object({
 
   title: MayBeStringScheme.default('Undefined'),
   elements: canBeNull(z.array(TrainingElementScheme)).default([]),
+
+  templateTrainingId: MayBeStringScheme,
 });
 
 export type TrainingApi = z.input<typeof TrainingScheme>;

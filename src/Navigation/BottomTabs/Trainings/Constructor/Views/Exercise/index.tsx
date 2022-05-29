@@ -7,14 +7,10 @@ import {TimeUtils} from 'src/Store/ModelsUtils/Time';
 import Animated, {
   interpolateColor,
   Layout,
-  SlideInRight,
-  SlideOutLeft,
   useAnimatedRef,
   useAnimatedStyle,
   useDerivedValue,
   withTiming,
-  ZoomIn,
-  ZoomOut,
 } from 'react-native-reanimated';
 import {Pressable} from 'src/Components';
 
@@ -207,7 +203,7 @@ export const Exercise: React.FC<ExerciseProps> = React.memo(
         layout={Layout}>
         <UI.ShadowView dx={10} dy={10} blur={10} color={color}>
           <ExerciseView
-            title={exercise.title}
+            title={exercise.baseExercise.title}
             restInfo={formattedRest}
             valueInfo={value}
             {...{handlePress, handlePressRest, handlePressRemove}}
