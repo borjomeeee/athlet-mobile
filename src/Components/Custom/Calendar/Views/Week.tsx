@@ -8,13 +8,18 @@ import {Day} from './Day';
 type WeekDates = (Date | undefined)[];
 interface WeekProps {
   dates: WeekDates;
+  calendarId: string;
 }
-export const Week: React.FC<WeekProps> = ({dates}) => {
+export const Week: React.FC<WeekProps> = React.memo(({dates, calendarId}) => {
   return (
     <View style={s(`row jcsb pv:10`)}>
       {dates.map((date, indx) => (
-        <Day key={date?.toISOString() || indx.toString()} date={date} />
+        <Day
+          key={date?.toISOString() || indx.toString()}
+          calendarId={calendarId}
+          date={date}
+        />
       ))}
     </View>
   );
-};
+});

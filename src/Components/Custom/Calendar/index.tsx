@@ -1,37 +1,35 @@
-import s from '@borjomeeee/rn-styles';
 import React from 'react';
-import Animated, {Layout, useSharedValue} from 'react-native-reanimated';
-import {HSpacer, ShadowView} from 'src/Components/Common';
+import {useSharedValue} from 'react-native-reanimated';
 
-import {Colors} from 'src/Utils/Styles';
-import {CalendarAnimatedContext} from './Controller';
-import {DayNames} from './Views/DayNames';
-import {DaysGridContainer} from './Views/DaysGrid';
-import {HeaderContainer} from './Views/Header';
+import {CalendarAnimatedContext, useCalendarController} from './Hooks';
+import {Content} from './Views/Content';
 
 interface CalendarProps {
   id: string;
+
+  initialSelectedDate?: Date;
 }
-export const Calendar: React.FC<CalendarProps> = ({id}) => {
+export const Calendar: React.FC<CalendarProps> = ({
+  id,
+  initialSelectedDate,
+}) => {
   const isAnimating = useSharedValue(false);
   const translateX = useSharedValue(0);
+
+  const {init} = useCalendarController(id);
 
   const contextValue = React.useMemo(
     () => ({translateX, isAnimating}),
     [translateX, isAnimating],
   );
 
+  React.useLayoutEffect(() => {
+    initialSelectedDate && init(initialSelectedDate);
+  }, [init, initialSelectedDate]);
+
   return (
     <CalendarAnimatedContext.Provider value={contextValue}>
-      <ShadowView dx={0} dy={0} blur={10} color={Colors.lightGray}>
-        <Animated.View style={s(`br:20 bgc:white pt:15 pb:20 ofh`)}>
-          <HeaderContainer id={id} />
-          <HSpacer size={10} />
-          <DayNames />
-          <HSpacer size={5} />
-          <DaysGridContainer id={id} />
-        </Animated.View>
-      </ShadowView>
+      <Content id={id} />
     </CalendarAnimatedContext.Provider>
   );
 };

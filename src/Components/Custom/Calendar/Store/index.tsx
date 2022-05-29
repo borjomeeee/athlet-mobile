@@ -1,6 +1,7 @@
 import React from 'react';
 import dayjs from 'dayjs';
 import {
+  atom,
   atomFamily,
   selectorFamily,
   useResetRecoilState,
@@ -8,15 +9,21 @@ import {
 } from 'recoil';
 import {getKeyFabricForDomain} from 'src/Utils/Recoil';
 
+const initialDate = new Date();
 const createKey = getKeyFabricForDomain('calendar component');
+export const todayDateStore = atom({
+  key: createKey('today date'),
+  default: initialDate,
+});
+
 export const selectedDateStore = atomFamily({
   key: createKey('selectedDate'),
-  default: new Date(),
+  default: initialDate,
 });
 
 export const showedDateStore = atomFamily({
   key: createKey('showedDate'),
-  default: new Date(),
+  default: initialDate,
 });
 
 export const currentDaysGridSelector = selectorFamily({
@@ -77,8 +84,14 @@ export const useCalendarStore = (id: string) => {
 
   const handleChangeSelectDate = React.useCallback(
     (date: Date) => {
+      const newSelectedDate = dayjs(date);
       changeSelectedDate(date);
-      changeShowedDate(date);
+      changeShowedDate(prevDate => {
+        const prevD = dayjs(prevDate);
+        return prevD
+          .add(-prevD.diff(newSelectedDate, 'month'), 'month')
+          .toDate();
+      });
     },
     [changeSelectedDate, changeShowedDate],
   );

@@ -11,7 +11,6 @@ export const Calendar = () => {
         <UI.Text style={s(`P3 medium`)}>Календарь</UI.Text>
         <UI.HSpacer size={30} />
         <UI.Calendar id={'home-screen'} />
-        <UI.Calendar id={'home-screen-2'} />
       </SafeAreaView>
     </UI.View>
   );

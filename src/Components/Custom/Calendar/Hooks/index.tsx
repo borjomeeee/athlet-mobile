@@ -1,9 +1,15 @@
 import React from 'react';
 
-import Animated, {runOnJS, withTiming} from 'react-native-reanimated';
-import {useCalendarStore} from '../Store';
+import Animated, {
+  runOnJS,
+  useAnimatedReaction,
+  withTiming,
+} from 'react-native-reanimated';
+import {useRecoilValue} from 'recoil';
+import {showedDateStore, useCalendarStore} from '../Store';
 
 // Can i create multiple same providers?
+// Answer: yes!
 export const CalendarAnimatedContext = React.createContext<{
   translateX: Animated.SharedValue<number>;
   isAnimating: Animated.SharedValue<boolean>;
@@ -25,7 +31,6 @@ export const useCalendarAnimations = (id: string) => {
     translateX.value = withTiming(1, {}, isFinished => {
       if (isFinished) {
         isAnimating.value = false;
-
         runOnJS(showPrevMonth)();
       }
     });
@@ -39,11 +44,36 @@ export const useCalendarAnimations = (id: string) => {
     translateX.value = withTiming(-1, {}, isFinished => {
       if (isFinished) {
         isAnimating.value = false;
-
         runOnJS(showNextMonth)();
       }
     });
   }, [translateX, showNextMonth, isAnimating]);
 
   return {isAnimating, translateX, toPrevMonth, toNextMonth};
+};
+
+export const useCalendarController = (id: string) => {
+  const {changeSelectedDate} = useCalendarStore(id);
+
+  const init = React.useCallback(
+    (initialSelectedDate: Date) => {
+      changeSelectedDate(initialSelectedDate);
+    },
+    [changeSelectedDate],
+  );
+
+  return {init, changeSelectedDate};
+};
+
+export const useCalendarStateAnimationsSync = (id: string) => {
+  const showedDate = useRecoilValue(showedDateStore(id));
+  const {translateX} = useCalendarAnimated();
+
+  useAnimatedReaction(
+    () => undefined,
+    () => {
+      translateX.value = 0;
+    },
+    [showedDate],
+  );
 };
