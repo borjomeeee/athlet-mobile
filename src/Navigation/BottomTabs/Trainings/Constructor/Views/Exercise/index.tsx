@@ -7,23 +7,16 @@ import {TimeUtils} from 'src/Store/ModelsUtils/Time';
 import Animated, {
   interpolateColor,
   Layout,
-  SlideInRight,
-  SlideOutLeft,
   useAnimatedRef,
   useAnimatedStyle,
   useDerivedValue,
   withTiming,
-  ZoomIn,
-  ZoomOut,
 } from 'react-native-reanimated';
 import {Pressable} from 'src/Components';
-
-import {AnimatedExercisesPositions} from '../../Types';
 
 import DragIcon from 'src/Assets/Svg/Drag';
 import {GestureDetector} from 'react-native-gesture-handler';
 import {useDraggableController} from '../../Hooks/Draggable';
-import {LayoutChangeEvent} from 'react-native';
 
 import RemoveIcon from 'src/Assets/Svg/Remove';
 import {useRecoilValue} from 'recoil';
@@ -32,9 +25,9 @@ import {useTrainingExerciseController} from './Controller';
 import {ExerciseWithId} from '../../Store/Types';
 import {
   useValue as useSkiaValue,
-  useDerivedValue as useSkiaDerivedValue,
   useSharedValueEffect,
 } from '@shopify/react-native-skia';
+import {useLayout} from '@react-native-community/hooks';
 
 interface ExerciseViewProps {
   title: string;
@@ -96,139 +89,134 @@ export const ExerciseView: React.FC<ExerciseViewProps> = React.memo(
 );
 
 interface ExerciseProps {
-  exercisesPositions: AnimatedExercisesPositions;
-
   exercise: ExerciseWithId;
 
   handlePressRest?: () => void;
   handlePress?: () => void;
   handlePressRemove?: () => void;
 
-  scrollViewRef: React.RefObject<Animated.ScrollView>;
-  scrollY: Animated.SharedValue<number>;
+  order: number;
 }
-export const Exercise: React.FC<ExerciseProps> = React.memo(
-  ({
-    exercise,
+export const Exercise: React.FC<ExerciseProps> = ({
+  exercise,
 
-    handlePressRest,
-    handlePress,
-    handlePressRemove,
+  handlePressRest,
+  handlePress,
+  handlePressRemove,
 
-    exercisesPositions,
-    scrollViewRef,
+  order,
+}) => {
+  const isEditing = useRecoilValue(isEditingSelector);
+  const animatedRef = useAnimatedRef<Animated.View>();
+
+  const {onLayout, ...layout} = useLayout();
+
+  const id = React.useMemo(() => exercise.elementId, [exercise]);
+
+  const {
+    isDragging,
+    isPressed,
+    initialScrollY,
+    draggingGesture,
+    gestureTranslateY,
+    tempOffsetY,
+    layout: handleLayout,
     scrollY,
-  }) => {
-    const isEditing = useRecoilValue(isEditingSelector);
-    const animatedRef = useAnimatedRef<Animated.View>();
+    lastOrder,
+  } = useDraggableController(id);
 
-    const id = React.useMemo(() => exercise.elementId, [exercise]);
-    const {
-      isDragging,
-      isPressed,
-      initialScrollY,
-      draggingGesture,
-      gestureTranslateY,
-      offsetY,
-      layout,
-    } = useDraggableController(id, exercisesPositions, scrollViewRef, scrollY);
-
-    const formattedRest = React.useMemo(() => {
-      const restStr = TimeUtils.getFormattedTimeForTraining(
-        exercise.restAfterComplete,
-      );
-
-      return restStr ? `Отдых - ${restStr}` : 'Без отдыха';
-    }, [exercise]);
-
-    const value = React.useMemo(() => {
-      if (ExerciseUtils.isRepsExercise(exercise)) {
-        return `${exercise.reps} раз.`;
-      } else if (ExerciseUtils.isTimeExercise(exercise)) {
-        return TimeUtils.getFormattedTimeForTraining(exercise.time) || '0 сек.';
-      } else if (ExerciseUtils.isGymExercise(exercise)) {
-        return `${exercise.reps} x ${exercise.kg} кг.`;
-      }
-
-      return 'Undefined';
-    }, [exercise]);
-
-    const animatedStyle = useAnimatedStyle(() => {
-      return {
-        transform: [
-          {
-            translateY: isDragging.value
-              ? gestureTranslateY.value + (scrollY.value - initialScrollY.value)
-              : withTiming(offsetY.value),
-          },
-          {
-            scale: withTiming(isPressed.value ? 1.05 : 1, {duration: 50}),
-          },
-        ],
-
-        zIndex: isPressed.value ? 100 : 1,
-      };
-    });
-
-    const animatedIsPressed = useDerivedValue(() =>
-      withTiming(+isPressed.value),
-    );
-    const color = useSkiaValue('#00000000');
-
-    useSharedValueEffect(() => {
-      const newColor = interpolateColor(
-        animatedIsPressed.value,
-        [0, 1],
-        ['#00000000', '#00000030'],
-      );
-
-      if (typeof newColor === 'string') {
-        color.current = newColor;
-      }
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-    }, [animatedIsPressed]);
-
-    const handleLayout = React.useCallback(
-      (e: LayoutChangeEvent) => {
-        layout(e.nativeEvent.layout.height);
-      },
-      [layout],
+  const formattedRest = React.useMemo(() => {
+    const restStr = TimeUtils.getFormattedTimeForTraining(
+      exercise.restAfterComplete,
     );
 
-    return (
-      <Animated.View
-        ref={animatedRef}
-        style={animatedStyle}
-        onLayout={handleLayout}
-        // TODO: animation not working
-        // entering={isNew.value ? SlideInRight : undefined}
-        // exiting={isNew.value ? SlideOutLeft : undefined}
-        layout={Layout}>
-        <UI.ShadowView dx={10} dy={10} blur={10} color={color}>
-          <ExerciseView
-            title={exercise.title}
-            restInfo={formattedRest}
-            valueInfo={value}
-            {...{handlePress, handlePressRest, handlePressRemove}}
-          />
-        </UI.ShadowView>
+    return restStr ? `Отдых - ${restStr}` : 'Без отдыха';
+  }, [exercise]);
 
-        {isEditing && (
-          <GestureDetector gesture={draggingGesture}>
-            <Animated.View
-              style={s(`abs r:20 t:0 b:0 jcc`)}
-              //  entering={ZoomIn}
-              //  exiting={ZoomOut}
-            >
-              <DragIcon />
-            </Animated.View>
-          </GestureDetector>
-        )}
-      </Animated.View>
+  const value = React.useMemo(() => {
+    if (ExerciseUtils.isRepsExercise(exercise)) {
+      return `${exercise.reps} раз.`;
+    } else if (ExerciseUtils.isTimeExercise(exercise)) {
+      return TimeUtils.getFormattedTimeForTraining(exercise.time) || '0 сек.';
+    } else if (ExerciseUtils.isGymExercise(exercise)) {
+      return `${exercise.reps} x ${exercise.kg} кг.`;
+    }
+
+    return 'Undefined';
+  }, [exercise]);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateY: isDragging.value
+            ? gestureTranslateY.value + (scrollY.value - initialScrollY.value)
+            : lastOrder.value === order
+            ? withTiming(tempOffsetY.value)
+            : 0,
+        },
+        {
+          scale: withTiming(isPressed.value ? 1.05 : 1, {duration: 50}),
+        },
+      ],
+
+      zIndex: isPressed.value ? 100 : 1,
+    };
+  });
+
+  const animatedIsPressed = useDerivedValue(() => withTiming(+isPressed.value));
+  const color = useSkiaValue('#00000000');
+
+  useSharedValueEffect(() => {
+    const newColor = interpolateColor(
+      animatedIsPressed.value,
+      [0, 1],
+      ['#00000000', '#00000030'],
     );
-  },
-);
+
+    if (typeof newColor === 'string') {
+      color.current = newColor;
+    }
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+  }, [animatedIsPressed]);
+
+  React.useEffect(() => {
+    layout.height && handleLayout(layout.height);
+  });
+
+  return (
+    <Animated.View
+      ref={animatedRef}
+      style={animatedStyle}
+      onLayout={onLayout}
+      // TODO: animation not working
+      // entering={isNew.value ? SlideInRight : undefined}
+      // exiting={isNew.value ? SlideOutLeft : undefined}
+      layout={Layout}>
+      <UI.ShadowView dx={10} dy={10} blur={10} color={color}>
+        <ExerciseView
+          title={exercise.title}
+          restInfo={formattedRest}
+          valueInfo={value}
+          {...{handlePress, handlePressRest, handlePressRemove}}
+        />
+      </UI.ShadowView>
+
+      {isEditing && (
+        <GestureDetector gesture={draggingGesture}>
+          <Animated.View
+            style={s(`abs r:20 t:0 b:0 jcc`)}
+            //  entering={ZoomIn}
+            //  exiting={ZoomOut}
+          >
+            <DragIcon />
+          </Animated.View>
+        </GestureDetector>
+      )}
+    </Animated.View>
+  );
+};
 
 export const TrainingExercise: React.FC<ExerciseProps> = ({
   exercise,

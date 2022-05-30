@@ -3,26 +3,18 @@ import React from 'react';
 import s from '@borjomeeee/rn-styles';
 import * as UI from 'src/Components';
 import {SET_HEADER_HEIGHT} from '../../Const';
-import {AnimatedExercisesPositions} from '../../Types';
-import {useDraggablePosition} from '../../Hooks/Draggable';
+import {useDraggableController} from '../../Hooks/Draggable';
 import Animated, {
   Layout,
-  SlideInRight,
-  SlideOutLeft,
   useAnimatedStyle,
   withTiming,
-  ZoomIn,
-  ZoomOut,
 } from 'react-native-reanimated';
 
 import OptionsIcon from 'src/Assets/Svg/Options';
 import {OverlayWrapper} from 'src/Lib/Overlay';
 import {useRecoilValue} from 'recoil';
 import {isEditingSelector} from '../../Store';
-import {
-  useSetHeaderController,
-  useSetHeaderOptionsController,
-} from './Controller';
+import {useSetHeaderOptionsController} from './Controller';
 
 interface SetHeaderProps {
   positionId: string;
@@ -30,29 +22,37 @@ interface SetHeaderProps {
   setId: string;
   title: string;
 
-  exercisesPositions: AnimatedExercisesPositions;
+  order: number;
 }
 
 export const SetHeader: React.FC<SetHeaderProps> = ({
   setId,
   title,
   positionId,
-  exercisesPositions,
+  order,
 }) => {
-  const {handleChangeSetTitle, handleBlurSetTitle} =
-    useSetHeaderController(setId);
+  // const {handleChangeSetTitle, handleBlurSetTitle} =
+  //   useSetHeaderController(setId);
 
-  const {offsetY} = useDraggablePosition(positionId, exercisesPositions);
-
+  const {tempOffsetY, lastOrder, layout} = useDraggableController(positionId);
   const isEditing = useRecoilValue(isEditingSelector);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{translateY: withTiming(offsetY.value)}],
+    transform: [
+      {
+        translateY:
+          lastOrder.value === order ? withTiming(tempOffsetY.value) : 0,
+      },
+    ],
   }));
 
   const renderOptionsOverlay = React.useCallback(() => {
     return <SetHeaderOptions id={setId} />;
   }, [setId]);
+
+  React.useEffect(() => {
+    layout(SET_HEADER_HEIGHT);
+  });
 
   return (
     <Animated.View

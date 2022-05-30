@@ -7,29 +7,31 @@ export enum ConstructorElementType {
   SET_FOOTER = 'set-footer',
 }
 
-export interface ExercisePosition {
-  id: string;
-  type: ConstructorElementType;
+export interface ExerciseValues {
+  elementId: string;
 
-  offsetY: number;
-  tempOffsetY: number;
-
-  height?: number;
+  height: number;
   order: number;
+
+  // temp
+  tempOffsetY: number;
+  tempOrder: number;
 }
 
-export type ExercisesPositions = {
-  [key: string]: ExercisePosition;
+export type ExerciseValuesStore = {
+  [key: string]: ExerciseValues;
 };
-export type AnimatedExercisesPositions =
-  Animated.SharedValue<ExercisesPositions>;
+export type AnimatedExerciseValuesStore =
+  Animated.SharedValue<ExerciseValuesStore>;
 
 export type ConstructorElementViewList = (
   | {
+      id: string;
       type: ConstructorElementType.EXERCISE;
       element: ExerciseWithId;
     }
   | {
+      id: string;
       type:
         | ConstructorElementType.SET_FOOTER
         | ConstructorElementType.SET_HEADER;

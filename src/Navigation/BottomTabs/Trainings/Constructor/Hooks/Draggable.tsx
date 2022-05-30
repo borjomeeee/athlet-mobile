@@ -14,42 +14,37 @@ import Animated, {
   Extrapolate,
 } from 'react-native-reanimated';
 import {useTrainingConstructorController} from './index';
-import {AnimatedExercisesPositions} from '../Types';
+import {ExerciseValuesStore, ExerciseValues} from '../Types';
 import {useWindowDimensions} from 'react-native';
+import {AnimationsContext} from '../Store/Animations';
 
-export const useDraggablePosition = (
-  id: string,
-  exercisesPositions: AnimatedExercisesPositions,
-) => {
-  const offsetY = useDerivedValue(
-    () => exercisesPositions.value[id]?.tempOffsetY || 0,
-  );
+export const useDraggableController = (id: string) => {
+  const {positions, scrollViewRef, scrollY} =
+    React.useContext(AnimationsContext);
 
-  return {offsetY};
-};
-
-export const useDraggableController = (
-  id: string,
-  exercisesPositions: AnimatedExercisesPositions,
-  scrollViewRef: React.RefObject<Animated.ScrollView>,
-  scrollY: Animated.SharedValue<number>,
-) => {
   const {reorder} = useTrainingConstructorController();
-  const {offsetY} = useDraggablePosition(id, exercisesPositions);
 
   const {height: windowHeight} = useWindowDimensions();
-  const wasMeasured = useSharedValue(false);
 
   const isPressed = useSharedValue(false);
   const isDragging = useSharedValue(false);
 
   const gestureTranslateY = useSharedValue(0);
-  const gestureAbsoluteY = useSharedValue(200);
-
-  const scrollSpeed = useSharedValue(0);
 
   const initialScrollY = useSharedValue(0);
   const startScrollY = useSharedValue(0);
+  const scrollSpeed = useSharedValue(0);
+
+  const tempOffsetY = useDerivedValue(
+    () => positions.value[id]?.tempOffsetY || 0,
+  );
+  const lastOrder = useDerivedValue(() => positions.value[id]?.order);
+
+  const animatedSortedPositions = useDerivedValue(() =>
+    Object.values(positions.value).sort(
+      (pos1, pos2) => pos1.tempOrder - pos2.tempOrder,
+    ),
+  );
 
   useAnimatedReaction(
     () => isDragging.value,
@@ -67,73 +62,13 @@ export const useDraggableController = (
     (height: number) => {
       runOnUI(() => {
         'worklet';
-        if (wasMeasured.value) {
-          return;
-        }
-
-        wasMeasured.value = true;
-        exercisesPositions.value = {
-          ...exercisesPositions.value,
-          [id]: {...exercisesPositions.value[id], height},
+        positions.value = {
+          ...positions.value,
+          [id]: {...positions.value[id], height},
         };
       })();
     },
-    [id, exercisesPositions, wasMeasured],
-  );
-
-  React.useEffect(() => {
-    wasMeasured.value = false;
-  }, [id, wasMeasured]);
-
-  useAnimatedReaction(
-    () => {
-      if (!isDragging.value) {
-        return id;
-      }
-
-      const currentPosition = exercisesPositions.value[id];
-      if (!currentPosition) {
-        return id;
-      }
-
-      for (const key in exercisesPositions.value) {
-        const position = exercisesPositions.value[key];
-        if (!position) {
-          continue;
-        }
-
-        if (currentPosition.order > position.order) {
-          if (
-            currentPosition.offsetY +
-              gestureTranslateY.value +
-              scrollY.value -
-              initialScrollY.value <
-            position.offsetY + position.tempOffsetY
-          ) {
-            return position.id;
-          }
-        } else if (currentPosition.order < position.order) {
-          if (
-            currentPosition.offsetY +
-              gestureTranslateY.value +
-              scrollY.value -
-              initialScrollY.value >
-            position.offsetY + position.tempOffsetY
-          ) {
-            return position.id;
-          }
-        }
-      }
-
-      return id;
-    },
-    newId => {
-      if (newId === id) {
-        return;
-      }
-
-      swap(id, newId, exercisesPositions);
-    },
+    [id, positions],
   );
 
   const draggingGesture = Gesture.Pan()
@@ -142,8 +77,6 @@ export const useDraggableController = (
     })
     .onStart(() => {
       gestureTranslateY.value = 0;
-      gestureAbsoluteY.value = 200;
-
       isDragging.value = true;
     })
     .onUpdate(e => {
@@ -182,23 +115,19 @@ export const useDraggableController = (
         });
       }
 
-      gestureAbsoluteY.value = e.absoluteY;
       gestureTranslateY.value = e.translationY;
     })
     .onEnd(() => {
       cancelAnimation(startScrollY);
 
       gestureTranslateY.value = withTiming(
-        offsetY.value - (scrollY.value - initialScrollY.value),
+        tempOffsetY.value - (scrollY.value - initialScrollY.value),
         {},
         isFinished => {
           if (isFinished) {
             isDragging.value = false;
 
-            const ids = Object.values(exercisesPositions.value)
-              .sort((val1, val2) => val1.order - val2.order)
-              .map(val => val.id);
-
+            const ids = animatedSortedPositions.value.map(val => val.elementId);
             runOnJS(reorder)(ids);
           }
         },
@@ -211,7 +140,53 @@ export const useDraggableController = (
   useAnimatedReaction(
     () => ({start: startScrollY.value, initial: initialScrollY.value}),
     ({start, initial}) => {
-      scrollTo(scrollViewRef, 0, initial + start, false);
+      if (isDragging.value) {
+        scrollTo(scrollViewRef, 0, initial + start, false);
+      }
+    },
+  );
+
+  useAnimatedReaction(
+    () => gestureTranslateY.value,
+    translateX => {
+      const currentPosition = positions.value[id];
+
+      if (isDragging.value && currentPosition) {
+        const sortedPositions = animatedSortedPositions.value;
+        const currentPositionOffset = getOffsetForOrder(
+          currentPosition.order,
+          sortedPositions,
+        );
+
+        let offsetY = 0;
+        for (const position of sortedPositions) {
+          if (currentPosition.tempOrder < position.tempOrder) {
+            if (
+              translateX +
+                currentPositionOffset +
+                scrollY.value -
+                initialScrollY.value >
+              offsetY
+            ) {
+              swap(currentPosition.elementId, position.elementId, positions);
+              break;
+            }
+          } else if (currentPosition.tempOrder > position.tempOrder) {
+            if (
+              translateX +
+                currentPositionOffset +
+                scrollY.value -
+                initialScrollY.value <
+              offsetY
+            ) {
+              swap(currentPosition.elementId, position.elementId, positions);
+              break;
+            }
+          }
+
+          offsetY += position.height;
+        }
+      }
     },
   );
 
@@ -220,9 +195,11 @@ export const useDraggableController = (
     isPressed,
     gestureTranslateY,
     initialScrollY,
-    offsetY,
+    tempOffsetY,
     draggingGesture,
     layout,
+    scrollY,
+    lastOrder,
   };
 };
 
@@ -249,7 +226,7 @@ function scroll({
 function swap(
   currentId: string,
   withId: string,
-  exercisesPositions: AnimatedExercisesPositions,
+  exercisesPositions: Animated.SharedValue<ExerciseValuesStore>,
 ) {
   'worklet';
 
@@ -260,19 +237,32 @@ function swap(
     return;
   }
 
-  const k = currentPosition.order > position.order ? 1 : -1;
+  const k = currentPosition.tempOrder > position.tempOrder ? 1 : -1;
 
   exercisesPositions.value = {
     ...exercisesPositions.value,
     [withId]: {
       ...position,
       tempOffsetY: position.tempOffsetY + k * (currentPosition.height || 0),
-      order: currentPosition.order,
+      tempOrder: currentPosition.tempOrder,
     },
     [currentId]: {
       ...currentPosition,
       tempOffsetY: currentPosition.tempOffsetY - k * (position.height || 0),
-      order: position.order,
+      tempOrder: position.tempOrder,
     },
   };
+}
+
+function getOffsetForOrder(order: number, positionsList: ExerciseValues[]) {
+  'worklet';
+  let offsetY = 0;
+  for (let i = 0; i < positionsList.length; i++) {
+    if (i === order) {
+      return offsetY;
+    }
+
+    offsetY += positionsList[i].height || 0;
+  }
+  return 0;
 }

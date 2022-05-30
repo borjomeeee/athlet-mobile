@@ -1,5 +1,5 @@
 export const Config = {
-  stateObserver: __DEV__ && true,
+  stateObserver: __DEV__ && false,
 
   fakeApiEnabled: __DEV__ && true,
   badNetworkConnection: __DEV__ && false,
