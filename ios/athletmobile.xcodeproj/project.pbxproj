@@ -18,6 +18,7 @@
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		D2A8970DF45B46258EF9193C /* Montserrat-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1D0628307222407FB969642E /* Montserrat-Bold.ttf */; };
 		E63E7C271F6048C6BE7F846C /* Rubik-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 050BA80092544A47AD8EA8C5 /* Rubik-Bold.ttf */; };
+		3EC1198A58E24359AF922619 /* Rubik-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C27FF3C0BFAB4E7181C635D3 /* Rubik-SemiBold.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +53,7 @@
 		C0A881CF5CF3F2B244570E2A /* Pods-athletmobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-athletmobile.debug.xcconfig"; path = "Target Support Files/Pods-athletmobile/Pods-athletmobile.debug.xcconfig"; sourceTree = "<group>"; };
 		D00AAFFCFCFDA5787532823F /* Pods-athletmobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-athletmobile.release.xcconfig"; path = "Target Support Files/Pods-athletmobile/Pods-athletmobile.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		C27FF3C0BFAB4E7181C635D3 /* Rubik-SemiBold.ttf */ = {isa = PBXFileReference; name = "Rubik-SemiBold.ttf"; path = "../src/Assets/Fonts/Rubik-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +113,7 @@
 				44369AE068CF436ABA0BF86B /* Rubik-Medium.ttf */,
 				9B761860C4054FA99C2F16B4 /* Rubik-Regular.ttf */,
 				1D0628307222407FB969642E /* Montserrat-Bold.ttf */,
+				C27FF3C0BFAB4E7181C635D3 /* Rubik-SemiBold.ttf */,
 			);
 			name = Resources;
 			path = "";
@@ -270,6 +273,7 @@
 				3ED00DA90331417D85402C6E /* Rubik-Medium.ttf in Resources */,
 				3B9490C4F5334D2489F6381C /* Rubik-Regular.ttf in Resources */,
 				D2A8970DF45B46258EF9193C /* Montserrat-Bold.ttf in Resources */,
+				3EC1198A58E24359AF922619 /* Rubik-SemiBold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

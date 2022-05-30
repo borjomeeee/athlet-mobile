@@ -7,6 +7,8 @@ import {Training} from 'src/Store/Models/Training';
 import dayjs from 'dayjs';
 import {useTrainingListTrainingElementController} from '../Hooks';
 
+import PlayIcon from 'src/Assets/Svg/Play';
+
 interface TrainingElementProps {
   training: Training;
 }
@@ -19,19 +21,41 @@ export const TrainingElement: React.FC<TrainingElementProps> = ({training}) => {
   );
 
   return (
-    <UI.PressableItem
-      onPress={handlePress}
-      style={s(
-        `btw:1 bbw:1 bc:ultraLightGray container pt:13 pb:15`,
-        `bgc:white`,
-      )}>
-      <>
-        <UI.Text style={s(`P7 medium`)}>{training.title}</UI.Text>
-        <UI.HSpacer size={7} />
-        <UI.Text style={s(`P8`)}>
-          Дата создания - {formattedCreationDate}
-        </UI.Text>
-      </>
-    </UI.PressableItem>
+    <UI.View style={s(`container`)}>
+      <UI.ShadowView dx={0} dy={0} color={'#E1E4E875'} blur={10}>
+        <UI.Scalable onPress={handlePress}>
+          <UI.View style={s(`bgc:white ph:16 pv:12 br:20 minH:92 jcsb`)}>
+            <UI.Text style={s(`P7 medium`)}>{training.title}</UI.Text>
+            <UI.HSpacer size={10} />
+            <UI.View style={s(`row jcsb`)}>
+              <UI.View style={s(`row`)}>
+                <Attribute label="CREATED AT" value={formattedCreationDate} />
+                <UI.VSpacer size={20} />
+                <Attribute label="AUTHOR" value={training.author.nickname} />
+              </UI.View>
+              <UI.Pressable>
+                <UI.View style={s(`w:30 h:30 bgc:green br:6 aic jcc`)}>
+                  <PlayIcon />
+                </UI.View>
+              </UI.Pressable>
+            </UI.View>
+          </UI.View>
+        </UI.Scalable>
+      </UI.ShadowView>
+    </UI.View>
+  );
+};
+
+interface AttributeProps {
+  label: string;
+  value: string;
+}
+const Attribute: React.FC<AttributeProps> = ({label, value}) => {
+  return (
+    <UI.View>
+      <UI.Text style={s(`P10 bold c:#ACACAC`)}>{label}</UI.Text>
+      <UI.HSpacer size={3} />
+      <UI.Text style={s(`P9 medium`)}>{value}</UI.Text>
+    </UI.View>
   );
 };

@@ -37,21 +37,16 @@ export const List = () => {
 
   return (
     <>
-      <UI.View style={s(`abs t:0 b:0 r:0 l:0`)}>
-        <UI.View style={s(`fill bgc:white`)} />
-        <UI.View style={s(`fill bgc:layout`)} />
-      </UI.View>
-
       <UI.FlatList
         data={myTrainings}
         keyExtractor={keyExtractor}
         renderItem={renderItem}
-        style={s(`fill`)}
+        style={s(`fill bgc:layout`)}
         contentContainerStyle={s(
-          `fill bgc:layout`,
-          `pb:${BUTTON_PADDING_BOTTOM * 2 + layout.height}`,
+          `fill pb:${BUTTON_PADDING_BOTTOM * 2 + layout.height}`,
         )}
-        ListHeaderComponent={ListHeaderComponent}
+        ListHeaderComponent={Header}
+        ItemSeparatorComponent={ItemSeparator}
       />
 
       <UI.View
@@ -75,13 +70,6 @@ function renderItem({item}: ListRenderItemInfo<Training>) {
   return <TrainingElement training={item} />;
 }
 
-function ListHeaderComponent() {
-  const {top} = useSafeAreaInsets();
-  return (
-    <UI.View style={s(`bgc:white`)}>
-      <UI.HSpacer size={top} />
-      <Header />
-      <UI.HSpacer size={8} />
-    </UI.View>
-  );
+function ItemSeparator() {
+  return <UI.HSpacer size={15} />;
 }

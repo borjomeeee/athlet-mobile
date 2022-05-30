@@ -17,7 +17,9 @@ export const Colors = {
   darkGray: '#666666',
 
   layout: '#FAFAFA',
-  // placeholder: '#E1E4E8',
+
+  tabBarActive: '#57606A',
+  tabBarInactive: '#cccccc',
 };
 
 const textSizeStyleSheet = {
@@ -41,6 +43,10 @@ const fontsStylesSheet = {
   medium: () => ({
     ...defaultTextStyles,
     fontFamily: 'Rubik-Medium',
+  }),
+  semibold: () => ({
+    ...defaultTextStyles,
+    fontFamily: 'Rubik-SemiBold',
   }),
   bold: () => ({
     ...defaultTextStyles,

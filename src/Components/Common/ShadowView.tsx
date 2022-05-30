@@ -11,48 +11,50 @@ interface ShadowViewProps extends React.ComponentProps<typeof Shadow> {
   containerStyle?: ViewStyle;
   canvasBackgroundColor?: string;
 }
-export const ShadowView: React.FC<ShadowViewProps> = ({
-  children,
-  containerStyle,
+export const ShadowView: React.FC<ShadowViewProps> = React.memo(
+  ({
+    children,
+    containerStyle,
 
-  dx,
-  dy,
+    dx,
+    dy,
 
-  blur,
-  canvasBackgroundColor = Colors.white,
+    blur,
+    canvasBackgroundColor = Colors.white,
 
-  ...props
-}) => {
-  const {onLayout, ...layout} = useLayout();
-  const style = React.useMemo(
-    () => [s(`rel ofv`), containerStyle],
-    [containerStyle],
-  );
+    ...props
+  }) => {
+    const {onLayout, ...layout} = useLayout();
+    const style = React.useMemo(
+      () => [s(`rel ofv`), containerStyle],
+      [containerStyle],
+    );
 
-  const diffX = -(Math.abs(+dx) + +blur * 10);
-  const diffY = -(Math.abs(+dy) + +blur * 10);
+    const diffX = -(Math.abs(+dx) + +blur * 10);
+    const diffY = -(Math.abs(+dy) + +blur * 10);
 
-  return (
-    <View style={style} onLayout={onLayout}>
-      {children}
-      <View
-        style={s(`abs t:${diffY} b:${diffY} r:${diffX} l:${diffX} ofv zi:-1`)}
-        pointerEvents="none">
-        <Canvas style={s(`fill`)}>
-          <Group>
-            <Paint>
-              <Shadow dx={dx} dy={dy} blur={blur} shadowOnly {...props} />
-            </Paint>
-            <Rect
-              x={-diffX}
-              y={-diffY}
-              width={layout.width}
-              height={layout.height}
-              color={canvasBackgroundColor}
-            />
-          </Group>
-        </Canvas>
+    return (
+      <View style={style} onLayout={onLayout}>
+        {children}
+        <View
+          style={s(`abs t:${diffY} b:${diffY} r:${diffX} l:${diffX} ofv zi:-1`)}
+          pointerEvents="none">
+          <Canvas style={s(`fill`)}>
+            <Group>
+              <Paint>
+                <Shadow dx={dx} dy={dy} blur={blur} shadowOnly {...props} />
+              </Paint>
+              <Rect
+                x={-diffX}
+                y={-diffY}
+                width={layout.width}
+                height={layout.height}
+                color={canvasBackgroundColor}
+              />
+            </Group>
+          </Canvas>
+        </View>
       </View>
-    </View>
-  );
-};
+    );
+  },
+);
