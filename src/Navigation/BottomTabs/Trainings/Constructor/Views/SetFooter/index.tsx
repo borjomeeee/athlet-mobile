@@ -6,19 +6,15 @@ import * as UI from 'src/Components';
 import {TimeUtils} from 'src/Store/ModelsUtils/Time';
 import {
   SET_FOOTER_ADD_EXERCISE_BUTTON_HEIGHT,
+  SET_FOOTER_HEIGHT,
   SET_FOOTER_REST_BLOCK_HEIGHT,
 } from '../../Const';
-import {AnimatedExercisesPositions} from '../../Types';
 import Animated, {
-  FadeIn,
-  FadeOut,
   Layout,
-  SlideInRight,
-  SlideOutLeft,
   useAnimatedStyle,
   withTiming,
 } from 'react-native-reanimated';
-import {useDraggablePosition} from '../../Hooks/Draggable';
+import {useDraggableController} from '../../Hooks/Draggable';
 import {useRecoilValue} from 'recoil';
 import {isEditingSelector} from '../../Store';
 import {useSetFooterController} from './Controller';
@@ -29,16 +25,16 @@ interface SetFooterProps {
   setId: string;
   restAfterComplete: number;
 
-  exercisesPositions: AnimatedExercisesPositions;
+  order: number;
 }
 export const SetFooter: React.FC<SetFooterProps> = ({
   setId,
   restAfterComplete,
 
   positionId,
-  exercisesPositions,
+  order,
 }) => {
-  const {offsetY} = useDraggablePosition(positionId, exercisesPositions);
+  const {tempOffsetY, lastOrder, layout} = useDraggableController(positionId);
 
   const {handlePressAddExercise, handlePressEditRest} =
     useSetFooterController(setId);
@@ -51,8 +47,17 @@ export const SetFooter: React.FC<SetFooterProps> = ({
   }, [restAfterComplete]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{translateY: withTiming(offsetY.value)}],
+    transform: [
+      {
+        translateY:
+          lastOrder.value === order ? withTiming(tempOffsetY.value) : 0,
+      },
+    ],
   }));
+
+  React.useEffect(() => {
+    layout(SET_FOOTER_HEIGHT);
+  });
 
   return (
     <Animated.View

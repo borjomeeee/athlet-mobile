@@ -47,14 +47,14 @@ export const Constructor = withHooks(
             scrollEventThrottle={16}
             onScroll={handleScroll}
             bounces={false}>
-            <Animated.View style={s(`fill`)} layout={Layout}>
+            <Animated.View style={s(`fill`)}>
               <Header />
 
               <UI.HSpacer size={8} />
               <ElementsList scrollViewRef={ref} scrollY={scrollY} />
               <UI.HSpacer size={20} />
 
-              <Animated.View style={s(`zi:-1`)} layout={Layout}>
+              <Animated.View style={s(`zi:-1`)}>
                 <AddElementButton />
                 <UI.HSpacer size={20} />
               </Animated.View>
