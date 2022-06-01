@@ -5,3 +5,7 @@ export const appNavigationOptions: NativeStackNavigationOptions = {
   headerShown: false,
   contentStyle: s(`bgc:layout`),
 };
+
+export const modalsGroupOptions: NativeStackNavigationOptions = {
+  presentation: 'fullScreenModal',
+};

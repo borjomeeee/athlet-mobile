@@ -5,8 +5,9 @@ import {Auth} from './Auth';
 import {BottomTabsNavigator} from './BottomTabs';
 import {Init} from './Init';
 
-import {AppPaths} from './Paths';
-import {appNavigationOptions} from './navigationOptions';
+import {AppPaths, ModalsPaths} from './Paths';
+import {appNavigationOptions, modalsGroupOptions} from './navigationOptions';
+import {Playground} from './Playground';
 
 const AppStack = createNativeStackNavigator();
 export const Navigation = () => {
@@ -20,6 +21,17 @@ export const Navigation = () => {
         name={AppPaths.BottomTab}
         component={BottomTabsNavigator}
       />
+
+      {/** Modals */}
+      <AppStack.Group screenOptions={modalsGroupOptions}>
+        <AppStack.Screen name={ModalsPaths.Playground} component={Playground} />
+      </AppStack.Group>
     </AppStack.Navigator>
   );
+};
+
+export type ModalsGroupParamList = {
+  [ModalsPaths.Playground]: {
+    trainingId?: string;
+  };
 };

@@ -189,33 +189,29 @@ export const useTrainingConstructorNavigationEffect = () => {
 
 export const useTrainingConstructorInitialTraining = () => {
   const {loadTrainingById} = useTrainingService();
-
-  const {setInitialTraining, resetInitialTraining} =
-    useTrainingConstructorController();
+  const {setInitialTraining} = useTrainingConstructorController();
 
   const {defaultHandleError} = useAppController();
-
   const initialTrainingId = useRecoilValue(initialTrainingIdAtom);
-  const {training: trainingWithInitialTrainingId} =
-    useTraining(initialTrainingId);
 
   React.useEffect(() => {
     async function loadTraining() {
       if (initialTrainingId) {
-        const [_, err] = await loadTrainingById(initialTrainingId);
+        const [training, err] = await loadTrainingById(initialTrainingId);
 
         if (err) {
           defaultHandleError(err);
+          return;
+        } else if (training) {
+          setInitialTraining(training);
         }
       }
     }
     loadTraining();
-  }, [initialTrainingId, loadTrainingById, defaultHandleError]);
-
-  React.useEffect(() => {
-    if (trainingWithInitialTrainingId) {
-      setInitialTraining(trainingWithInitialTrainingId);
-      return () => resetInitialTraining();
-    }
-  }, [setInitialTraining, trainingWithInitialTrainingId, resetInitialTraining]);
+  }, [
+    initialTrainingId,
+    loadTrainingById,
+    defaultHandleError,
+    setInitialTraining,
+  ]);
 };
