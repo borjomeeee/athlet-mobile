@@ -1,19 +1,23 @@
 import s from '@borjomeeee/rn-styles';
 import React from 'react';
-import {SelectWheel, Text, View} from 'src/Components/Common';
+import {TextStyle} from 'react-native';
+import {SelectWheel, SelectWheelProps, Text, View} from 'src/Components/Common';
+import {Centered} from 'src/Components/Unique';
 
-interface SelectTimeWheelProps {
-  selectedTime?: number;
-  onChangeValue?: (value: number) => void;
+export interface SelectTimeWheelProps
+  extends Omit<SelectWheelProps, 'start' | 'end'> {
+  labelStyle?: TextStyle;
 }
 export const SelectTimeWheel: React.FC<SelectTimeWheelProps> = ({
-  selectedTime = 15,
+  defaultValue = 15,
   onChangeValue,
+  labelStyle,
+  ...props
 }) => {
   const [selectedMins, setSelectedMins] = React.useState(
-    Math.floor(selectedTime / 60),
+    Math.floor(defaultValue / 60),
   );
-  const [selectedSecs, setSelectedSecs] = React.useState(selectedTime % 60);
+  const [selectedSecs, setSelectedSecs] = React.useState(defaultValue % 60);
 
   const time = React.useMemo(
     () => selectedMins * 60 + selectedSecs,
@@ -24,28 +28,40 @@ export const SelectTimeWheel: React.FC<SelectTimeWheelProps> = ({
     onChangeValue?.(time);
   }, [time, onChangeValue]);
 
+  const middleLStyle = React.useMemo(
+    () => [s(`P4 medium`), labelStyle],
+    [labelStyle],
+  );
+
+  const lStyle = React.useMemo(
+    () => [s(`P7 medium`), labelStyle],
+    [labelStyle],
+  );
   return (
-    <View style={s(`rel row`)}>
-      <View style={s(`abs t:0 b:0 l:-35 aic jcc zi:-1`)}>
-        <Text style={s(`P7 medium`)}>мин.</Text>
+    <View style={s(`row aic`)}>
+      <View>
+        <Text style={lStyle}>мин.</Text>
       </View>
       <SelectWheel
         start={0}
         end={99}
         onChangeValue={setSelectedMins}
         defaultValue={selectedMins}
+        {...props}
       />
-      <View style={s(`abs t:0 b:0 r:55 pb:3 aic jcc zi:-1`)}>
-        <Text style={s(`P4 medium`)}>:</Text>
+
+      <View>
+        <Text style={middleLStyle}>:</Text>
       </View>
       <SelectWheel
         start={0}
         end={59}
         onChangeValue={setSelectedSecs}
         defaultValue={selectedSecs}
+        {...props}
       />
-      <View style={s(`abs t:0 b:0 r:-30 aic jcc zi:-1`)}>
-        <Text style={s(`P7 medium`)}>сек.</Text>
+      <View>
+        <Text style={lStyle}>сек.</Text>
       </View>
     </View>
   );

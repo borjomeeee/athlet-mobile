@@ -2,14 +2,16 @@ import React from 'react';
 import * as UI from 'src/Components';
 import {useRecoilValue} from 'recoil';
 import {currentElementStore} from 'src/Navigation/Playground/Store';
-import {usePlaygroundActionsController} from './Controller';
 import s from '@borjomeeee/rn-styles';
 import {PlaygroundElementType} from 'src/Navigation/Playground/Types';
 import {ExerciseCompletionType} from 'src/Store/Models/Training';
+import {usePlayground} from 'src/Navigation/Playground/Hooks';
 
 export const Actions = () => {
   const currentElement = useRecoilValue(currentElementStore);
-  const {goNext, forceFinish} = usePlaygroundActionsController();
+
+  // TODO: create force exit method
+  const {goNext, exit} = usePlayground();
 
   const isTime = React.useMemo(() => {
     if (!currentElement) {
@@ -42,7 +44,7 @@ export const Actions = () => {
       <UI.HSpacer size={10} />
       <UI.GithubButton
         label="Завершить тренировку"
-        onPress={forceFinish}
+        onPress={exit}
         style={s(`bgc:red bw:0`)}
       />
     </UI.View>

@@ -1,5 +1,11 @@
 import React from 'react';
-import {counterStore, trainingIdStore, usePlaygroundStore} from '../Store';
+import {
+  counterStore,
+  currentIndexStore,
+  trainingElementsStore,
+  trainingIdStore,
+  usePlaygroundStore,
+} from '../Store';
 import {useRecoilValue} from 'recoil';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
 import {AppPaths, ModalsPaths} from 'src/Navigation/Paths';
@@ -7,6 +13,7 @@ import {ModalsGroupParamList} from 'src/Navigation';
 import {useTrainingService} from 'src/Services/Trainings';
 import {useAppController} from 'src/Services/App';
 import {StackActions} from '@react-navigation/native';
+import {useGetRecoilState} from 'src/Utils/Recoil';
 
 export const usePlayground = () => {
   const {reset} = usePlaygroundStore();
@@ -20,7 +27,23 @@ export const usePlayground = () => {
     }
   }, [navigation]);
 
-  return {reset, exit};
+  const getTrainingElements = useGetRecoilState(trainingElementsStore);
+  const getCurrentIndex = useGetRecoilState(currentIndexStore);
+
+  const {setCurrentIndex} = usePlaygroundStore();
+
+  const goNext = React.useCallback(() => {
+    const currentIndex = getCurrentIndex();
+    const elements = getTrainingElements();
+
+    if (currentIndex === elements.length - 1) {
+      exit();
+    } else {
+      setCurrentIndex(i => ++i);
+    }
+  }, [getCurrentIndex, getTrainingElements, setCurrentIndex, exit]);
+
+  return {reset, exit, goNext};
 };
 
 export const usePlaygroundCountdown = () => {

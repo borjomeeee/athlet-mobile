@@ -4,7 +4,6 @@ import {useFocusEffect} from '@react-navigation/core';
 
 import React from 'react';
 import {ListRenderItemInfo} from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useRecoilValue} from 'recoil';
 
 import * as UI from 'src/Components';

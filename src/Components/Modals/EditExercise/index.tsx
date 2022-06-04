@@ -107,7 +107,7 @@ function SelectTime({id}: SelectProps) {
   React.useEffect(() => () => resetTime(), [resetTime]);
   return (
     <SelectTimeWheel
-      selectedTime={selectedTime}
+      defaultValue={selectedTime}
       onChangeValue={handleChangeTime}
     />
   );
@@ -120,7 +120,7 @@ function SelectReps({id}: SelectProps) {
   React.useEffect(() => () => resetReps(), [resetReps]);
   return (
     <SelectRepsWheel
-      selectedNumber={selectedReps}
+      defaultValue={selectedReps}
       onChangeValue={handleChangeReps}
     />
   );

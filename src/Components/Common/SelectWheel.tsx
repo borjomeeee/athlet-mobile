@@ -1,5 +1,6 @@
 import s from '@borjomeeee/rn-styles';
 import React from 'react';
+import {TextStyle, ViewStyle} from 'react-native';
 import {
   Gesture,
   GestureDetector,
@@ -27,7 +28,14 @@ import {HSpacer} from './Spacer';
 import {Text} from './Text';
 import {View} from './View';
 
-interface SelectWheelProps {
+export interface SelectWheelValueChild {
+  value: number;
+  Component: React.FC;
+
+  style?: ViewStyle;
+}
+
+export interface SelectWheelProps {
   start: number;
   end: number;
 
@@ -36,6 +44,12 @@ interface SelectWheelProps {
 
   width?: number;
   onChangeValue?: (value: number) => void;
+
+  textStyle?: TextStyle;
+  gradientColor?: string;
+
+  valueChild?: SelectWheelValueChild;
+  disableOverflow?: boolean;
 }
 
 const DIGIT_HEIGHT = 33;
@@ -49,6 +63,11 @@ export const SelectWheelHelper: React.FC<SelectWheelProps> = ({
   width = 60,
   defaultValue = 0,
   onChangeValue,
+  textStyle,
+  gradientColor,
+
+  valueChild,
+  disableOverflow,
 }) => {
   const numberItems = React.useMemo(
     () => Math.floor(end - start + 1) / step,
@@ -143,25 +162,36 @@ export const SelectWheelHelper: React.FC<SelectWheelProps> = ({
 
   return (
     <GestureDetector gesture={gesture}>
-      <View style={s(`h:${HEIGHT} w:${width} ofh`)}>
+      <View style={s(`h:${HEIGHT} w:${width} ofh`, disableOverflow && `ofv`)}>
         <View style={s(`abs t:0 r:0 l:0 zi:100`)} pointerEvents="none">
-          <Start width={width} height={66} />
+          <Start width={width} fill={gradientColor} height={66} />
         </View>
 
         <Animated.View style={animatedStyle}>
           <HSpacer size={DIGIT_HEIGHT * 2} />
           <HSpacer size={topHeight} />
 
-          {data.map(value => (
-            <React.Fragment key={value.toString()}>
-              <Number value={value} />
-            </React.Fragment>
-          ))}
+          {data.map(value => {
+            const ValueChildComponent = valueChild
+              ? valueChild.Component
+              : React.Fragment;
+
+            return (
+              <View style={s(`rel`)} key={value.toString()}>
+                {valueChild && valueChild.value === value && (
+                  <View style={[s(`abs`), valueChild.style]}>
+                    <ValueChildComponent />
+                  </View>
+                )}
+                <Number value={value} textStyle={textStyle} />
+              </View>
+            );
+          })}
           <HSpacer size={DIGIT_HEIGHT * 2} />
         </Animated.View>
 
         <View style={s(`abs b:0 r:0 l:0 zi:100 aic jcc`)} pointerEvents="none">
-          <End width={width} height={66} />
+          <End width={width} fill={gradientColor} height={66} />
         </View>
       </View>
     </GestureDetector>
@@ -170,29 +200,32 @@ export const SelectWheelHelper: React.FC<SelectWheelProps> = ({
 
 interface NumberProps {
   value: number;
+  textStyle?: TextStyle;
 }
-function Number({value}: NumberProps) {
+function Number({value, textStyle}: NumberProps) {
+  const style = React.useMemo(
+    () => [s(`fsz:28 lh:33 medium`), textStyle],
+    [textStyle],
+  );
   return (
     <Animated.View style={s(`aic`)}>
-      <Text style={s(`fsz:28 lh:33 medium`)}>
-        {value < 10 ? `0${value}` : value}
-      </Text>
+      <Text style={style}>{value < 10 ? `0${value}` : value}</Text>
     </Animated.View>
   );
 }
 
-function Start({width, height}: SvgProps) {
+function Start({width, height, fill = '#ffffff'}: SvgProps) {
   return (
     <Svg {...{width, height}}>
       <Defs>
         <LinearGradient id="grad1" x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor="#ffffff" stopOpacity="0.8" />
-          <Stop offset="1" stopColor="#ffffff" stopOpacity="0.5" />
+          <Stop offset="0" stopColor={fill} stopOpacity="0.8" />
+          <Stop offset="1" stopColor={fill} stopOpacity="0.5" />
         </LinearGradient>
 
         <LinearGradient id="grad2" x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor="#ffffff" stopOpacity="0.5" />
-          <Stop offset="1" stopColor="#ffffff" stopOpacity="0" />
+          <Stop offset="0" stopColor={fill} stopOpacity="0.5" />
+          <Stop offset="1" stopColor={fill} stopOpacity="0" />
         </LinearGradient>
       </Defs>
       <Rect x="0" y="0" width={width} height="56" fill="url(#grad1)" />
@@ -201,18 +234,18 @@ function Start({width, height}: SvgProps) {
   );
 }
 
-function End({width, height}: SvgProps) {
+function End({width, height, fill = '#ffffff'}: SvgProps) {
   return (
     <Svg {...{width, height}}>
       <Defs>
         <LinearGradient id="grad1" x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor="#ffffff" stopOpacity="0" />
-          <Stop offset="1" stopColor="#ffffff" stopOpacity="0.5" />
+          <Stop offset="0" stopColor={fill} stopOpacity="0" />
+          <Stop offset="1" stopColor={fill} stopOpacity="0.5" />
         </LinearGradient>
 
         <LinearGradient id="grad2" x1="0" y1="0" x2="0" y2="1">
-          <Stop offset="0" stopColor="#ffffff" stopOpacity="0.5" />
-          <Stop offset="1" stopColor="#ffffff" stopOpacity="0.8" />
+          <Stop offset="0" stopColor={fill} stopOpacity="0.5" />
+          <Stop offset="1" stopColor={fill} stopOpacity="0.8" />
         </LinearGradient>
       </Defs>
       <Rect x="0" y="0" width={width} height="10" fill="url(#grad1)" />
