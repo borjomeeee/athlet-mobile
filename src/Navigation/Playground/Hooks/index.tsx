@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  counterStore,
+  completingElementStore,
   currentIndexStore,
   trainingElementsStore,
   trainingIdStore,
@@ -14,69 +14,71 @@ import {useTrainingService} from 'src/Services/Trainings';
 import {useAppController} from 'src/Services/App';
 import {StackActions} from '@react-navigation/native';
 import {useGetRecoilState} from 'src/Utils/Recoil';
+import {ElementType, ExerciseCompletionType} from 'src/Store/Models/Training';
 
 export const usePlayground = () => {
-  const {reset} = usePlaygroundStore();
+  const getCompletingElement = useGetRecoilState(completingElementStore);
+
+  const {reset, setCompletedElements, setStartTime} = usePlaygroundStore();
   const navigation = useNavigation();
 
+  const saveCurrent = React.useCallback(() => {
+    const completingElement = getCompletingElement();
+    if (completingElement) {
+      setCompletedElements(completedElements => [
+        ...completedElements,
+        completingElement,
+      ]);
+    }
+  }, [setCompletedElements, getCompletingElement]);
+
   const exit = React.useCallback(() => {
+    const completingElement = getCompletingElement();
+
+    if (
+      completingElement &&
+      completingElement.type === ElementType.EXERCISE &&
+      completingElement.completionType === ExerciseCompletionType.TIME
+    ) {
+      saveCurrent();
+    }
+
     if (navigation.canGoBack()) {
       navigation.goBack();
     } else {
       navigation.dispatch(StackActions.replace(AppPaths.BottomTab));
     }
-  }, [navigation]);
+  }, [getCompletingElement, saveCurrent, navigation]);
 
   const getTrainingElements = useGetRecoilState(trainingElementsStore);
   const getCurrentIndex = useGetRecoilState(currentIndexStore);
 
-  const {setCurrentIndex} = usePlaygroundStore();
+  const {setCurrentIndex, setCompletingElement} = usePlaygroundStore();
+
+  const start = React.useCallback(() => {
+    setStartTime(Date.now());
+  }, [setStartTime]);
 
   const goNext = React.useCallback(() => {
     const currentIndex = getCurrentIndex();
     const elements = getTrainingElements();
+
+    saveCurrent();
 
     if (currentIndex === elements.length - 1) {
       exit();
     } else {
       setCurrentIndex(i => ++i);
     }
-  }, [getCurrentIndex, getTrainingElements, setCurrentIndex, exit]);
+  }, [
+    getCurrentIndex,
+    getTrainingElements,
+    setCurrentIndex,
+    saveCurrent,
+    exit,
+  ]);
 
-  return {reset, exit, goNext};
-};
-
-export const usePlaygroundCountdown = () => {
-  const countdownRef = React.useRef<NodeJS.Timer | null>(null);
-
-  const counter = useRecoilValue(counterStore);
-  const {setCounter, setStartTime} = usePlaygroundStore();
-
-  const start = React.useCallback(() => {
-    if (!countdownRef.current) {
-      countdownRef.current = setInterval(() => {
-        setCounter(i => --i);
-      }, 1000);
-    }
-  }, [setCounter]);
-
-  const end = React.useCallback(() => {
-    if (countdownRef.current) {
-      clearInterval(countdownRef.current);
-    }
-  }, []);
-
-  React.useEffect(() => {
-    start();
-    return () => end();
-  }, [start, end]);
-
-  React.useEffect(() => {
-    if (counter === 0) {
-      setStartTime(Date.now());
-      end();
-    }
-  }, [counter, setStartTime, end]);
+  return {reset, exit, start, goNext, setCompletingElement};
 };
 
 type ProfileScreenRouteProp = RouteProp<

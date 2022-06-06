@@ -3,8 +3,7 @@ import * as UI from 'src/Components';
 import {useRecoilValue} from 'recoil';
 import {currentElementStore} from 'src/Navigation/Playground/Store';
 import s from '@borjomeeee/rn-styles';
-import {PlaygroundElementType} from 'src/Navigation/Playground/Types';
-import {ExerciseCompletionType} from 'src/Store/Models/Training';
+import {ElementType, ExerciseCompletionType} from 'src/Store/Models/Training';
 import {usePlayground} from 'src/Navigation/Playground/Hooks';
 
 export const Actions = () => {
@@ -19,10 +18,9 @@ export const Actions = () => {
     }
 
     return (
-      (currentElement.type === PlaygroundElementType.EXERCISE &&
-        currentElement.exercise.completionType ===
-          ExerciseCompletionType.TIME) ||
-      currentElement.type === PlaygroundElementType.REST
+      (currentElement.type === ElementType.EXERCISE &&
+        currentElement.completionType === ExerciseCompletionType.TIME) ||
+      currentElement.type === ElementType.REST
     );
   }, [currentElement]);
 

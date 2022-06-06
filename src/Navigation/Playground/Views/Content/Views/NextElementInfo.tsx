@@ -1,12 +1,12 @@
 import React from 'react';
 import {useRecoilValue} from 'recoil';
 import {nextElementStore} from 'src/Navigation/Playground/Store';
-import {PlaygroundUtils} from 'src/Navigation/Playground/Utils';
 
 import * as UI from 'src/Components';
 import {TimeUtils} from 'src/Store/ModelsUtils/Time';
 import s from '@borjomeeee/rn-styles';
 import {ExerciseUtils} from 'src/Store/ModelsUtils/Exercise';
+import {ElementType} from 'src/Store/Models/Training';
 
 export const NextElementInfo = () => {
   const nextElement = useRecoilValue(nextElementStore);
@@ -15,7 +15,7 @@ export const NextElementInfo = () => {
     return <UI.Text style={s(`P7 c:#FFFFFF tar`)}>Конец</UI.Text>;
   }
 
-  if (PlaygroundUtils.isRest(nextElement)) {
+  if (nextElement.type === ElementType.REST) {
     const formattedDuration = TimeUtils.getFormattedTimeForTraining(
       nextElement.duration,
     );
@@ -24,7 +24,7 @@ export const NextElementInfo = () => {
         style={s(`P7 c:#FFFFFF tar`)}>{`Отдых · ${formattedDuration}`}</UI.Text>
     );
   } else {
-    const exercise = nextElement.exercise;
+    const exercise = nextElement;
     const value = (() => {
       if (ExerciseUtils.isRepsExercise(exercise)) {
         return `${exercise.reps} раз.`;
@@ -40,7 +40,7 @@ export const NextElementInfo = () => {
       <UI.Text
         style={s(
           `P7 c:#FFFFFF tar`,
-        )}>{`${nextElement.exercise.title} · ${value}`}</UI.Text>
+        )}>{`${nextElement.title} · ${value}`}</UI.Text>
     );
   }
 };

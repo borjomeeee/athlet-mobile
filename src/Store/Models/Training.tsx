@@ -65,11 +65,11 @@ export const GymExerciseScheme = TrainingExerciseScheme.extend({
 });
 export type GymExercise = z.output<typeof GymExerciseScheme>;
 
-export const RestScheme = ElementSheme.extend({
+export const RestElementScheme = ElementSheme.extend({
   type: z.literal(ElementType.REST),
   duration: MayBeIntegerScheme.default(0),
 });
-export type Rest = z.output<typeof RestScheme>;
+export type RestElement = z.output<typeof RestElementScheme>;
 
 export const ExerciseElementScheme = z.union([
   RestExerciseScheme,
@@ -88,7 +88,6 @@ export type SetElement = z.output<typeof SetElementScheme>;
 
 export const TrainingElementScheme = z.union([
   SetElementScheme,
-  // RestScheme,
   ExerciseElementScheme,
 ]);
 export type TrainingElement = z.output<typeof TrainingElementScheme>;

@@ -3,33 +3,45 @@ import * as UI from 'src/Components';
 import {useRecoilValue} from 'recoil';
 import {currentElementStore} from 'src/Navigation/Playground/Store';
 import s from '@borjomeeee/rn-styles';
-import {PlaygroundUtils} from 'src/Navigation/Playground/Utils';
-import {PlaygroundElementType} from 'src/Navigation/Playground/Types';
-import {ExerciseBody} from './ExerciseBody';
-import {CompletionType} from 'src/Components/Modals/EditExercise/Views/CompletionType';
-import {ExerciseCompletionType} from 'src/Store/Models/Training';
-import {ExpirationTime} from './ExpirationTime';
+import {ExerciseBody} from '../ExerciseBody';
+import {ElementType, ExerciseCompletionType} from 'src/Store/Models/Training';
+import {ExpirationTime} from '../ExpirationTime';
 import {usePlayground} from 'src/Navigation/Playground/Hooks';
+import {useCurrentElementController} from './Controller';
 
 export const CurrentElement = () => {
   const currentElement = useRecoilValue(currentElementStore);
-  const {goNext} = usePlayground();
+
+  const {goNext, setCompletingElement} = usePlayground();
+  const {handleChangeRest} = useCurrentElementController();
 
   const elementTitle = React.useMemo(() => {
     if (!currentElement) {
       return 'Undefined';
     }
 
-    if (PlaygroundUtils.isRest(currentElement)) {
+    if (currentElement.type === ElementType.REST) {
       return 'Отдых';
     }
 
-    let title = currentElement.exercise.title;
-    if (currentElement.exercise.completionType === ExerciseCompletionType.GYM) {
-      title += ` · ${currentElement.exercise.kg}кг`;
+    let title = currentElement.title;
+    if (currentElement.completionType === ExerciseCompletionType.GYM) {
+      title += ` · ${currentElement.kg}кг`;
     }
     return title;
   }, [currentElement]);
+
+  React.useEffect(() => {
+    if (!currentElement) {
+      return;
+    }
+
+    if (currentElement.type === ElementType.EXERCISE) {
+      setCompletingElement(currentElement);
+    } else {
+      setCompletingElement({...currentElement, duration: 0});
+    }
+  }, [currentElement, setCompletingElement]);
 
   if (!currentElement) {
     return null;
@@ -43,11 +55,13 @@ export const CurrentElement = () => {
         <UI.Text style={s(`P4 medium c:white`)}>{elementTitle}</UI.Text>
       </UI.View>
       <UI.View style={s(`fill aic jcc`)}>
-        {currentElement.type === PlaygroundElementType.EXERCISE ? (
+        {currentElement.type === ElementType.EXERCISE ? (
           <ExerciseBody />
         ) : (
           <ExpirationTime
-            expirationDate={Date.now() + currentElement.duration}
+            key={Date.now() + currentElement.duration}
+            duration={currentElement.duration}
+            onChange={handleChangeRest}
             onExpire={goNext}
           />
         )}

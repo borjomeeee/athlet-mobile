@@ -1,19 +1,11 @@
 import React from 'react';
 import {atom, selector, useResetRecoilState, useSetRecoilState} from 'recoil';
+import {Training} from 'src/Store/Models/Training';
 import {
-  ElementType,
-  ExerciseElement,
-  SetElement,
-  Training,
-} from 'src/Store/Models/Training';
-import {myTrainingsStore} from 'src/Store/Trainings';
+  IterableTrainingElement,
+  TrainingUtils,
+} from 'src/Store/ModelsUtils/Training';
 import {getKeyFabricForDomain} from 'src/Utils/Recoil';
-import {
-  PlaygroundElement,
-  PlaygroundElementType,
-  PlaygroundExercise,
-  PlaygroundRest,
-} from '../Types';
 
 const createKey = getKeyFabricForDomain('playground');
 
@@ -41,45 +33,10 @@ export const trainingElementsStore = selector({
   key: createKey('trainingElements'),
   get: ({get}) => {
     const training = get(trainingStore);
-    if (!training) {
-      return [];
+    if (training) {
+      return TrainingUtils.iterable(training?.elements);
     }
-
-    const elements: PlaygroundElement[] = [];
-    for (let i = 0; i < training.elements.length; i++) {
-      if (training.elements[i].type === ElementType.SET) {
-        const set = training.elements[i] as SetElement;
-        for (let j = 0; j < set.elements.length; j++) {
-          elements.push({
-            exercise: set.elements[j],
-            type: PlaygroundElementType.EXERCISE,
-          });
-
-          elements.push({
-            duration: set.elements[j].restAfterComplete,
-            type: PlaygroundElementType.REST,
-          });
-        }
-
-        elements.push({
-          duration: set.restAfterComplete,
-          type: PlaygroundElementType.REST,
-        });
-      } else {
-        const exercise = training.elements[i] as ExerciseElement;
-        elements.push({
-          exercise,
-          type: PlaygroundElementType.EXERCISE,
-        });
-
-        elements.push({
-          duration: exercise.restAfterComplete,
-          type: PlaygroundElementType.REST,
-        });
-      }
-    }
-
-    return elements;
+    return [];
   },
 });
 
@@ -112,6 +69,16 @@ export const nextElementStore = selector({
   },
 });
 
+export const completingElementStore = atom({
+  key: createKey('completingElement'),
+  default: undefined as IterableTrainingElement | undefined,
+});
+
+export const completedElementsStore = atom({
+  key: createKey('completedElements'),
+  default: [] as IterableTrainingElement[],
+});
+
 export const usePlaygroundStore = () => {
   const setCounter = useSetRecoilState(counterStore);
   const resetCounter = useResetRecoilState(counterStore);
@@ -128,18 +95,28 @@ export const usePlaygroundStore = () => {
   const setTraining = useSetRecoilState(trainingStore);
   const resetTraining = useResetRecoilState(trainingStore);
 
+  const setCompletingElement = useSetRecoilState(completingElementStore);
+  const resetCompletingElement = useResetRecoilState(completingElementStore);
+
+  const setCompletedElements = useSetRecoilState(completedElementsStore);
+  const resetCompletedElements = useResetRecoilState(completedElementsStore);
+
   const reset = React.useCallback(() => {
     resetCounter();
     resetStartTime();
     resetTrainingId();
     resetCurrentIndex();
     resetTraining();
+    resetCompletingElement();
+    resetCompletedElements();
   }, [
     resetCounter,
     resetStartTime,
     resetTrainingId,
     resetCurrentIndex,
     resetTraining,
+    resetCompletingElement,
+    resetCompletedElements,
   ]);
 
   return {
@@ -148,6 +125,8 @@ export const usePlaygroundStore = () => {
     setCounter,
     setStartTime,
     setTraining,
+    setCompletingElement,
+    setCompletedElements,
     reset,
   };
 };

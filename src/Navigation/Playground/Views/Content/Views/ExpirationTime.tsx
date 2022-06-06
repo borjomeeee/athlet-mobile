@@ -1,75 +1,86 @@
 import s from '@borjomeeee/rn-styles';
 import React from 'react';
 import Animated, {
+  Easing,
   interpolate,
   useAnimatedStyle,
   useDerivedValue,
   withTiming,
 } from 'react-native-reanimated';
 import * as UI from 'src/Components';
+import {playgroundClock} from 'src/Navigation/Playground/Clock';
 
 interface ExpirationTimeProps {
-  expirationDate: number;
+  duration: number;
   onExpire?: () => void;
+
+  onChange?: (duration: number) => void;
 }
 export const ExpirationTime: React.FC<ExpirationTimeProps> = ({
-  expirationDate: providedExpirationDate,
+  duration: providedDuration,
+  onChange,
   onExpire,
 }) => {
-  const [expirationDate, setExpirationDate] = React.useState(
-    providedExpirationDate,
+  const [startTime] = React.useState(Date.now());
+
+  const [duration, setDuration] = React.useState(0);
+  const [expirationTime, setExpirationTime] = React.useState(
+    Date.now() + providedDuration,
   );
 
   const intervalId = React.useRef<NodeJS.Timer | null>(null);
 
-  const [startTime] = React.useState(Date.now());
-  const [diffTime, setDiffTime] = React.useState(expirationDate - Date.now());
-
   React.useEffect(() => {
-    setDiffTime(expirationDate - Date.now());
-    intervalId.current = setInterval(() => {
-      setDiffTime(expirationDate - Date.now());
-    }, 1000);
-    return () => {
-      intervalId.current && clearInterval(intervalId.current);
-    };
-  }, [expirationDate]);
+    onChange?.(Math.ceil(duration / 1000) * 1000);
 
-  React.useEffect(() => {
-    if (diffTime <= 0) {
+    if (expirationTime - startTime - duration <= 0) {
       intervalId.current && clearInterval(intervalId.current);
       onExpire?.();
     }
-  }, [diffTime, onExpire]);
+  }, [duration, startTime, expirationTime, onExpire, onChange]);
+
+  React.useEffect(() => {
+    setDuration(Date.now() - startTime);
+
+    const unwatch = playgroundClock.watch(time =>
+      setDuration(Math.max(time - startTime, 0)),
+    );
+    return () => unwatch();
+  }, [startTime]);
 
   const formattedDiffTime = React.useMemo(() => {
-    const diffInSecs = Math.floor(diffTime / 1000);
+    const durationInSecs = Math.floor(
+      (expirationTime - startTime - duration) / 1000,
+    );
 
-    const mins = Math.floor(diffInSecs / 60);
-    const secs = Math.floor(diffInSecs % 60);
+    const mins = Math.floor(durationInSecs / 60);
+    const secs = Math.floor(durationInSecs % 60);
 
     const minsStr = mins >= 10 ? mins.toString() : `0${mins}`;
     const secsStr = secs >= 10 ? secs.toString() : `0${secs}`;
 
     return `${minsStr}:${secsStr}`;
-  }, [diffTime]);
+  }, [expirationTime, startTime, duration]);
 
   const handlePressAdd30s = React.useCallback(() => {
-    setExpirationDate(i => i + 30 * 1000);
+    setExpirationTime(i => i + 30 * 1000);
   }, []);
 
-  const animatedDiffTime = useDerivedValue(() => diffTime);
+  const animatedDuration = useDerivedValue(() => duration);
   const animatedProgress = useDerivedValue(() =>
     interpolate(
-      animatedDiffTime.value,
-      [expirationDate - startTime, 0],
+      animatedDuration.value,
+      [0, expirationTime - startTime],
       [0, 160],
     ),
   );
 
   const animatedWidth = useAnimatedStyle(() => {
     return {
-      width: withTiming(animatedProgress.value, {duration: 1000}),
+      width: withTiming(animatedProgress.value, {
+        duration: 1000,
+        easing: Easing.linear,
+      }),
     };
   }, []);
   const style = React.useMemo(
@@ -77,7 +88,7 @@ export const ExpirationTime: React.FC<ExpirationTimeProps> = ({
     [animatedWidth],
   );
 
-  if (diffTime <= 0) {
+  if (expirationTime - startTime - duration <= 0) {
     return null;
   }
 
