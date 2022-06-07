@@ -25,7 +25,6 @@ export const Centered: React.FC<ICenteredProps> = ({
   );
 
   const adjustmentWidth = React.useMemo(() => {
-    console.log(layoutLeft);
     if (LeftComponent && !layoutLeft.width) {
       return;
     }

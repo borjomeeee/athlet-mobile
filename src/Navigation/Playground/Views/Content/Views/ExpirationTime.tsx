@@ -9,7 +9,6 @@ import Animated, {
 } from 'react-native-reanimated';
 import {useRecoilValue} from 'recoil';
 import * as UI from 'src/Components';
-import {playgroundClock} from 'src/Navigation/Playground/Clock';
 import {isPauseStore, pauseTimeStore} from 'src/Navigation/Playground/Store';
 
 interface ExpirationTimeProps {
@@ -27,50 +26,56 @@ export const ExpirationTime: React.FC<ExpirationTimeProps> = ({
   const isPause = useRecoilValue(isPauseStore);
   const pauseTime = useRecoilValue(pauseTimeStore);
 
-  const [duration, setDuration] = React.useState(0);
   const [initialPauseTime] = React.useState(pauseTime);
+  const [clockTime, setClockTime] = React.useState(Date.now());
 
   const [expirationTime, setExpirationTime] = React.useState(
-    Date.now() + providedDuration,
+    startTime + providedDuration + pauseTime,
   );
 
-  const intervalId = React.useRef<NodeJS.Timer | null>(null);
+  const duration = React.useMemo(
+    () => Math.max(clockTime - startTime - (pauseTime - initialPauseTime), 0),
+    [clockTime, startTime, pauseTime, initialPauseTime],
+  );
 
   React.useEffect(() => {
-    onChange?.(Math.ceil(duration / 1000) * 1000);
+    onChange?.(Math.floor(duration / 1000) * 1000);
 
-    if (expirationTime - startTime - duration <= 0) {
-      intervalId.current && clearInterval(intervalId.current);
+    if (expirationTime <= clockTime) {
       onExpire?.();
     }
-  }, [duration, startTime, expirationTime, onExpire, onChange]);
+  }, [expirationTime, clockTime, duration, onExpire, onChange]);
 
   React.useEffect(() => {
     if (!isPause) {
-      setDuration(Date.now() - startTime);
+      setClockTime(Date.now());
 
-      const unwatch = playgroundClock.watch(time => {
-        setDuration(
-          Math.max(time - startTime - (pauseTime - initialPauseTime), 0),
-        );
-      });
-      return () => unwatch();
+      const intervalId = setInterval(() => {
+        const nowTime = Date.now();
+        setClockTime(nowTime);
+      }, 1000);
+
+      return () => clearInterval(intervalId);
     }
   }, [isPause, startTime, pauseTime, initialPauseTime]);
 
-  const formattedDiffTime = React.useMemo(() => {
-    const durationInSecs = Math.floor(
-      (expirationTime - startTime - duration) / 1000,
+  React.useEffect(() => {
+    setExpirationTime(
+      startTime + providedDuration + (pauseTime - initialPauseTime),
     );
+  }, [startTime, providedDuration, pauseTime, initialPauseTime]);
 
-    const mins = Math.floor(durationInSecs / 60);
-    const secs = Math.floor(durationInSecs % 60);
+  const formattedDiffTime = React.useMemo(() => {
+    const restInSecs = Math.ceil((expirationTime - clockTime) / 1000);
+
+    const mins = Math.floor(restInSecs / 60);
+    const secs = Math.floor(restInSecs % 60);
 
     const minsStr = mins >= 10 ? mins.toString() : `0${mins}`;
     const secsStr = secs >= 10 ? secs.toString() : `0${secs}`;
 
     return `${minsStr}:${secsStr}`;
-  }, [expirationTime, startTime, duration]);
+  }, [expirationTime, clockTime]);
 
   const handlePressAdd30s = React.useCallback(() => {
     setExpirationTime(i => i + 30 * 1000);

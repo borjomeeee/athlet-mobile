@@ -2,39 +2,27 @@ import React from 'react';
 import * as UI from 'src/Components';
 import s from '@borjomeeee/rn-styles';
 import {usePlaygroundPreviewController} from './Controller';
-import {PlaygroundClock} from '../../Clock';
 import {usePlayground} from '../../Hooks';
 
-const previewClock = new PlaygroundClock();
-const DURATION = 5000;
-
 export const Preview = () => {
-  const [renderTime] = React.useState(Date.now());
-  const [clockTime, setClockTime] = React.useState(renderTime);
+  const [countdown, setCountdown] = React.useState(5);
 
   const {start} = usePlayground();
   const {handlePressCancel} = usePlaygroundPreviewController();
 
   React.useEffect(() => {
-    previewClock.start();
-    return () => previewClock.stop();
+    const intervalId = setInterval(() => {
+      setCountdown(i => --i);
+    }, 1000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   React.useEffect(() => {
-    const unwatch = previewClock.watch(setClockTime);
-    return () => unwatch();
-  }, []);
-
-  React.useEffect(() => {
-    if (clockTime - DURATION >= renderTime) {
+    if (countdown === 0) {
       start();
     }
-  }, [clockTime, renderTime, start]);
-
-  const countdown = React.useMemo(() => {
-    const secs = Math.ceil((DURATION - (clockTime - renderTime)) / 1000);
-    return secs;
-  }, [clockTime, renderTime]);
+  }, [countdown, start]);
 
   return (
     <UI.View style={s(`fill aic jcc`)}>

@@ -2,7 +2,6 @@ import s from '@borjomeeee/rn-styles';
 import React from 'react';
 import {useRecoilValue} from 'recoil';
 import * as UI from 'src/Components';
-import {playgroundClock} from 'src/Navigation/Playground/Clock';
 import {
   isPauseStore,
   pauseTimeStore,
@@ -18,8 +17,13 @@ export const Time = () => {
 
   React.useEffect(() => {
     if (!isPause) {
-      const unwatch = playgroundClock.watch(setClockTime);
-      return () => unwatch();
+      setClockTime(Date.now());
+
+      const intervalId = setInterval(() => {
+        const nowTime = Date.now();
+        setClockTime(nowTime);
+      }, 1000);
+      return () => clearInterval(intervalId);
     }
   }, [isPause]);
 

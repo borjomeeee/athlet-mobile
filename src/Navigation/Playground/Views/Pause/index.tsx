@@ -6,31 +6,15 @@ import * as UI from 'src/Components';
 import PauseIcon from 'src/Assets/Svg/Pause';
 import {Colors} from 'src/Utils/Styles';
 import {usePauseController} from './Controller';
-import {playgroundClock} from '../../Clock';
-import {useRecoilValue} from 'recoil';
-import {isPauseStore} from '../../Store';
 
-const DURATION = 3000;
 export const Pause = () => {
   const {bottom} = useSafeAreaInsets();
-
-  const isPause = useRecoilValue(isPauseStore);
-
   const {handlePressFinish, completePause} = usePauseController();
 
   const [startPauseTime] = React.useState(Date.now());
   const [isCompleting, setIsCompleting] = React.useState(false);
 
   const [countdown, setCountdown] = React.useState(3);
-
-  React.useEffect(() => {
-    const unwatch = playgroundClock.watch(time => {
-      if (time - startPauseTime >= DURATION) {
-      }
-    });
-
-    return () => unwatch();
-  }, [isPause, startPauseTime]);
 
   React.useEffect(() => {
     if (isCompleting) {

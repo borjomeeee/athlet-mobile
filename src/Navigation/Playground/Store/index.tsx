@@ -9,11 +9,10 @@ import {getKeyFabricForDomain} from 'src/Utils/Recoil';
 
 const createKey = getKeyFabricForDomain('playground');
 
-export const counterStore = atom({
-  key: createKey('counter'),
-  default: 5,
+export const isStartedStore = atom({
+  key: createKey('isStarted'),
+  default: false,
 });
-
 export const startTimeStore = atom({
   key: createKey('startTime'),
   default: undefined as number | undefined,
@@ -90,8 +89,8 @@ export const pauseTimeStore = atom({
 });
 
 export const usePlaygroundStore = () => {
-  const setCounter = useSetRecoilState(counterStore);
-  const resetCounter = useResetRecoilState(counterStore);
+  const setIsStarted = useSetRecoilState(isStartedStore);
+  const resetIsStarted = useResetRecoilState(isStartedStore);
 
   const setStartTime = useSetRecoilState(startTimeStore);
   const resetStartTime = useResetRecoilState(startTimeStore);
@@ -118,7 +117,7 @@ export const usePlaygroundStore = () => {
   const resetPauseTime = useResetRecoilState(pauseTimeStore);
 
   const reset = React.useCallback(() => {
-    resetCounter();
+    resetIsStarted();
     resetStartTime();
     resetTrainingId();
     resetCurrentIndex();
@@ -128,7 +127,7 @@ export const usePlaygroundStore = () => {
     resetIsPause();
     resetPauseTime();
   }, [
-    resetCounter,
+    resetIsStarted,
     resetStartTime,
     resetTrainingId,
     resetCurrentIndex,
@@ -140,9 +139,9 @@ export const usePlaygroundStore = () => {
   ]);
 
   return {
+    setIsStarted,
     setTrainingId,
     setCurrentIndex,
-    setCounter,
     setStartTime,
     setTraining,
     setCompletingElement,

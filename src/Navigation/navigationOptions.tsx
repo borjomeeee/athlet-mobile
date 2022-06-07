@@ -7,5 +7,5 @@ export const appNavigationOptions: NativeStackNavigationOptions = {
 };
 
 export const modalsGroupOptions: NativeStackNavigationOptions = {
-  presentation: 'fullScreenModal',
+  presentation: 'containedModal',
 };

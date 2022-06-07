@@ -8,7 +8,6 @@ import * as UI from 'src/Components';
 import {Preview} from './Views/Preview';
 import s from '@borjomeeee/rn-styles';
 import {StatusBar} from 'react-native';
-import {playgroundClock} from './Clock';
 import {withHooks} from 'src/Utils/HOCs';
 
 import {
@@ -26,13 +25,6 @@ export const Playground = withHooks(
     const isPause = useRecoilValue(isPauseStore);
 
     React.useEffect(() => () => reset(), [reset]);
-
-    React.useEffect(() => {
-      if (startTime) {
-        playgroundClock.start();
-        return () => playgroundClock.stop();
-      }
-    }, [startTime]);
 
     return (
       <>
