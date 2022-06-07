@@ -16,8 +16,8 @@ export const SelectGymWheel: React.FC<SelectGymWheelProps> = ({
   onChangeWeight,
 }) => {
   return (
-    <View style={s(`rel row`)}>
-      <View style={s(`abs t:0 b:0 l:-45 aic jcc zi:-1`)}>
+    <View style={s(`row aic`)}>
+      <View>
         <Text style={s(`P7 medium`)}>reps.</Text>
       </View>
       <SelectWheel
@@ -26,8 +26,8 @@ export const SelectGymWheel: React.FC<SelectGymWheelProps> = ({
         onChangeValue={onChangeReps}
         defaultValue={reps}
       />
-      <View style={s(`abs t:0 b:0 r:80 pb:3 aic jcc zi:-1`)}>
-        <Text style={s(`P5 medium`)}>x</Text>
+      <View>
+        <Text style={s(`P5 medium l:5`)}>x</Text>
       </View>
       <SelectWheel
         width={90}
@@ -36,7 +36,7 @@ export const SelectGymWheel: React.FC<SelectGymWheelProps> = ({
         onChangeValue={onChangeWeight}
         defaultValue={weight}
       />
-      <View style={s(`abs t:0 b:0 r:-17 aic jcc zi:-1`)}>
+      <View>
         <Text style={s(`P7 medium`)}>kg.</Text>
       </View>
     </View>

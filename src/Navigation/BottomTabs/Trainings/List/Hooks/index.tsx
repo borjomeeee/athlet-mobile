@@ -1,7 +1,7 @@
 import React from 'react';
 
 import {StackActions, useNavigation} from '@react-navigation/native';
-import {BottomTabTrainingsPaths} from 'src/Navigation/Paths';
+import {BottomTabTrainingsPaths, ModalsPaths} from 'src/Navigation/Paths';
 
 export const useTrainingListController = () => {
   const navigation = useNavigation();
@@ -24,5 +24,11 @@ export const useTrainingListTrainingElementController = (id: string) => {
     );
   }, [id, navigation]);
 
-  return {handlePress};
+  const handlePressStart = React.useCallback(() => {
+    navigation.dispatch(
+      StackActions.push(ModalsPaths.Playground, {trainingId: id}),
+    );
+  }, [id, navigation]);
+
+  return {handlePress, handlePressStart};
 };

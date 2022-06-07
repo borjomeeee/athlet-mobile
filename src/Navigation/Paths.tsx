@@ -5,6 +5,10 @@ export enum AppPaths {
   BottomTab = 'tabs',
 }
 
+export enum ModalsPaths {
+  Playground = 'playground',
+}
+
 export enum AuthPaths {
   SignIn = 'auth/sign-in',
   SignUp = 'auth/sign-up',

@@ -20,6 +20,8 @@ export const Colors = {
 
   tabBarActive: '#57606A',
   tabBarInactive: '#cccccc',
+
+  playgroundBg: '#24292E',
 };
 
 const textSizeStyleSheet = {

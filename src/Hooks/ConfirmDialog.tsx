@@ -9,7 +9,7 @@ export const useConfirmDialog = (id: string) => {
 
   const requestConfirm = React.useCallback(
     (props: Omit<ConfirmDialogProps, 'id' | 'onAccept' | 'onCancel'>) =>
-      new Promise(res => {
+      new Promise<boolean>(res => {
         show(UI.ConfirmDialog, {
           ...props,
 

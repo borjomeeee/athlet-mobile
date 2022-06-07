@@ -1,6 +1,6 @@
 export class TimeUtils {
   static getFormattedTimeForTraining(time: number) {
-    if (time <= 0) {
+    if (time < 0) {
       return undefined;
     }
 
@@ -12,7 +12,7 @@ export class TimeUtils {
       res += `${mins} мин. `;
     }
 
-    if (secs > 0) {
+    if (res === '' || secs > 0) {
       res += `${secs} сек. `;
     }
 

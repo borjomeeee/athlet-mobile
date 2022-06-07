@@ -13,7 +13,8 @@ interface TrainingElementProps {
   training: Training;
 }
 export const TrainingElement: React.FC<TrainingElementProps> = ({training}) => {
-  const {handlePress} = useTrainingListTrainingElementController(training.id);
+  const {handlePress, handlePressStart} =
+    useTrainingListTrainingElementController(training.id);
 
   const formattedCreationDate = React.useMemo(
     () => dayjs(training.createdAt).format('DD/MM/YYYY'),
@@ -33,7 +34,7 @@ export const TrainingElement: React.FC<TrainingElementProps> = ({training}) => {
                 <UI.VSpacer size={20} />
                 <Attribute label="AUTHOR" value={training.author.nickname} />
               </UI.View>
-              <UI.Pressable>
+              <UI.Pressable onPress={handlePressStart}>
                 <UI.View style={s(`w:30 h:30 bgc:green br:6 aic jcc`)}>
                   <PlayIcon />
                 </UI.View>
