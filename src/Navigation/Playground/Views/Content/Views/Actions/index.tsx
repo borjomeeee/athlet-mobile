@@ -6,11 +6,15 @@ import s from '@borjomeeee/rn-styles';
 import {ElementType, ExerciseCompletionType} from 'src/Store/Models/Training';
 import {usePlayground} from 'src/Navigation/Playground/Hooks';
 
+import StopIcon from 'src/Assets/Svg/Stop';
+import PauseIcon from 'src/Assets/Svg/Pause';
+import {Colors} from 'src/Utils/Styles';
+import {useActionsController} from './Controller';
+
 export const Actions = () => {
   const currentElement = useRecoilValue(currentElementStore);
-
-  // TODO: create force exit method
-  const {goNext, exit} = usePlayground();
+  const {handlePressFinish, handlePressPause, handlePressSkip} =
+    useActionsController();
 
   const isTime = React.useMemo(() => {
     if (!currentElement) {
@@ -34,17 +38,28 @@ export const Actions = () => {
         <UI.Button
           style={s(`bw:1 bc:#FFFFFF50 br:6`, `ph:47 bgc:#ffffff10`)}
           label="Пропустить"
-          onPress={goNext}
+          onPress={handlePressSkip}
         />
       ) : (
-        <UI.GithubButton label="Дальше" onPress={goNext} />
+        <UI.GithubButton label="Дальше" onPress={handlePressSkip} />
       )}
       <UI.HSpacer size={10} />
-      <UI.GithubButton
-        label="Завершить тренировку"
-        onPress={exit}
-        style={s(`bgc:red bw:0`)}
-      />
+
+      <UI.View style={s(`row`)}>
+        <UI.GithubButton
+          label="Завершить тренировку"
+          onPress={handlePressFinish}
+          style={s(`fill bgc:red bw:0 pv:10`)}>
+          <StopIcon />
+        </UI.GithubButton>
+        <UI.VSpacer size={10} />
+        <UI.GithubButton
+          label="Пауза"
+          onPress={handlePressPause}
+          style={s(`fill bgc:#F8F8F8 bw:0 pv:10`)}>
+          <PauseIcon fill={Colors.black} />
+        </UI.GithubButton>
+      </UI.View>
     </UI.View>
   );
 };

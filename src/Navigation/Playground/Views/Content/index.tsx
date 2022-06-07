@@ -6,7 +6,7 @@ import {Header} from './Views/Header';
 import {CurrentElement} from './Views/CurrentElement';
 import {Actions} from './Views/Actions';
 
-export const Content = () => {
+export const Content = React.memo(() => {
   return (
     <SafeAreaView style={s(`fill`)}>
       <Header />
@@ -18,4 +18,4 @@ export const Content = () => {
       <UI.HSpacer size={20} />
     </SafeAreaView>
   );
-};
+});

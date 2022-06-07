@@ -7,8 +7,10 @@ import Animated, {
   useDerivedValue,
   withTiming,
 } from 'react-native-reanimated';
+import {useRecoilValue} from 'recoil';
 import * as UI from 'src/Components';
 import {playgroundClock} from 'src/Navigation/Playground/Clock';
+import {isPauseStore, pauseTimeStore} from 'src/Navigation/Playground/Store';
 
 interface ExpirationTimeProps {
   duration: number;
@@ -22,8 +24,12 @@ export const ExpirationTime: React.FC<ExpirationTimeProps> = ({
   onExpire,
 }) => {
   const [startTime] = React.useState(Date.now());
+  const isPause = useRecoilValue(isPauseStore);
+  const pauseTime = useRecoilValue(pauseTimeStore);
 
   const [duration, setDuration] = React.useState(0);
+  const [initialPauseTime] = React.useState(pauseTime);
+
   const [expirationTime, setExpirationTime] = React.useState(
     Date.now() + providedDuration,
   );
@@ -40,13 +46,17 @@ export const ExpirationTime: React.FC<ExpirationTimeProps> = ({
   }, [duration, startTime, expirationTime, onExpire, onChange]);
 
   React.useEffect(() => {
-    setDuration(Date.now() - startTime);
+    if (!isPause) {
+      setDuration(Date.now() - startTime);
 
-    const unwatch = playgroundClock.watch(time =>
-      setDuration(Math.max(time - startTime, 0)),
-    );
-    return () => unwatch();
-  }, [startTime]);
+      const unwatch = playgroundClock.watch(time => {
+        setDuration(
+          Math.max(time - startTime - (pauseTime - initialPauseTime), 0),
+        );
+      });
+      return () => unwatch();
+    }
+  }, [isPause, startTime, pauseTime, initialPauseTime]);
 
   const formattedDiffTime = React.useMemo(() => {
     const durationInSecs = Math.floor(

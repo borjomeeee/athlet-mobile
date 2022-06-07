@@ -2,6 +2,7 @@ import React from 'react';
 import {
   completingElementStore,
   currentIndexStore,
+  startTimeStore,
   trainingElementsStore,
   trainingIdStore,
   usePlaygroundStore,
@@ -15,13 +16,28 @@ import {useAppController} from 'src/Services/App';
 import {StackActions} from '@react-navigation/native';
 import {useGetRecoilState} from 'src/Utils/Recoil';
 import {ElementType, ExerciseCompletionType} from 'src/Store/Models/Training';
+import {useConfirmDialog} from 'src/Hooks/ConfirmDialog';
+import {Modals} from '../Const';
 
 export const usePlayground = () => {
+  const {requestConfirm: requestForceCloseConfirm} = useConfirmDialog(
+    Modals.ConfirmForceClose,
+  );
+
   const getCompletingElement = useGetRecoilState(completingElementStore);
+  const getTrainingElements = useGetRecoilState(trainingElementsStore);
+  const getCurrentIndex = useGetRecoilState(currentIndexStore);
 
-  const {reset, setCompletedElements, setStartTime} = usePlaygroundStore();
+  const {
+    reset,
+    setCompletedElements,
+    setCurrentIndex,
+    setCompletingElement,
+    resetCompletingElement,
+    setStartTime,
+  } = usePlaygroundStore();
+
   const navigation = useNavigation();
-
   const saveCurrent = React.useCallback(() => {
     const completingElement = getCompletingElement();
     if (completingElement) {
@@ -29,8 +45,9 @@ export const usePlayground = () => {
         ...completedElements,
         completingElement,
       ]);
+      resetCompletingElement();
     }
-  }, [setCompletedElements, getCompletingElement]);
+  }, [setCompletedElements, resetCompletingElement, getCompletingElement]);
 
   const exit = React.useCallback(() => {
     const completingElement = getCompletingElement();
@@ -50,10 +67,22 @@ export const usePlayground = () => {
     }
   }, [getCompletingElement, saveCurrent, navigation]);
 
-  const getTrainingElements = useGetRecoilState(trainingElementsStore);
-  const getCurrentIndex = useGetRecoilState(currentIndexStore);
+  const requestForceClose = React.useCallback(() => {
+    return requestForceCloseConfirm({
+      title: 'Завершение тренировки',
+      description: 'Вы действительно хотите завершить тренировку?',
 
-  const {setCurrentIndex, setCompletingElement} = usePlaygroundStore();
+      acceptText: 'Да, хочу',
+      cancelText: 'Отмена',
+    });
+  }, [requestForceCloseConfirm]);
+
+  const forceClose = React.useCallback(async () => {
+    const isConfirmed = await requestForceClose();
+    if (isConfirmed) {
+      exit();
+    }
+  }, [requestForceClose, exit]);
 
   const start = React.useCallback(() => {
     setStartTime(Date.now());
@@ -78,7 +107,15 @@ export const usePlayground = () => {
     exit,
   ]);
 
-  return {reset, exit, start, goNext, setCompletingElement};
+  return {
+    reset,
+    exit,
+    start,
+    goNext,
+    setCompletingElement,
+    requestForceClose,
+    forceClose,
+  };
 };
 
 type ProfileScreenRouteProp = RouteProp<
@@ -87,9 +124,12 @@ type ProfileScreenRouteProp = RouteProp<
 >;
 
 export const usePlaygroundNavigationEffect = () => {
+  const navigation = useNavigation();
   const route = useRoute<ProfileScreenRouteProp>();
 
+  const {requestForceClose} = usePlayground();
   const {setTrainingId} = usePlaygroundStore();
+  const getStartTime = useGetRecoilState(startTimeStore);
 
   React.useEffect(() => {
     const params = route.params;
@@ -98,6 +138,25 @@ export const usePlaygroundNavigationEffect = () => {
       setTrainingId(params?.trainingId);
     }
   }, [route, setTrainingId]);
+
+  React.useEffect(
+    () =>
+      navigation.addListener('beforeRemove', async e => {
+        // Training was started
+        const isStarted = !!getStartTime();
+        if (!isStarted) {
+          return;
+        }
+
+        e.preventDefault();
+
+        const isConfirmed = await requestForceClose();
+        if (isConfirmed) {
+          navigation.dispatch(e.data.action);
+        }
+      }),
+    [navigation, getStartTime, requestForceClose],
+  );
 };
 
 export const usePlaygroundInitialTraining = () => {

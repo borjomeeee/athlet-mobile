@@ -3,23 +3,32 @@ import React from 'react';
 import {useRecoilValue} from 'recoil';
 import * as UI from 'src/Components';
 import {playgroundClock} from 'src/Navigation/Playground/Clock';
-import {startTimeStore} from 'src/Navigation/Playground/Store';
+import {
+  isPauseStore,
+  pauseTimeStore,
+  startTimeStore,
+} from 'src/Navigation/Playground/Store';
 
 export const Time = () => {
   const [clockTime, setClockTime] = React.useState(Date.now());
+
   const startTime = useRecoilValue(startTimeStore);
+  const isPause = useRecoilValue(isPauseStore);
+  const pauseTime = useRecoilValue(pauseTimeStore);
 
   React.useEffect(() => {
-    const unwatch = playgroundClock.watch(setClockTime);
-    return () => unwatch();
-  }, []);
+    if (!isPause) {
+      const unwatch = playgroundClock.watch(setClockTime);
+      return () => unwatch();
+    }
+  }, [isPause]);
 
   const formattedDuration = React.useMemo(() => {
     if (!startTime) {
       return 'Undefined';
     }
 
-    const diffSeconds = Math.floor((clockTime - startTime) / 1000);
+    const diffSeconds = Math.floor((clockTime - startTime - pauseTime) / 1000);
     const diffSecondsPerMin = diffSeconds % 60;
     const strDiffSecondsPerMin =
       diffSecondsPerMin.toString().length === 1
@@ -33,7 +42,7 @@ export const Time = () => {
         : diffMinutes.toString();
 
     return `${strDiffMinutes}:${strDiffSecondsPerMin}`;
-  }, [clockTime, startTime]);
+  }, [clockTime, startTime, pauseTime]);
 
   return (
     <UI.View>

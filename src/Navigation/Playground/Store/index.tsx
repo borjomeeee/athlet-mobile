@@ -79,6 +79,16 @@ export const completedElementsStore = atom({
   default: [] as IterableTrainingElement[],
 });
 
+export const isPauseStore = atom({
+  key: createKey('isPause'),
+  default: false,
+});
+
+export const pauseTimeStore = atom({
+  key: createKey('pauseTime'),
+  default: 0,
+});
+
 export const usePlaygroundStore = () => {
   const setCounter = useSetRecoilState(counterStore);
   const resetCounter = useResetRecoilState(counterStore);
@@ -101,6 +111,12 @@ export const usePlaygroundStore = () => {
   const setCompletedElements = useSetRecoilState(completedElementsStore);
   const resetCompletedElements = useResetRecoilState(completedElementsStore);
 
+  const setIsPause = useSetRecoilState(isPauseStore);
+  const resetIsPause = useResetRecoilState(isPauseStore);
+
+  const setPauseTime = useSetRecoilState(pauseTimeStore);
+  const resetPauseTime = useResetRecoilState(pauseTimeStore);
+
   const reset = React.useCallback(() => {
     resetCounter();
     resetStartTime();
@@ -109,6 +125,8 @@ export const usePlaygroundStore = () => {
     resetTraining();
     resetCompletingElement();
     resetCompletedElements();
+    resetIsPause();
+    resetPauseTime();
   }, [
     resetCounter,
     resetStartTime,
@@ -117,6 +135,8 @@ export const usePlaygroundStore = () => {
     resetTraining,
     resetCompletingElement,
     resetCompletedElements,
+    resetPauseTime,
+    resetIsPause,
   ]);
 
   return {
@@ -127,6 +147,9 @@ export const usePlaygroundStore = () => {
     setTraining,
     setCompletingElement,
     setCompletedElements,
+    resetCompletingElement,
+    setIsPause,
+    setPauseTime,
     reset,
   };
 };

@@ -14,6 +14,7 @@ export const Button: React.FC<ButtonProps> = ({
   label,
   style,
   labelStyle,
+  children,
   ...props
 }) => {
   const containerStyle = React.useMemo(
@@ -27,7 +28,7 @@ export const Button: React.FC<ButtonProps> = ({
 
   return (
     <Pressable style={containerStyle} {...props}>
-      <Text style={memoLabelStyle}>{label}</Text>
+      {children ? children : <Text style={memoLabelStyle}>{label}</Text>}
     </Pressable>
   );
 };
