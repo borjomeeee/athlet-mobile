@@ -7,7 +7,7 @@ import * as UI from 'src/Components';
 import {TrainingEvent} from 'src/Store/Models/Training';
 import {trainingsEventsListSelector} from 'src/Store/TrainingsEvents';
 
-import RightArrowIcon from 'src/Assets/Svg/RightArrow';
+import {TrainingEventCard} from './Views/TrainingEventCard';
 
 export const TrainingsEventsList = () => {
   const trainingsEventsList = useRecoilValue(trainingsEventsListSelector);
@@ -60,22 +60,7 @@ function renderSectionHeader({
 }
 
 function renderItem({item}: {item: TrainingEvent}) {
-  return (
-    <UI.View style={s(`container`)}>
-      <UI.Scalable>
-        <UI.ShadowView dx={0} dy={0} color={'#E1E4E875'} blur={10}>
-          <UI.View style={s(`row bgc:white br:20 ph:16 pv:10 aic`)}>
-            <UI.View style={s(`fill`)}>
-              <UI.Text style={s(`P7 medium`)}>
-                {item.initialTraining.title}
-              </UI.Text>
-            </UI.View>
-            <RightArrowIcon />
-          </UI.View>
-        </UI.ShadowView>
-      </UI.Scalable>
-    </UI.View>
-  );
+  return <TrainingEventCard trainingEvent={item} />;
 }
 
 function SectionSeparator() {

@@ -1,5 +1,5 @@
 import React from 'react';
-import {atom, selector, useSetRecoilState} from 'recoil';
+import {atom, selector, useRecoilValue, useSetRecoilState} from 'recoil';
 import {getKeyFabricForDomain} from 'src/Utils/Recoil';
 import {TrainingEvent} from './Models/Training';
 
@@ -31,3 +31,8 @@ export const trainingsEventsListSelector = selector({
     return Object.values(get(trainingsEventsStore));
   },
 });
+
+export const useTrainingEvent = (id?: string) => {
+  const trainingEvents = useRecoilValue(trainingsEventsStore);
+  return id ? trainingEvents[id] : undefined;
+};
