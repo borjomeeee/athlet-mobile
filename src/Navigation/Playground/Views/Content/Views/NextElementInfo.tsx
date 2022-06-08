@@ -40,7 +40,7 @@ export const NextElementInfo = () => {
       <UI.Text
         style={s(
           `P7 c:#FFFFFF tar`,
-        )}>{`${nextElement.title} · ${value}`}</UI.Text>
+        )}>{`${nextElement.baseExercise.title} · ${value}`}</UI.Text>
     );
   }
 };

@@ -2,7 +2,6 @@ import s from '@borjomeeee/rn-styles';
 import React from 'react';
 import {TextStyle} from 'react-native';
 import {SelectWheel, SelectWheelProps, Text, View} from 'src/Components/Common';
-import {Centered} from 'src/Components/Unique';
 
 export interface SelectTimeWheelProps
   extends Omit<SelectWheelProps, 'start' | 'end'> {

@@ -196,7 +196,7 @@ export const Exercise: React.FC<ExerciseProps> = ({
       layout={Layout}>
       <UI.ShadowView dx={10} dy={10} blur={10} color={color}>
         <ExerciseView
-          title={exercise.title}
+          title={exercise.baseExercise.title}
           restInfo={formattedRest}
           valueInfo={value}
           {...{handlePress, handlePressRest, handlePressRemove}}

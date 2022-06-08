@@ -28,7 +28,7 @@ export const CurrentElement = () => {
       return 'Отдых';
     }
 
-    let title = currentElement.title;
+    let title = currentElement.baseExercise.title;
     if (currentElement.completionType === ExerciseCompletionType.GYM) {
       title += ` · ${currentElement.kg}кг`;
     }

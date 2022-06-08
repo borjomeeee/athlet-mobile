@@ -4,9 +4,11 @@ import {
   completingElementStore,
   currentIndexStore,
   isStartedStore,
+  pauseTimeStore,
   startTimeStore,
   trainingElementsStore,
   trainingIdStore,
+  trainingStore,
   usePlaygroundStore,
 } from '../Store';
 import {useRecoilCallback, useRecoilValue} from 'recoil';
@@ -22,8 +24,12 @@ import {useConfirmDialog} from 'src/Hooks/ConfirmDialog';
 import {Modals} from '../Const';
 import {useModal} from 'src/Lib/ModalRouter';
 import {SuccessCompleteTraining} from '../Modals/SuccessCompleteTraining';
+import {useTrainingsEventsService} from 'src/Services/TrainingsEvents';
+import {v4 as uuidv4} from 'uuid';
+import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
 
 export const usePlayground = () => {
+  const {saveTrainingEvent} = useTrainingsEventsService();
   const {requestConfirm: requestForceCloseConfirm} = useConfirmDialog(
     Modals.ConfirmForceClose,
   );
@@ -32,10 +38,13 @@ export const usePlayground = () => {
     Modals.SuccessCompleteTraining,
   );
 
+  const getTraining = useGetRecoilState(trainingStore);
   const getCompletedElements = useGetRecoilState(completedElementsStore);
   const getCompletingElement = useGetRecoilState(completingElementStore);
   const getTrainingElements = useGetRecoilState(trainingElementsStore);
   const getCurrentIndex = useGetRecoilState(currentIndexStore);
+  const getStartTime = useGetRecoilState(startTimeStore);
+  const getPauseTime = useGetRecoilState(pauseTimeStore);
 
   const {
     reset,
@@ -68,7 +77,19 @@ export const usePlayground = () => {
   }, [requestForceCloseConfirm]);
 
   const save = React.useCallback(() => {
+    const training = getTraining();
+    if (!training) {
+      return;
+    }
+
     const completingElement = getCompletingElement();
+
+    const startTime = getStartTime();
+    if (!startTime) {
+      return;
+    }
+    const pauseTime = getPauseTime();
+
     let completedElements = getCompletedElements();
 
     if (
@@ -79,7 +100,27 @@ export const usePlayground = () => {
     ) {
       completedElements = [...completedElements, completingElement];
     }
-  }, [getCompletingElement, getCompletedElements]);
+
+    saveTrainingEvent({
+      id: uuidv4(),
+
+      duration: Date.now() - startTime - pauseTime,
+      completedElements: TrainingUtils.fromIterable(completedElements),
+      initialTraining: {
+        id: training.id,
+        author: training.author,
+        elements: training.elements,
+        title: training.title,
+      },
+    });
+  }, [
+    getCompletingElement,
+    getCompletedElements,
+    saveTrainingEvent,
+    getStartTime,
+    getPauseTime,
+    getTraining,
+  ]);
 
   const saveAndClose = React.useCallback(() => {
     setIsStarted(false);

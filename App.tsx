@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 import 'react-native-gesture-handler';
 import React from 'react';
 import {LogBox} from 'react-native';
@@ -14,6 +16,9 @@ import {ModalRouter} from 'src/Lib/ModalRouter';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {OverlayProvider} from 'src/Lib/Overlay';
 import {DebugObserver} from 'src/Utils/Recoil';
+
+import localeRu from 'dayjs/locale/ru';
+dayjs.locale(localeRu);
 
 configureStyles();
 

@@ -26,9 +26,11 @@ export const training: TrainingApi = {
 
   elements: [
     {
-      id: '1',
+      baseExercise: {
+        id: '1',
+        title: 'Подтягивания',
+      },
       type: ElementType.EXERCISE,
-      title: 'Подтягивания',
       completionType: ExerciseCompletionType.REPS,
       reps: 10,
       restAfterComplete: 30000,
@@ -37,25 +39,33 @@ export const training: TrainingApi = {
       type: ElementType.SET,
       elements: [
         {
-          id: '1',
+          baseExercise: {
+            id: '1',
+            title: 'Подтягивания',
+          },
           type: ElementType.EXERCISE,
-          title: 'Подтягивания',
+
           completionType: ExerciseCompletionType.REPS,
           reps: 10,
           restAfterComplete: 30000,
         },
         {
-          id: '1',
+          baseExercise: {
+            id: '1',
+            title: 'Подтягивания',
+          },
           type: ElementType.EXERCISE,
-          title: 'Подтягивания',
+
           completionType: ExerciseCompletionType.TIME,
           time: 15000,
           restAfterComplete: 30000,
         },
         {
-          id: '1',
+          baseExercise: {
+            id: '1',
+            title: 'Подтягивания',
+          },
           type: ElementType.EXERCISE,
-          title: 'Подтягивания',
           completionType: ExerciseCompletionType.GYM,
           reps: 10,
           kg: 150,
@@ -68,25 +78,33 @@ export const training: TrainingApi = {
       type: ElementType.SET,
       elements: [
         {
-          id: '1',
+          baseExercise: {
+            id: '1',
+            title: 'Подтягивания',
+          },
           type: ElementType.EXERCISE,
-          title: 'Подтягивания',
           completionType: ExerciseCompletionType.REPS,
           reps: 10,
           restAfterComplete: 1000,
         },
         {
-          id: '1',
+          baseExercise: {
+            id: '1',
+            title: 'Подтягивания',
+          },
           type: ElementType.EXERCISE,
-          title: 'Подтягивания',
+
           completionType: ExerciseCompletionType.TIME,
           time: 15000,
           restAfterComplete: 15000,
         },
         {
-          id: '1',
+          baseExercise: {
+            id: '1',
+            title: 'Подтягивания',
+          },
           type: ElementType.EXERCISE,
-          title: 'Подтягивания',
+
           completionType: ExerciseCompletionType.GYM,
           reps: 10,
           kg: 150,

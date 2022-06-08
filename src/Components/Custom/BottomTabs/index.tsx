@@ -9,15 +9,25 @@ import {Colors} from 'src/Utils/Styles';
 import TabBarHome from 'src/Assets/Svg/TabBarHome';
 import TabBarAccount from 'src/Assets/Svg/TabBarAccount';
 import TabBarFitness from 'src/Assets/Svg/TabBarFitness';
+import {BottomTabPaths} from 'src/Navigation/Paths';
 
 export const BottomTabs = (props: BottomTabBarProps) => {
   const {bottom} = useSafeAreaInsets();
+  const navigation = props.navigation;
+
+  const handlePressHome = React.useCallback(() => {
+    navigation.navigate(BottomTabPaths.Home);
+  }, [navigation]);
+
+  const handlePressFitness = React.useCallback(() => {
+    navigation.navigate(BottomTabPaths.Trainings);
+  }, [navigation]);
 
   return (
     <ShadowView dx={0} dy={4} blur={12} color={Colors.black + '05'}>
       <View style={s(`btrr:15 btlr:15 bgc:${Colors.white}`)}>
         <View style={s(`container pv:15 row jcsa`)}>
-          <Pressable>
+          <Pressable onPress={handlePressHome}>
             <TabBarHome
               fill={
                 props.state.index === 0
@@ -27,7 +37,7 @@ export const BottomTabs = (props: BottomTabBarProps) => {
             />
           </Pressable>
 
-          <Pressable>
+          <Pressable onPress={handlePressFitness}>
             <TabBarFitness
               fill={
                 props.state.index === 1

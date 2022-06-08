@@ -37,12 +37,11 @@ export const ExerciseScheme = z.object({
 export type ExerciseApi = z.input<typeof ExerciseScheme>;
 export type Exercise = z.output<typeof ExerciseScheme>;
 
-export const TrainingExerciseScheme = ElementSheme.merge(ExerciseScheme).extend(
-  {
-    type: z.literal(ElementType.EXERCISE),
-    restAfterComplete: MayBeIntegerScheme.default(0),
-  },
-);
+export const TrainingExerciseScheme = ElementSheme.extend({
+  type: z.literal(ElementType.EXERCISE),
+  baseExercise: ExerciseScheme,
+  restAfterComplete: MayBeIntegerScheme.default(0),
+});
 
 export type TrainingExercise = z.output<typeof TrainingExerciseScheme>;
 
@@ -107,4 +106,25 @@ export const TrainingScheme = z.object({
 export type TrainingApi = z.input<typeof TrainingScheme>;
 export type Training = z.output<typeof TrainingScheme>;
 
+export const TrainingSnapshotScheme = z.object({
+  id: z.string(),
+  author: canBeNull(UserPreviewScheme).default({}),
+
+  title: MayBeStringScheme.default('Undefined'),
+  elements: canBeNull(z.array(TrainingElementScheme)).default([]),
+});
+
+export type TrainingSnapshot = z.output<typeof TrainingSnapshotScheme>;
+
+export const TrainingEventScheme = z.object({
+  id: z.string(),
+
+  completedAt: MayBeDateScheme,
+  duration: MayBeIntegerScheme.default(0),
+
+  initialTraining: TrainingSnapshotScheme,
+  completedElements: canBeNull(z.array(TrainingElementScheme)).default([]),
+});
+
+export type TrainingEvent = z.output<typeof TrainingEventScheme>;
 export type CreatingTraining = Pick<Training, 'title' | 'elements'>;
