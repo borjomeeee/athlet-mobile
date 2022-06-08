@@ -38,7 +38,7 @@ export const useEditExerciseController = (id: string) => {
   const {show} = useModal(`${id} -> editExercise__selectExercise`);
   const changeCurrentExercise = React.useCallback(
     (exercise: ExerciseElement) => {
-      setCurrentExercise(exercise);
+      setCurrentExercise(exercise.baseExercise);
       setCompletionType(exercise.completionType);
 
       switch (exercise.completionType) {
@@ -129,7 +129,7 @@ export const useEditExerciseSubmitController = (id: string) => {
         props.onEdit?.({
           restAfterComplete: 15,
 
-          ...currentExercise,
+          baseExercise: currentExercise,
           type: ElementType.EXERCISE,
           completionType: ExerciseCompletionType.REPS,
           reps: selectedReps,
@@ -139,7 +139,7 @@ export const useEditExerciseSubmitController = (id: string) => {
         props.onEdit?.({
           restAfterComplete: 15,
 
-          ...currentExercise,
+          baseExercise: currentExercise,
           type: ElementType.EXERCISE,
           completionType: ExerciseCompletionType.TIME,
           time: selectedTime,
@@ -149,7 +149,7 @@ export const useEditExerciseSubmitController = (id: string) => {
         props.onEdit?.({
           restAfterComplete: 15,
 
-          ...currentExercise,
+          baseExercise: currentExercise,
           type: ElementType.EXERCISE,
           completionType: ExerciseCompletionType.GYM,
           reps: selectedGymReps,
