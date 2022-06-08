@@ -23,8 +23,8 @@ export const TrainingElement: React.FC<TrainingElementProps> = ({training}) => {
 
   return (
     <UI.View style={s(`container`)}>
-      <UI.ShadowView dx={0} dy={0} color={'#E1E4E875'} blur={10}>
-        <UI.Scalable onPress={handlePress}>
+      <UI.Scalable onPress={handlePress}>
+        <UI.ShadowView dx={0} dy={0} color={'#E1E4E875'} blur={10}>
           <UI.View style={s(`bgc:white ph:16 pv:12 br:20 minH:92 jcsb`)}>
             <UI.Text style={s(`P7 medium`)}>{training.title}</UI.Text>
             <UI.HSpacer size={10} />
@@ -41,8 +41,8 @@ export const TrainingElement: React.FC<TrainingElementProps> = ({training}) => {
               </UI.Pressable>
             </UI.View>
           </UI.View>
-        </UI.Scalable>
-      </UI.ShadowView>
+        </UI.ShadowView>
+      </UI.Scalable>
     </UI.View>
   );
 };

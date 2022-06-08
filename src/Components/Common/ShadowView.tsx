@@ -1,13 +1,27 @@
 import React from 'react';
 
-import {Canvas, Group, Paint, Rect, Shadow} from '@shopify/react-native-skia';
+import {Box, BoxShadow, Canvas, rect, SkRect} from '@shopify/react-native-skia';
 import {View} from './View';
 import s from '@borjomeeee/rn-styles';
 import {ViewStyle} from 'react-native';
 import {useLayout} from '@react-native-community/hooks';
-import {Colors} from 'src/Utils/Styles';
 
-interface ShadowViewProps extends React.ComponentProps<typeof Shadow> {
+interface ShadowProps extends React.ComponentProps<typeof BoxShadow> {
+  box: SkRect;
+}
+
+const Shadow: React.FC<ShadowProps> = ({box, ...props}) => {
+  return (
+    // Bug: shadow updates when rerendered and not disappears
+    <Canvas style={s(`fill`)} key={Date.now().toString()}>
+      <Box box={box} color="transparent">
+        <BoxShadow {...props} />
+      </Box>
+    </Canvas>
+  );
+};
+
+interface ShadowViewProps extends React.ComponentProps<typeof BoxShadow> {
   containerStyle?: ViewStyle;
   canvasBackgroundColor?: string;
 }
@@ -20,8 +34,6 @@ export const ShadowView: React.FC<ShadowViewProps> = React.memo(
     dy,
 
     blur,
-    canvasBackgroundColor = Colors.white,
-
     ...props
   }) => {
     const {onLayout, ...layout} = useLayout();
@@ -30,8 +42,13 @@ export const ShadowView: React.FC<ShadowViewProps> = React.memo(
       [containerStyle],
     );
 
-    const diffX = -(Math.abs(+dx) + +blur * 10);
-    const diffY = -(Math.abs(+dy) + +blur * 10);
+    const diffX = -(Math.abs(+(dx || 0)) + +blur * 10);
+    const diffY = -(Math.abs(+(dy || 0)) + +blur * 10);
+
+    const box = React.useMemo(
+      () => rect(-diffX, -diffY, layout.width, layout.height),
+      [diffX, diffY, layout.width, layout.height],
+    );
 
     return (
       <View style={style} onLayout={onLayout}>
@@ -39,20 +56,7 @@ export const ShadowView: React.FC<ShadowViewProps> = React.memo(
         <View
           style={s(`abs t:${diffY} b:${diffY} r:${diffX} l:${diffX} ofv zi:-1`)}
           pointerEvents="none">
-          <Canvas style={s(`fill`)}>
-            <Group>
-              <Paint>
-                <Shadow dx={dx} dy={dy} blur={blur} shadowOnly {...props} />
-              </Paint>
-              <Rect
-                x={-diffX}
-                y={-diffY}
-                width={layout.width}
-                height={layout.height}
-                color={canvasBackgroundColor}
-              />
-            </Group>
-          </Canvas>
+          <Shadow box={box} dx={dx} dy={dy} blur={blur} {...props} />
         </View>
       </View>
     );
