@@ -65,6 +65,7 @@ export const configureStyles = () => {
     ...textSizeStyleSheet,
     ...fontsStylesSheet,
 
+    removed: () => ({textDecorationLine: 'line-through'}),
     uppercase: () => ({textTransform: 'uppercase'}),
     container: () => ({paddingHorizontal: 20}),
 
@@ -78,6 +79,10 @@ export const configureStyles = () => {
       shadowRadius: 12,
 
       elevation: 7,
+    }),
+
+    rotate: () => ({
+      transform: [{rotate: '180deg'}],
     }),
   });
 
