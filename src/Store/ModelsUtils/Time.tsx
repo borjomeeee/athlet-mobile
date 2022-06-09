@@ -7,13 +7,13 @@ export class TimeUtils {
 
     let res = '';
     if (mins > 0) {
-      res += `${mins} мин.`;
+      res += `${mins}м.`;
     }
     if (res) {
       res += ' ';
     }
 
-    res += `${secs} сек.`;
+    res += `${secs}с.`;
 
     if (time < 0) {
       res = '-' + res;

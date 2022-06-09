@@ -74,9 +74,7 @@ export const Exercise: React.FC<ExerciseProps> = ({
     if (ExerciseUtils.isRepsExercise(initialExercise)) {
       return `${initialExercise.reps} раз.`;
     } else if (ExerciseUtils.isTimeExercise(initialExercise)) {
-      return (
-        TimeUtils.getFormattedTimeForTraining(initialExercise.time) || '0 сек.'
-      );
+      return TimeUtils.getFormattedTimeForTraining(initialExercise.time);
     } else if (ExerciseUtils.isGymExercise(initialExercise)) {
       return `${initialExercise.reps} x ${initialExercise.kg} кг.`;
     }
@@ -97,12 +95,9 @@ export const Exercise: React.FC<ExerciseProps> = ({
         completedExercise &&
         ExerciseUtils.isTimeExercise(completedExercise)
       ) {
-        return (
-          TimeUtils.getFormattedTimeForTraining(completedExercise.time) ||
-          '0 сек.'
-        );
+        return TimeUtils.getFormattedTimeForTraining(completedExercise.time);
       } else {
-        return '0 сек.';
+        return TimeUtils.getFormattedTimeForTraining(0);
       }
     } else if (ExerciseUtils.isGymExercise(initialExercise)) {
       if (completedExercise && ExerciseUtils.isGymExercise(completedExercise)) {
@@ -145,9 +140,7 @@ export const Exercise: React.FC<ExerciseProps> = ({
 
   const formattedValueDiff = React.useMemo(() => {
     if (ExerciseUtils.isTimeExercise(initialExercise)) {
-      return (
-        TimeUtils.getFormattedTimeForTraining(Math.abs(valueDiff)) || `0 сек.`
-      );
+      return TimeUtils.getFormattedTimeForTraining(Math.abs(valueDiff));
     } else {
       return Math.abs(valueDiff);
     }
