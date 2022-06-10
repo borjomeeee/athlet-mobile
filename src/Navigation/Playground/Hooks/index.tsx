@@ -11,7 +11,7 @@ import {
   trainingStore,
   usePlaygroundStore,
 } from '../Store';
-import {useRecoilCallback, useRecoilValue} from 'recoil';
+import {useRecoilValue} from 'recoil';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
 import {AppPaths, ModalsPaths} from 'src/Navigation/Paths';
 import {ModalsGroupParamList} from 'src/Navigation';
@@ -231,25 +231,25 @@ export const usePlaygroundNavigationEffect = () => {
 };
 
 export const usePlaygroundInitialTraining = () => {
-  const {loadTrainingById} = useTrainingService();
+  const {loadTraining} = useTrainingService();
   const {setTraining} = usePlaygroundStore();
 
   const {defaultHandleError} = useAppController();
   const trainingId = useRecoilValue(trainingIdStore);
 
   React.useEffect(() => {
-    async function loadTraining() {
+    async function _loadTraining() {
       if (trainingId) {
-        const [training, err] = await loadTrainingById(trainingId);
+        const [training, err] = await loadTraining(trainingId);
 
         if (err) {
           defaultHandleError(err);
           return;
         } else if (training) {
-          setTraining(training);
+          // setTraining(training);
         }
       }
     }
-    loadTraining();
-  }, [trainingId, loadTrainingById, defaultHandleError, setTraining]);
+    _loadTraining();
+  }, [trainingId, loadTraining, defaultHandleError, setTraining]);
 };

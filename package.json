@@ -44,6 +44,7 @@
     "@react-native-community/eslint-config": "^2.0.0",
     "@testing-library/jest-native": "^4.0.4",
     "@testing-library/react-hooks": "^7.0.2",
+    "@testing-library/react-native": "^9.1.0",
     "@types/jest": "^27.4.1",
     "@types/react-native": "^0.66.15",
     "@types/react-test-renderer": "^17.0.1",

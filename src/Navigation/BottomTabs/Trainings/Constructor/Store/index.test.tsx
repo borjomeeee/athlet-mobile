@@ -16,8 +16,12 @@ import {
 
 const firstElement: ExerciseElement = {
   type: ElementType.EXERCISE,
-  id: '1',
-  title: 'Hello, world!',
+
+  baseExercise: {
+    id: '1',
+    title: 'Hello, world!',
+  },
+
   completionType: ExerciseCompletionType.REPS,
   restAfterComplete: 10,
   reps: 10,
@@ -25,8 +29,12 @@ const firstElement: ExerciseElement = {
 
 const secondElement: ExerciseElement = {
   type: ElementType.EXERCISE,
-  id: '2',
-  title: 'Hello, world!',
+
+  baseExercise: {
+    id: '2',
+    title: 'Hello, world!',
+  },
+
   completionType: ExerciseCompletionType.TIME,
   restAfterComplete: 10,
   time: 10,
@@ -106,12 +114,12 @@ describe('trainings constructor store', () => {
     });
 
     expect(storeResult.current.elements).toHaveLength(2);
-    expect((storeResult.current.elements[0] as ExerciseWithId)?.id).toBe(
-      firstElement.id,
-    );
-    expect((storeResult.current.elements[1] as ExerciseWithId)?.id).toBe(
-      secondElement.id,
-    );
+    expect(
+      (storeResult.current.elements[0] as ExerciseWithId)?.baseExercise.id,
+    ).toBe(firstElement.baseExercise.id);
+    expect(
+      (storeResult.current.elements[1] as ExerciseWithId)?.baseExercise.id,
+    ).toBe(secondElement.baseExercise.id);
 
     // swap first element with prev (Must nothing happines)
     act(() => {
@@ -121,12 +129,12 @@ describe('trainings constructor store', () => {
     });
 
     expect(storeResult.current.elements).toHaveLength(2);
-    expect((storeResult.current.elements[0] as ExerciseWithId)?.id).toBe(
-      firstElement.id,
-    );
-    expect((storeResult.current.elements[1] as ExerciseWithId)?.id).toBe(
-      secondElement.id,
-    );
+    expect(
+      (storeResult.current.elements[0] as ExerciseWithId)?.baseExercise.id,
+    ).toBe(firstElement.baseExercise.id);
+    expect(
+      (storeResult.current.elements[1] as ExerciseWithId)?.baseExercise.id,
+    ).toBe(secondElement.baseExercise.id);
 
     // swap second element with prev (Must swap happines)
     act(() => {
@@ -136,12 +144,12 @@ describe('trainings constructor store', () => {
     });
 
     expect(storeResult.current.elements).toHaveLength(2);
-    expect((storeResult.current.elements[0] as ExerciseWithId)?.id).toBe(
-      secondElement.id,
-    );
-    expect((storeResult.current.elements[1] as ExerciseWithId)?.id).toBe(
-      firstElement.id,
-    );
+    expect(
+      (storeResult.current.elements[0] as ExerciseWithId)?.baseExercise.id,
+    ).toBe(secondElement.baseExercise.id);
+    expect(
+      (storeResult.current.elements[1] as ExerciseWithId)?.baseExercise.id,
+    ).toBe(firstElement.baseExercise.id);
 
     // swap second element with next (Must nothing happines)
     act(() => {
@@ -151,12 +159,12 @@ describe('trainings constructor store', () => {
     });
 
     expect(storeResult.current.elements).toHaveLength(2);
-    expect((storeResult.current.elements[0] as ExerciseWithId)?.id).toBe(
-      secondElement.id,
-    );
-    expect((storeResult.current.elements[1] as ExerciseWithId)?.id).toBe(
-      firstElement.id,
-    );
+    expect(
+      (storeResult.current.elements[0] as ExerciseWithId)?.baseExercise.id,
+    ).toBe(secondElement.baseExercise.id);
+    expect(
+      (storeResult.current.elements[1] as ExerciseWithId)?.baseExercise.id,
+    ).toBe(firstElement.baseExercise.id);
 
     // swap first element with next (Must swap happines)
     act(() => {
@@ -166,12 +174,12 @@ describe('trainings constructor store', () => {
     });
 
     expect(storeResult.current.elements).toHaveLength(2);
-    expect((storeResult.current.elements[0] as ExerciseWithId)?.id).toBe(
-      firstElement.id,
-    );
-    expect((storeResult.current.elements[1] as ExerciseWithId)?.id).toBe(
-      secondElement.id,
-    );
+    expect(
+      (storeResult.current.elements[0] as ExerciseWithId)?.baseExercise.id,
+    ).toBe(firstElement.baseExercise.id);
+    expect(
+      (storeResult.current.elements[1] as ExerciseWithId)?.baseExercise.id,
+    ).toBe(secondElement.baseExercise.id);
   });
 
   it('add exercise to set', () => {
@@ -229,9 +237,9 @@ describe('trainings constructor store', () => {
     });
 
     expect(storeResult.current.elements).toHaveLength(1);
-    expect((storeResult.current.elements[0] as ExerciseWithId).id).toBe(
-      firstElement.id,
-    );
+    expect(
+      (storeResult.current.elements[0] as ExerciseWithId).baseExercise.id,
+    ).toBe(firstElement.baseExercise.id);
 
     act(() => {
       storeResult.current.constructorStore.replaceExercise(
@@ -241,9 +249,9 @@ describe('trainings constructor store', () => {
     });
 
     expect(storeResult.current.elements).toHaveLength(1);
-    expect((storeResult.current.elements[0] as ExerciseWithId).id).toBe(
-      secondElement.id,
-    );
+    expect(
+      (storeResult.current.elements[0] as ExerciseWithId).baseExercise.id,
+    ).toBe(secondElement.baseExercise.id);
 
     act(() => {
       storeResult.current.constructorStore.addSet();

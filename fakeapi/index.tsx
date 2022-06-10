@@ -8,13 +8,15 @@ import {account, exercises, training} from './Data';
 import {DefaultResponse, IFakeApiConfig} from './Types';
 
 export class FakeApiFabric {
-  static createFakeApi() {
-    const config: IFakeApiConfig = {
-      responses: {},
-    };
+  static createFakeApi(
+    env = 'development',
+    config: IFakeApiConfig = {responses: {}},
+  ) {
     const baseUrl = Config.defaultApiProtocol + '://' + Config.defaultApiDomain;
 
     return createServer({
+      environment: env,
+
       seeds(server) {
         server.db.loadData({
           trainings: [training],
@@ -60,11 +62,12 @@ export class FakeApiFabric {
             const {createTraining} = config.responses;
 
             const data: CreatingTraining = JSON.parse(request.requestBody);
+
             const newTraining: Training = {
               ...data,
 
-              createdAt: new Date(),
-              updatedAt: new Date(),
+              createdAt: Date.now(),
+              updatedAt: Date.now(),
 
               id: Id.generate(),
 
@@ -74,7 +77,7 @@ export class FakeApiFabric {
               },
             };
 
-            schema.db.trainings.insert(newTraining);
+            // schema.db.trainings.insert(newTraining);
             return makeResponse(createTraining, newTraining);
           },
         );

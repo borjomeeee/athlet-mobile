@@ -3,6 +3,18 @@ import {Id} from 'src/Utils/Id';
 import {Logger} from 'src/Utils/Logger';
 
 type FlowReturnType<T> = Promise<[Awaited<T>, undefined] | [undefined, Error]>;
+
+export const asyncCall = async <
+  T extends (...args: any[]) => Promise<any> | any,
+>(
+  cb: T,
+): FlowReturnType<ReturnType<typeof cb>> => {
+  try {
+    return [await cb(), undefined];
+  } catch (e) {
+    return [undefined, e];
+  }
+};
 export class FlowAlreadyStartedError extends Error {
   flowId: string;
   message: string;
@@ -30,15 +42,10 @@ export const useFlow = <T extends (...args: any[]) => Promise<any> | any>(
         return [undefined, e];
       }
 
-      try {
-        flowsStack[flowId] = true;
-        return [await cb(...args), undefined];
-      } catch (e) {
-        Logger.error(e.message);
-        return [undefined, e];
-      } finally {
-        delete flowsStack[flowId];
-      }
+      const result = await asyncCall(() => cb(...args));
+      delete flowsStack[flowId];
+
+      return result;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     deps,

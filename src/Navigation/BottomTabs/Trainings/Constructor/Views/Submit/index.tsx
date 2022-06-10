@@ -3,7 +3,7 @@ import React from 'react';
 import {useRecoilValue} from 'recoil';
 import * as UI from 'src/Components';
 import {isCreatingSelector, isEditingSelector} from '../../Store';
-import {useSubmitController} from './Controller';
+import {useSubmitController} from './Hooks';
 
 export const Submit = () => {
   const isCreating = useRecoilValue(isCreatingSelector);

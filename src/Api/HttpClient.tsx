@@ -82,6 +82,7 @@ export class HttpClient implements IHttpClient {
       );
 
       this._logRequest({...request, url: urlWithParams, data: body});
+
       const response = await fetch(urlWithParams, {
         method,
         headers: this.jwtToken

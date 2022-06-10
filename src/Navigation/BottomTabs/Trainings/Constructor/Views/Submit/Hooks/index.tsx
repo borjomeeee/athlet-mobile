@@ -31,10 +31,14 @@ export const useSubmitController = () => {
       return;
     }
 
-    const [createdTraining, err] = await createTraining({
-      title: trainingTitle,
-      elements: elements,
-    });
+    const [createdTraining, err] = await createTraining(
+      {
+        title: trainingTitle,
+        elements: elements,
+      },
+      // TODO
+      () => undefined,
+    );
 
     if (err) {
       defaultHandleError(err);

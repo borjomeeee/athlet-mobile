@@ -29,9 +29,6 @@ export const ElementCompletionTypeScheme = z.nativeEnum(ExerciseCompletionType);
 export const ExerciseScheme = z.object({
   id: z.string(),
   title: MayBeStringScheme.default('Undefined'),
-  completionType: canBeNull(ElementCompletionTypeScheme).default(
-    ExerciseCompletionType.REPS,
-  ),
 });
 
 export type ExerciseApi = z.input<typeof ExerciseScheme>;
@@ -97,7 +94,7 @@ export const TrainingScheme = z.object({
   createdAt: MayBeDateScheme,
   updatedAt: MayBeDateScheme,
 
-  author: canBeNull(UserPreviewScheme).default({}),
+  author: canBeNull(UserPreviewScheme),
 
   title: MayBeStringScheme.default('Undefined'),
   elements: canBeNull(z.array(TrainingElementScheme)).default([]),
@@ -108,7 +105,7 @@ export type Training = z.output<typeof TrainingScheme>;
 
 export const TrainingSnapshotScheme = z.object({
   id: z.string(),
-  author: canBeNull(UserPreviewScheme).default({}),
+  author: canBeNull(UserPreviewScheme),
 
   title: MayBeStringScheme.default('Undefined'),
   elements: canBeNull(z.array(TrainingElementScheme)).default([]),

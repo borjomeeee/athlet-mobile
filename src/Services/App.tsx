@@ -11,7 +11,7 @@ import {
 import {ApiResponse} from 'src/Api/Responses';
 import {LocalStorage} from 'src/Lib/LocalStorage';
 import {useModal} from 'src/Lib/ModalRouter';
-import {FlowAlreadyStartedError} from 'src/Hooks/Flow';
+import {JobAlreadyStarted} from 'src/Utils/Exceptions';
 
 export const useAppController = () => {
   const navigation = useNavigation();
@@ -27,7 +27,7 @@ export const useAppController = () => {
 
   const defaultHandleError = React.useCallback(
     (error: Error) => {
-      if (error instanceof FlowAlreadyStartedError) {
+      if (error instanceof JobAlreadyStarted) {
         return;
       } else if (error instanceof BadNetworkConnectionError) {
         showBadNetworkConnection(UI.BadNetworkConnection, {});
