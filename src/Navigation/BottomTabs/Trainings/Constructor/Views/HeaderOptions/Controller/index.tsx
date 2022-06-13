@@ -1,5 +1,5 @@
 import React from 'react';
-import {useTrainingConstructorChangesController} from '../../../Hooks';
+
 import {
   initialTrainingIdAtom,
   useTrainingConstructorStore,
@@ -11,6 +11,7 @@ import {useNavigation} from '@react-navigation/core';
 import {useAppController} from 'src/Services/App';
 import {useConfirmDialog} from 'src/Hooks/ConfirmDialog';
 import {Modals} from '../../../Const';
+import {useTrainingConstructorChangesController} from '../../../Hooks/Changes';
 
 export const useHeaderOptionsController = () => {
   const {swithToViewMode} = useTrainingConstructorStore();
@@ -67,7 +68,7 @@ export const useHeaderOptionsOverlayController = () => {
       return;
     }
 
-    const [_, err] = await removeTraining(initialTrainingId);
+    const [_, err] = await removeTraining(initialTrainingId, () => undefined);
     if (err) {
       defaultHandleError(err);
     } else {

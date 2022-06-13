@@ -131,6 +131,18 @@ export const useTraining = (id: string | undefined) => {
   return {training: id ? trainings[id] : undefined};
 };
 
+export const useGetTraining = () => {
+  const getTrainings = useGetRecoilState(myTrainingsStore);
+
+  return React.useCallback(
+    (id: string | undefined) => {
+      const trainings = getTrainings();
+      return id ? trainings[id] : undefined;
+    },
+    [getTrainings],
+  );
+};
+
 export const useTrainingAdditionals = () => {
   const getAdditionals = useGetRecoilState(myTrainingsAdditionalStore);
 

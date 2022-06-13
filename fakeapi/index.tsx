@@ -77,7 +77,7 @@ export class FakeApiFabric {
               },
             };
 
-            // schema.db.trainings.insert(newTraining);
+            schema.db.trainings.insert(newTraining);
             return makeResponse(createTraining, newTraining);
           },
         );

@@ -6,21 +6,6 @@ import s from '@borjomeeee/rn-styles';
 import {ViewStyle} from 'react-native';
 import {useLayout} from '@react-native-community/hooks';
 
-interface ShadowProps extends React.ComponentProps<typeof BoxShadow> {
-  box: SkRect;
-}
-
-const Shadow: React.FC<ShadowProps> = ({box, ...props}) => {
-  return (
-    // Bug: shadow updates when rerendered and not disappears
-    <Canvas style={s(`fill`)} key={Date.now().toString()}>
-      <Box box={box} color="transparent">
-        <BoxShadow {...props} />
-      </Box>
-    </Canvas>
-  );
-};
-
 interface ShadowViewProps extends React.ComponentProps<typeof BoxShadow> {
   containerStyle?: ViewStyle;
   canvasBackgroundColor?: string;
@@ -56,7 +41,11 @@ export const ShadowView: React.FC<ShadowViewProps> = React.memo(
         <View
           style={s(`abs t:${diffY} b:${diffY} r:${diffX} l:${diffX} ofv zi:-1`)}
           pointerEvents="none">
-          <Shadow box={box} dx={dx} dy={dy} blur={blur} {...props} />
+          <Canvas style={s(`fill`)}>
+            <Box box={box} color="transparent">
+              <BoxShadow dx={dx} dy={dy} blur={blur} {...props} />
+            </Box>
+          </Canvas>
         </View>
       </View>
     );

@@ -5,6 +5,7 @@ import {useOfflineTrainingsRepository} from 'src/Repositories/OfflineTrainings';
 import {useTrainingsRepository} from 'src/Repositories/Trainings';
 import {CreatingTraining} from 'src/Store/Models/Training';
 import {
+  useGetTraining,
   useTrainingAdditionals,
   useTrainingAdditionalStore,
   useTrainingStore,
@@ -28,62 +29,59 @@ export const useTrainingsService = () => {
     () =>
       asyncCall(async () => {
         const offlineTrainings = await offlineGetMyTrainings();
-        const trainings = await apiGetMyTrainings();
+        // const trainings = await apiGetMyTrainings();
 
-        offlineTrainings.forEach(offlineTraining => {
-          if (trainings.some(training => training.id === offlineTraining.id)) {
-            return;
-          }
+        // offlineTrainings.forEach(offlineTraining => {
+        //   if (trainings.some(training => training.id === offlineTraining.id)) {
+        //     return;
+        //   }
 
-          trainings.push(offlineTraining);
-        });
+        //   trainings.push(offlineTraining);
+        // });
 
         replaceMyTrainings(offlineTrainings);
         return offlineTrainings;
       }),
-    [offlineGetMyTrainings, apiGetMyTrainings, replaceMyTrainings],
+    [offlineGetMyTrainings, replaceMyTrainings],
   );
 
   const createTraining = React.useCallback(
     (
       training: CreatingTraining,
-      onApi: (trainingId: string | undefined, error: Error | undefined) => void,
+      onApi?: (
+        trainingId: string | undefined,
+        error: Error | undefined,
+      ) => void,
     ) =>
       asyncCall(async () => {
         const offlineCreatedTraining = await offlineCreateTraining(training);
         addTraining(offlineCreatedTraining);
 
         // TODO
-        if ('is_authorized') {
-          apiCreateTraining(training)
-            .then(async data => {
-              return offlineReplaceTraining(
-                offlineCreatedTraining.id,
-                data,
-              ).then(() => data);
-            })
-            .catch(e => {
-              Logger.error(
-                `Replace offline training to api created failed: ${e.message}`,
-              );
-              throw e;
-            })
-            .then(createdTraining => {
-              replaceTraining(offlineCreatedTraining.id, createdTraining);
-              onApi(createdTraining.id, undefined);
-            })
-            .catch(e => onApi(undefined, e));
-        }
+        // if ('is_authorized') {
+        //   apiCreateTraining(training)
+        //     .then(async data => {
+        //       return offlineReplaceTraining(
+        //         offlineCreatedTraining.id,
+        //         data,
+        //       ).then(() => data);
+        //     })
+        //     .catch(e => {
+        //       Logger.error(
+        //         `Replace offline training to api created failed: ${e.message}`,
+        //       );
+        //       throw e;
+        //     })
+        //     .then(createdTraining => {
+        //       replaceTraining(offlineCreatedTraining.id, createdTraining);
+        //       onApi(createdTraining.id, undefined);
+        //     })
+        //     .catch(e => onApi(undefined, e));
+        // }
 
         return offlineCreatedTraining.id;
       }),
-    [
-      offlineCreateTraining,
-      offlineReplaceTraining,
-      apiCreateTraining,
-      addTraining,
-      replaceTraining,
-    ],
+    [offlineCreateTraining, addTraining],
   );
 
   return {getMyTrainings, createTraining};
@@ -118,7 +116,10 @@ export const useTrainingService = () => {
     (
       id: string,
       training: CreatingTraining,
-      onApi: (trainingId: string | undefined, error: Error | undefined) => void,
+      onApi?: (
+        trainingId: string | undefined,
+        error: Error | undefined,
+      ) => void,
     ) => {
       if (isUpdating(id)) {
         throw new JobAlreadyStarted('updateTraining');
@@ -135,20 +136,20 @@ export const useTrainingService = () => {
           replaceTraining(id, offlineUpdatedTraining);
 
           // TODO
-          if ('is_authorized') {
-            apiUpdateTraining(id, training)
-              .then(data => offlineReplaceTraining(id, data))
-              .catch(_ =>
-                Logger.error('Replace offline training to api updated failed!'),
-              )
-              .then(updatedTraining => {
-                if (updatedTraining) {
-                  replaceTraining(id, updatedTraining);
-                  onApi(updatedTraining.id, undefined);
-                }
-              })
-              .catch(e => onApi(undefined, e));
-          }
+          // if ('is_authorized') {
+          //   apiUpdateTraining(id, training)
+          //     .then(data => offlineReplaceTraining(id, data))
+          //     .catch(_ =>
+          //       Logger.error('Replace offline training to api updated failed!'),
+          //     )
+          //     .then(updatedTraining => {
+          //       if (updatedTraining) {
+          //         replaceTraining(id, updatedTraining);
+          //         onApi(updatedTraining.id, undefined);
+          //       }
+          //     })
+          //     .catch(e => onApi(undefined, e));
+          // }
 
           return id;
         } finally {
@@ -158,12 +159,10 @@ export const useTrainingService = () => {
     },
     [
       isUpdating,
-      apiUpdateTraining,
+      offlineUpdateTraining,
       replaceTraining,
       startUpdating,
       finishUpdating,
-      offlineUpdateTraining,
-      offlineReplaceTraining,
     ],
   );
 
@@ -184,11 +183,11 @@ export const useTrainingService = () => {
           deleteTraining(id);
 
           // TODO
-          if ('is_authorized') {
-            apiRemoveTraining(id)
-              .then(() => onApi(id, undefined))
-              .catch(e => onApi(undefined, e));
-          }
+          // if ('is_authorized') {
+          //   apiRemoveTraining(id)
+          //     .then(() => onApi(id, undefined))
+          //     .catch(e => onApi(undefined, e));
+          // }
 
           return id;
         } finally {
@@ -200,7 +199,6 @@ export const useTrainingService = () => {
       isDeleting,
       startDeleting,
       finishDeleting,
-      apiRemoveTraining,
       deleteTraining,
       offlineRemoveTraining,
     ],
@@ -216,17 +214,17 @@ export const useTrainingService = () => {
         try {
           startLoading(id);
 
-          const training = await getTrainingById(id);
+          // const training = await getTrainingById(id);
 
           // TODO: add training to нужное place
-          addTraining(training);
+          // addTraining(training);
           return id;
         } finally {
           finishLoading(id);
         }
       });
     },
-    [isLoading, addTraining, getTrainingById, startLoading, finishLoading],
+    [isLoading, startLoading, finishLoading],
   );
 
   return {updateTraining, removeTraining, loadTraining};

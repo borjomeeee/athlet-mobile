@@ -98,6 +98,9 @@ export const TrainingScheme = z.object({
 
   title: MayBeStringScheme.default('Undefined'),
   elements: canBeNull(z.array(TrainingElementScheme)).default([]),
+
+  idempotanceKey: z.string(),
+  version: z.string(),
 });
 
 export type TrainingApi = z.input<typeof TrainingScheme>;
@@ -121,7 +124,18 @@ export const TrainingEventScheme = z.object({
 
   initialTraining: TrainingSnapshotScheme,
   completedElements: canBeNull(z.array(TrainingElementScheme)).default([]),
+
+  idempotanceKey: z.string(),
 });
 
 export type TrainingEvent = z.output<typeof TrainingEventScheme>;
-export type CreatingTraining = Pick<Training, 'title' | 'elements'>;
+
+export interface CreatingTraining {
+  title: string;
+  elements: TrainingElement[];
+}
+
+export interface UpdateTraining {
+  title: string;
+  elements: TrainingElement[];
+}

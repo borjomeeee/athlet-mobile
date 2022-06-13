@@ -45,24 +45,28 @@ export const useAppController = () => {
   );
 
   const init = React.useCallback(async () => {
-    const [res, error] = await checkAuth();
-    if (!res) {
-      handleAuthorizationError();
-      return;
-    }
+    // const [res, error] = await checkAuth();
+    // if (!res) {
+    //   handleAuthorizationError();
+    //   return;
+    // }
 
-    if (error) {
-      handleAuthorizationError();
-      if (
-        error instanceof BadApiResponseError &&
-        error.reason === ApiResponse.AUTHORIZATION_ERROR
-      ) {
-        return;
-      }
+    // if (error) {
+    //   handleAuthorizationError();
+    //   if (
+    //     error instanceof BadApiResponseError &&
+    //     error.reason === ApiResponse.AUTHORIZATION_ERROR
+    //   ) {
+    //     return;
+    //   }
 
-      defaultHandleError(error);
-    }
-  }, [checkAuth, defaultHandleError, handleAuthorizationError]);
+    //   defaultHandleError(error);
+    // }
+
+    requestAnimationFrame(() => {
+      navigation.dispatch(StackActions.replace(AppPaths.BottomTab));
+    });
+  }, [navigation]);
 
   return {init, defaultHandleError};
 };

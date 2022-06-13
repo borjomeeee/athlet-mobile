@@ -10,33 +10,13 @@ import {
 
 export class ExerciseUtils {
   static getExerciseElementFromBase(exercise: Exercise): ExerciseElement {
-    switch (exercise.completionType) {
-      case ExerciseCompletionType.REPS:
-        return {
-          baseExercise: exercise,
-          completionType: ExerciseCompletionType.REPS,
-          type: ElementType.EXERCISE,
-          reps: 15,
-          restAfterComplete: 60,
-        };
-      case ExerciseCompletionType.TIME:
-        return {
-          baseExercise: exercise,
-          completionType: ExerciseCompletionType.TIME,
-          type: ElementType.EXERCISE,
-          time: 30,
-          restAfterComplete: 60,
-        };
-      case ExerciseCompletionType.GYM:
-        return {
-          baseExercise: exercise,
-          completionType: ExerciseCompletionType.GYM,
-          type: ElementType.EXERCISE,
-          reps: 10,
-          kg: 40,
-          restAfterComplete: 60,
-        };
-    }
+    return {
+      baseExercise: exercise,
+      completionType: ExerciseCompletionType.REPS,
+      type: ElementType.EXERCISE,
+      reps: 15,
+      restAfterComplete: 60,
+    };
   }
 
   static isRepsExercise(exercise: ExerciseElement): exercise is RepsExercise {

@@ -9,12 +9,13 @@ const MY_TRAININGS_KEY = '@@my-trainings';
 
 interface IOfflineTrainingsRepository extends ITrainingsRepository {
   replaceTraining(id: string, training: Training): Promise<Training>;
+  replaceTrainings(trainings: Training[]): Promise<void>;
 }
 export const useOfflineTrainingsRepository =
   (): IOfflineTrainingsRepository => {
     const getMyTrainings = React.useCallback(async () => {
       try {
-        return getAsJsonFromLocal<Training[]>(MY_TRAININGS_KEY);
+        return await getAsJsonFromLocal<Training[]>(MY_TRAININGS_KEY);
       } catch (e) {
         return [];
       }
@@ -51,7 +52,7 @@ export const useOfflineTrainingsRepository =
           elements: creatingTraining.elements,
         };
 
-        setJsonToLocal(MY_TRAININGS_KEY, [...trainings, newTraining]);
+        await setJsonToLocal(MY_TRAININGS_KEY, [...trainings, newTraining]);
         return newTraining;
       },
       [getMyTrainings],
@@ -61,7 +62,7 @@ export const useOfflineTrainingsRepository =
       async (id: string, training: Training) => {
         const trainings = await getMyTrainings();
 
-        setJsonToLocal(MY_TRAININGS_KEY, [
+        await setJsonToLocal(MY_TRAININGS_KEY, [
           ...trainings.filter(t => t.id !== id),
           training,
         ]);
@@ -91,12 +92,19 @@ export const useOfflineTrainingsRepository =
     const removeTraining = React.useCallback(
       async (id: string) => {
         const trainings = await getMyTrainings();
-        setJsonToLocal(
+        await setJsonToLocal(
           MY_TRAININGS_KEY,
           trainings.filter(training => training.id !== id),
         );
       },
       [getMyTrainings],
+    );
+
+    const replaceTrainings = React.useCallback(
+      async (trainings: Training[]) => {
+        await setJsonToLocal(MY_TRAININGS_KEY, trainings);
+      },
+      [],
     );
 
     return {
@@ -106,5 +114,6 @@ export const useOfflineTrainingsRepository =
       updateTraining,
       removeTraining,
       replaceTraining,
+      replaceTrainings,
     };
   };

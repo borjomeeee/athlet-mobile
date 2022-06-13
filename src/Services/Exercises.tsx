@@ -1,6 +1,7 @@
 import {useFlow} from 'src/Hooks/Flow';
 import {useExercisesRepository} from 'src/Repositories/Exercises';
 import {useExercisesStore} from 'src/Store/Exercises';
+import {Exercise} from 'src/Store/Models/Training';
 
 export const useExercisesService = () => {
   const {getExercises: fetchGetExercises} = useExercisesRepository();
@@ -8,10 +9,10 @@ export const useExercisesService = () => {
 
   const getExercises = useFlow(
     async () => {
-      const {exercises} = await fetchGetExercises();
-      setExercises(exercises);
+      // const {exercises} = await fetchGetExercises();
+      // setExercises(exercises);
     },
-    [setExercises, fetchGetExercises],
+    [],
     'exercisesService__downloadExercises',
   );
 
