@@ -7,16 +7,17 @@ import {
   CreatingTraining,
   TrainingScheme,
 } from 'src/Store/Models/Training';
+import {noop} from 'src/Utils/Common';
 import {z} from 'zod';
 
-export const useTrainingsRepository = () => {
-  const downloadMyTrainings = React.useCallback(() => {
+import {ITrainingsRepository} from './Interfaces/Trainings';
+
+export const useTrainingsRepository = (): ITrainingsRepository => {
+  const getMyTrainings = React.useCallback(() => {
     return httpClient
       .get({url: ApiPaths.getMyTrainings})
       .then(parseDefaultApiResponse)
-      .then(data => ({
-        trainings: z.array(TrainingScheme).parse(data.json) as Training[],
-      }));
+      .then(data => z.array(TrainingScheme).parse(data.json) as Training[]);
   }, []);
 
   const getTrainingById = React.useCallback((id: string) => {
@@ -46,11 +47,12 @@ export const useTrainingsRepository = () => {
   const removeTraining = React.useCallback((id: string) => {
     return httpClient
       .delete({url: ApiPaths.trainingAction(id)})
-      .then(parseDefaultApiResponse);
+      .then(parseDefaultApiResponse)
+      .then(noop);
   }, []);
 
   return {
-    downloadMyTrainings,
+    getMyTrainings,
     getTrainingById,
     createTraining,
     updateTraining,

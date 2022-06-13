@@ -24,7 +24,7 @@ export const SelectTimeWheel: React.FC<SelectTimeWheelProps> = ({
   );
 
   React.useEffect(() => {
-    onChangeValue?.(time);
+    onChangeValue?.(time * 1000);
   }, [time, onChangeValue]);
 
   const middleLStyle = React.useMemo(

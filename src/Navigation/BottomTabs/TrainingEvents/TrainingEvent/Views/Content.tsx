@@ -14,38 +14,44 @@ export const Content = () => {
       return null;
     }
 
-    let indx = 0;
-    const completedElementsLength = trainingEvent.completedElements.length;
-    return trainingEvent.initialTraining.elements.map(element => {
+    let indx = -1;
+    return trainingEvent.initialTraining.elements.map((element, i) => {
+      indx++;
       if (element.type === ElementType.EXERCISE) {
-        indx++;
         return (
           <Exercise
+            key={`Exercise(indx=${i})`}
             initialExercise={element}
             completedExercise={
-              indx < completedElementsLength
-                ? (trainingEvent.completedElements[indx] as ExerciseElement)
-                : undefined
+              trainingEvent.completedElements[indx] as ExerciseElement
             }
           />
         );
       } else if (element.type === ElementType.SET) {
-        indx += element.elements.length;
         return (
-          <>
+          <React.Fragment key={`Set(indx=${i})`}>
             <SetHeader title={element.title} />
-            {element.elements.map(setElement => (
-              <Exercise
-                initialExercise={setElement}
-                completedExercise={
-                  indx < completedElementsLength
-                    ? (trainingEvent.completedElements[indx] as ExerciseElement)
-                    : undefined
-                }
-              />
-            ))}
-            <SetFooter rest={element.restAfterComplete} />
-          </>
+            {element.elements.map((setElement, j) => {
+              const elem = trainingEvent.completedElements[indx];
+              return (
+                <Exercise
+                  key={`SetExercise(set=${i}, indx=${j})`}
+                  initialExercise={setElement}
+                  completedExercise={
+                    elem && elem.type === ElementType.SET
+                      ? elem.elements[j]
+                      : undefined
+                  }
+                />
+              );
+            })}
+            <SetFooter
+              initialRest={element.restAfterComplete}
+              completedRest={
+                trainingEvent.completedElements[indx]?.restAfterComplete
+              }
+            />
+          </React.Fragment>
         );
       }
     });

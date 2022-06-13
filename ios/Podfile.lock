@@ -286,32 +286,32 @@ PODS:
     - RCTTypeSafety
     - React
     - ReactCommon/turbomodule/core
-  - react-native-skia (0.1.118):
+  - react-native-skia (0.1.130):
     - React
     - React-callinvoker
     - React-Core
-    - react-native-skia/Api (= 0.1.118)
-    - react-native-skia/Jsi (= 0.1.118)
-    - react-native-skia/RNSkia (= 0.1.118)
-    - react-native-skia/SkiaHeaders (= 0.1.118)
-    - react-native-skia/Utils (= 0.1.118)
-  - react-native-skia/Api (0.1.118):
+    - react-native-skia/Api (= 0.1.130)
+    - react-native-skia/Jsi (= 0.1.130)
+    - react-native-skia/RNSkia (= 0.1.130)
+    - react-native-skia/SkiaHeaders (= 0.1.130)
+    - react-native-skia/Utils (= 0.1.130)
+  - react-native-skia/Api (0.1.130):
     - React
     - React-callinvoker
     - React-Core
-  - react-native-skia/Jsi (0.1.118):
+  - react-native-skia/Jsi (0.1.130):
     - React
     - React-callinvoker
     - React-Core
-  - react-native-skia/RNSkia (0.1.118):
+  - react-native-skia/RNSkia (0.1.130):
     - React
     - React-callinvoker
     - React-Core
-  - react-native-skia/SkiaHeaders (0.1.118):
+  - react-native-skia/SkiaHeaders (0.1.130):
     - React
     - React-callinvoker
     - React-Core
-  - react-native-skia/Utils (0.1.118):
+  - react-native-skia/Utils (0.1.130):
     - React
     - React-callinvoker
     - React-Core
@@ -621,7 +621,7 @@ SPEC CHECKSUMS:
   react-native-get-random-values: 30b3f74ca34e30e2e480de48e4add2706a40ac8f
   react-native-mmkv: 2a15aadabf649c364cab7975eef52848611eea25
   react-native-safe-area-context: 806f8370bf9fc9db90a3413aaa1aab0d2e22fdf3
-  react-native-skia: 3c913c39517087892c6aadb5c17154d7b90ef2b2
+  react-native-skia: ded7ec890d19a75f17b3cbd5ebf0d6459701daa9
   React-perflogger: 93d3f142d6d9a46e635f09ba0518027215a41098
   React-RCTActionSheet: 87327c3722203cc79cf79d02fb83e7332aeedd18
   React-RCTAnimation: 009c87c018d50e0b38692699405ebe631ff4872d
@@ -644,4 +644,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: aa8058dcc14911a6f5ba5944e6eb55e31710cc29
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3

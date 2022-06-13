@@ -46,7 +46,7 @@ export const SuccessCompleteTraining: React.FC<
         <UI.HSpacer size={10} />
         <UI.View style={s(`aic`)}>
           <UI.Pressable onPress={hide}>
-            <UI.Text style={s(`P7 medium c:#B3B3B3`)}>Закрыть</UI.Text>
+            <UI.Text style={s(`P7 medium c:gray`)}>Закрыть</UI.Text>
           </UI.Pressable>
         </UI.View>
         <UI.HSpacer size={20 + bottom} />

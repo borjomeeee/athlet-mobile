@@ -29,9 +29,6 @@ export const ElementCompletionTypeScheme = z.nativeEnum(ExerciseCompletionType);
 export const ExerciseScheme = z.object({
   id: z.string(),
   title: MayBeStringScheme.default('Undefined'),
-  completionType: canBeNull(ElementCompletionTypeScheme).default(
-    ExerciseCompletionType.REPS,
-  ),
 });
 
 export type ExerciseApi = z.input<typeof ExerciseScheme>;
@@ -97,10 +94,13 @@ export const TrainingScheme = z.object({
   createdAt: MayBeDateScheme,
   updatedAt: MayBeDateScheme,
 
-  author: canBeNull(UserPreviewScheme).default({}),
+  author: canBeNull(UserPreviewScheme),
 
   title: MayBeStringScheme.default('Undefined'),
   elements: canBeNull(z.array(TrainingElementScheme)).default([]),
+
+  idempotanceKey: z.string(),
+  version: z.string(),
 });
 
 export type TrainingApi = z.input<typeof TrainingScheme>;
@@ -108,7 +108,7 @@ export type Training = z.output<typeof TrainingScheme>;
 
 export const TrainingSnapshotScheme = z.object({
   id: z.string(),
-  author: canBeNull(UserPreviewScheme).default({}),
+  author: canBeNull(UserPreviewScheme),
 
   title: MayBeStringScheme.default('Undefined'),
   elements: canBeNull(z.array(TrainingElementScheme)).default([]),
@@ -124,7 +124,18 @@ export const TrainingEventScheme = z.object({
 
   initialTraining: TrainingSnapshotScheme,
   completedElements: canBeNull(z.array(TrainingElementScheme)).default([]),
+
+  idempotanceKey: z.string(),
 });
 
 export type TrainingEvent = z.output<typeof TrainingEventScheme>;
-export type CreatingTraining = Pick<Training, 'title' | 'elements'>;
+
+export interface CreatingTraining {
+  title: string;
+  elements: TrainingElement[];
+}
+
+export interface UpdateTraining {
+  title: string;
+  elements: TrainingElement[];
+}

@@ -11,7 +11,7 @@ import {
 import {ApiResponse} from 'src/Api/Responses';
 import {LocalStorage} from 'src/Lib/LocalStorage';
 import {useModal} from 'src/Lib/ModalRouter';
-import {FlowAlreadyStartedError} from 'src/Hooks/Flow';
+import {JobAlreadyStarted} from 'src/Utils/Exceptions';
 
 export const useAppController = () => {
   const navigation = useNavigation();
@@ -27,7 +27,7 @@ export const useAppController = () => {
 
   const defaultHandleError = React.useCallback(
     (error: Error) => {
-      if (error instanceof FlowAlreadyStartedError) {
+      if (error instanceof JobAlreadyStarted) {
         return;
       } else if (error instanceof BadNetworkConnectionError) {
         showBadNetworkConnection(UI.BadNetworkConnection, {});
@@ -45,24 +45,28 @@ export const useAppController = () => {
   );
 
   const init = React.useCallback(async () => {
-    const [res, error] = await checkAuth();
-    if (!res) {
-      handleAuthorizationError();
-      return;
-    }
+    // const [res, error] = await checkAuth();
+    // if (!res) {
+    //   handleAuthorizationError();
+    //   return;
+    // }
 
-    if (error) {
-      handleAuthorizationError();
-      if (
-        error instanceof BadApiResponseError &&
-        error.reason === ApiResponse.AUTHORIZATION_ERROR
-      ) {
-        return;
-      }
+    // if (error) {
+    //   handleAuthorizationError();
+    //   if (
+    //     error instanceof BadApiResponseError &&
+    //     error.reason === ApiResponse.AUTHORIZATION_ERROR
+    //   ) {
+    //     return;
+    //   }
 
-      defaultHandleError(error);
-    }
-  }, [checkAuth, defaultHandleError, handleAuthorizationError]);
+    //   defaultHandleError(error);
+    // }
+
+    requestAnimationFrame(() => {
+      navigation.dispatch(StackActions.replace(AppPaths.BottomTab));
+    });
+  }, [navigation]);
 
   return {init, defaultHandleError};
 };

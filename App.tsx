@@ -1,3 +1,4 @@
+import 'react-native-get-random-values';
 import dayjs from 'dayjs';
 
 import 'react-native-gesture-handler';
@@ -18,6 +19,8 @@ import {OverlayProvider} from 'src/Lib/Overlay';
 import {DebugObserver} from 'src/Utils/Recoil';
 
 import localeRu from 'dayjs/locale/ru';
+import {withHooks} from 'src/Utils/HOCs';
+import {useSyncLocalStorage} from 'src/Lib/Hooks/Sync';
 dayjs.locale(localeRu);
 
 configureStyles();
@@ -26,9 +29,21 @@ LogBox.ignoreLogs([
   `[react-native-gesture-handler] Seems like you\'re using an old API with gesture components, check out new Gestures system!`,
 ]);
 
-// TODO: move constructor controllers to views
+const AppContent = withHooks(
+  [useSyncLocalStorage],
+  React.memo(() => {
+    return (
+      <OverlayProvider>
+        <Navigation />
+        <ModalRouter />
+      </OverlayProvider>
+    );
+  }),
+);
+
 const App = () => {
   const [dev, setDev] = React.useState(Config.fakeApiEnabled);
+
   React.useEffect(() => {
     if (Config.fakeApiEnabled) {
       const server = FakeApiFabric.createFakeApi();
@@ -46,10 +61,7 @@ const App = () => {
     <RecoilRoot>
       <NavigationContainer>
         <SafeAreaProvider>
-          <OverlayProvider>
-            <Navigation />
-            <ModalRouter />
-          </OverlayProvider>
+          <AppContent />
         </SafeAreaProvider>
       </NavigationContainer>
 

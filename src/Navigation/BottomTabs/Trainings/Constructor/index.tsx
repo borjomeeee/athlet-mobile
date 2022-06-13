@@ -1,7 +1,6 @@
 import s from '@borjomeeee/rn-styles';
 import React from 'react';
 import Animated, {
-  Layout,
   useAnimatedRef,
   useAnimatedScrollHandler,
   useSharedValue,
@@ -9,12 +8,10 @@ import Animated, {
 
 import * as UI from 'src/Components';
 import {withHooks} from 'src/Utils/HOCs';
-import {
-  useTrainingConstructorController,
-  useTrainingConstructorHeader,
-  useTrainingConstructorInitialTraining,
-  useTrainingConstructorNavigationEffect,
-} from './Hooks';
+import {useTrainingConstructorController} from './Hooks';
+import {useTrainingConstructorHeader} from './Hooks/Header';
+import {useTrainingConstructorInitialTraining} from './Hooks/InitialTraining';
+import {useTrainingConstructorNavigationEffect} from './Hooks/NavigationEffect';
 import {AddElementButton} from './Views/AddElementButton';
 import {ElementsList} from './Views/ElementsList';
 import {Header} from './Views/Header';

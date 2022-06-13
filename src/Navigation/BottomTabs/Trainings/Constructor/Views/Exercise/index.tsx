@@ -137,7 +137,7 @@ export const Exercise: React.FC<ExerciseProps> = ({
     if (ExerciseUtils.isRepsExercise(exercise)) {
       return `${exercise.reps} раз.`;
     } else if (ExerciseUtils.isTimeExercise(exercise)) {
-      return TimeUtils.getFormattedTimeForTraining(exercise.time) || '0 сек.';
+      return TimeUtils.getFormattedTimeForTraining(exercise.time);
     } else if (ExerciseUtils.isGymExercise(exercise)) {
       return `${exercise.reps} x ${exercise.kg} кг.`;
     }

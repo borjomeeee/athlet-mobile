@@ -2,6 +2,7 @@ module.exports = {
   coverageDirectory: 'coverage',
   preset: 'react-native',
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  testEnvironment: 'jsdom',
   transformIgnorePatterns: [
     'node_modules/(?!((jest-)?@?react-native' +
       '|@react-native-community' +

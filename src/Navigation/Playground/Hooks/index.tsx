@@ -11,7 +11,7 @@ import {
   trainingStore,
   usePlaygroundStore,
 } from '../Store';
-import {useRecoilCallback, useRecoilValue} from 'recoil';
+import {useRecoilValue} from 'recoil';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
 import {AppPaths, ModalsPaths} from 'src/Navigation/Paths';
 import {ModalsGroupParamList} from 'src/Navigation';
@@ -27,6 +27,7 @@ import {SuccessCompleteTraining} from '../Modals/SuccessCompleteTraining';
 import {useTrainingsEventsService} from 'src/Services/TrainingsEvents';
 import {v4 as uuidv4} from 'uuid';
 import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
+import {useTraining} from 'src/Store/Trainings';
 
 export const usePlayground = () => {
   const {saveTrainingEvent} = useTrainingsEventsService();
@@ -112,6 +113,8 @@ export const usePlayground = () => {
         elements: training.elements,
         title: training.title,
       },
+
+      idempotanceKey: uuidv4(),
     });
   }, [
     getCompletingElement,
@@ -231,25 +234,33 @@ export const usePlaygroundNavigationEffect = () => {
 };
 
 export const usePlaygroundInitialTraining = () => {
-  const {loadTrainingById} = useTrainingService();
+  const {loadTraining} = useTrainingService();
   const {setTraining} = usePlaygroundStore();
 
   const {defaultHandleError} = useAppController();
   const trainingId = useRecoilValue(trainingIdStore);
 
-  React.useEffect(() => {
-    async function loadTraining() {
-      if (trainingId) {
-        const [training, err] = await loadTrainingById(trainingId);
+  const {training} = useTraining(trainingId);
 
-        if (err) {
-          defaultHandleError(err);
-          return;
-        } else if (training) {
-          setTraining(training);
-        }
-      }
+  React.useEffect(() => {
+    if (training) {
+      setTraining(training);
     }
-    loadTraining();
-  }, [trainingId, loadTrainingById, defaultHandleError, setTraining]);
+  }, [training, setTraining]);
+
+  // React.useEffect(() => {
+  //   async function _loadTraining() {
+  //     if (trainingId) {
+  //       const [training, err] = await loadTraining(trainingId);
+
+  //       if (err) {
+  //         defaultHandleError(err);
+  //         return;
+  //       } else if (training) {
+  //         // setTraining(training);
+  //       }
+  //     }
+  //   }
+  //   _loadTraining();
+  // }, [trainingId, loadTraining, defaultHandleError, setTraining]);
 };

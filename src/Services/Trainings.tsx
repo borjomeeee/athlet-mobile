@@ -1,37 +1,87 @@
-import {useFlow} from 'src/Hooks/Flow';
+import React from 'react';
+
+import {asyncCall} from 'src/Hooks/Flow';
+import {useOfflineTrainingsRepository} from 'src/Repositories/OfflineTrainings';
 import {useTrainingsRepository} from 'src/Repositories/Trainings';
 import {CreatingTraining} from 'src/Store/Models/Training';
 import {
+  useGetTraining,
   useTrainingAdditionals,
   useTrainingAdditionalStore,
   useTrainingStore,
 } from 'src/Store/Trainings';
+import {JobAlreadyStarted} from 'src/Utils/Exceptions';
+import {Logger} from 'src/Utils/Logger';
 
 export const useTrainingsService = () => {
-  const {replaceMyTrainings, addTraining} = useTrainingStore();
-  const {downloadMyTrainings, createTraining: apiCreateTraining} =
+  const {replaceMyTrainings, addTraining, replaceTraining} = useTrainingStore();
+
+  const {
+    getMyTrainings: offlineGetMyTrainings,
+    createTraining: offlineCreateTraining,
+    replaceTraining: offlineReplaceTraining,
+  } = useOfflineTrainingsRepository();
+
+  const {getMyTrainings: apiGetMyTrainings, createTraining: apiCreateTraining} =
     useTrainingsRepository();
 
-  const getMyTrainings = useFlow(
-    async () => {
-      const {trainings} = await downloadMyTrainings();
-      replaceMyTrainings(trainings);
+  const getMyTrainings = React.useCallback(
+    () =>
+      asyncCall(async () => {
+        const offlineTrainings = await offlineGetMyTrainings();
+        // const trainings = await apiGetMyTrainings();
 
-      return trainings;
-    },
-    [downloadMyTrainings, replaceMyTrainings],
-    'trainingsService__getMyTrainings',
+        // offlineTrainings.forEach(offlineTraining => {
+        //   if (trainings.some(training => training.id === offlineTraining.id)) {
+        //     return;
+        //   }
+
+        //   trainings.push(offlineTraining);
+        // });
+
+        replaceMyTrainings(offlineTrainings);
+        return offlineTrainings;
+      }),
+    [offlineGetMyTrainings, replaceMyTrainings],
   );
 
-  const createTraining = useFlow(
-    async (training: CreatingTraining) => {
-      const createdTraining = await apiCreateTraining(training);
-      addTraining(createdTraining);
+  const createTraining = React.useCallback(
+    (
+      training: CreatingTraining,
+      onApi?: (
+        trainingId: string | undefined,
+        error: Error | undefined,
+      ) => void,
+    ) =>
+      asyncCall(async () => {
+        const offlineCreatedTraining = await offlineCreateTraining(training);
+        addTraining(offlineCreatedTraining);
 
-      return createdTraining;
-    },
-    [apiCreateTraining, addTraining],
-    'trainingService__createTraining',
+        // TODO
+        // if ('is_authorized') {
+        //   apiCreateTraining(training)
+        //     .then(async data => {
+        //       return offlineReplaceTraining(
+        //         offlineCreatedTraining.id,
+        //         data,
+        //       ).then(() => data);
+        //     })
+        //     .catch(e => {
+        //       Logger.error(
+        //         `Replace offline training to api created failed: ${e.message}`,
+        //       );
+        //       throw e;
+        //     })
+        //     .then(createdTraining => {
+        //       replaceTraining(offlineCreatedTraining.id, createdTraining);
+        //       onApi(createdTraining.id, undefined);
+        //     })
+        //     .catch(e => onApi(undefined, e));
+        // }
+
+        return offlineCreatedTraining.id;
+      }),
+    [offlineCreateTraining, addTraining],
   );
 
   return {getMyTrainings, createTraining};
@@ -49,6 +99,12 @@ export const useTrainingService = () => {
   } = useTrainingAdditionalStore();
 
   const {
+    updateTraining: offlineUpdateTraining,
+    replaceTraining: offlineReplaceTraining,
+    removeTraining: offlineRemoveTraining,
+  } = useOfflineTrainingsRepository();
+
+  const {
     updateTraining: apiUpdateTraining,
     removeTraining: apiRemoveTraining,
     getTrainingById,
@@ -56,79 +112,120 @@ export const useTrainingService = () => {
 
   const {isLoading, isUpdating, isDeleting} = useTrainingAdditionals();
 
-  const updateTraining = useFlow(
-    async (id: string, training: CreatingTraining) => {
+  const updateTraining = React.useCallback(
+    (
+      id: string,
+      training: CreatingTraining,
+      onApi?: (
+        trainingId: string | undefined,
+        error: Error | undefined,
+      ) => void,
+    ) => {
       if (isUpdating(id)) {
-        return;
+        throw new JobAlreadyStarted('updateTraining');
       }
 
-      try {
-        startUpdating(id);
+      return asyncCall(async () => {
+        try {
+          startUpdating(id);
 
-        const updatedTraining = await apiUpdateTraining(id, training);
-        replaceTraining(id, updatedTraining);
+          const offlineUpdatedTraining = await offlineUpdateTraining(
+            id,
+            training,
+          );
+          replaceTraining(id, offlineUpdatedTraining);
 
-        return updatedTraining;
-      } finally {
-        finishUpdating(id);
-      }
+          // TODO
+          // if ('is_authorized') {
+          //   apiUpdateTraining(id, training)
+          //     .then(data => offlineReplaceTraining(id, data))
+          //     .catch(_ =>
+          //       Logger.error('Replace offline training to api updated failed!'),
+          //     )
+          //     .then(updatedTraining => {
+          //       if (updatedTraining) {
+          //         replaceTraining(id, updatedTraining);
+          //         onApi(updatedTraining.id, undefined);
+          //       }
+          //     })
+          //     .catch(e => onApi(undefined, e));
+          // }
+
+          return id;
+        } finally {
+          finishUpdating(id);
+        }
+      });
     },
     [
       isUpdating,
-      apiUpdateTraining,
+      offlineUpdateTraining,
       replaceTraining,
       startUpdating,
       finishUpdating,
     ],
-    'trainingService__updateTraining',
   );
 
-  const removeTraining = useFlow(
-    async (id: string) => {
+  const removeTraining = React.useCallback(
+    (
+      id: string,
+      onApi: (trainingId: string | undefined, error: Error | undefined) => void,
+    ) => {
       if (isDeleting(id)) {
-        return;
+        throw new JobAlreadyStarted('removeTraining');
       }
 
-      try {
-        startDeleting(id);
+      return asyncCall(async () => {
+        try {
+          startDeleting(id);
 
-        await apiRemoveTraining(id);
-        deleteTraining(id);
+          await offlineRemoveTraining(id);
+          deleteTraining(id);
 
-        return id;
-      } finally {
-        finishDeleting(id);
-      }
+          // TODO
+          // if ('is_authorized') {
+          //   apiRemoveTraining(id)
+          //     .then(() => onApi(id, undefined))
+          //     .catch(e => onApi(undefined, e));
+          // }
+
+          return id;
+        } finally {
+          finishDeleting(id);
+        }
+      });
     },
     [
       isDeleting,
       startDeleting,
       finishDeleting,
-      apiRemoveTraining,
       deleteTraining,
+      offlineRemoveTraining,
     ],
-    'trainingService__deleteTraining',
   );
 
-  const loadTrainingById = useFlow(
-    async (id: string) => {
+  const loadTraining = React.useCallback(
+    (id: string) => {
       if (isLoading(id)) {
-        return;
+        throw new JobAlreadyStarted('loadTrainingById');
       }
 
-      try {
-        startLoading(id);
+      return asyncCall(async () => {
+        try {
+          startLoading(id);
 
-        const training = await getTrainingById(id);
-        addTraining(training);
+          // const training = await getTrainingById(id);
 
-        return training;
-      } finally {
-        finishLoading(id);
-      }
+          // TODO: add training to нужное place
+          // addTraining(training);
+          return id;
+        } finally {
+          finishLoading(id);
+        }
+      });
     },
-    [isLoading, addTraining, getTrainingById, startLoading, finishLoading],
+    [isLoading, startLoading, finishLoading],
   );
 
-  return {updateTraining, removeTraining, loadTrainingById};
+  return {updateTraining, removeTraining, loadTraining};
 };

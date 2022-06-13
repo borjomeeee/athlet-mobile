@@ -1,7 +1,6 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-import {Auth} from './Auth';
 import {BottomTabsNavigator} from './BottomTabs';
 import {Init} from './Init';
 
@@ -16,7 +15,7 @@ export const Navigation = () => {
       screenOptions={appNavigationOptions}
       initialRouteName={AppPaths.Init}>
       <AppStack.Screen name={AppPaths.Init} component={Init} />
-      <AppStack.Screen name={AppPaths.Auth} component={Auth} />
+      {/* <AppStack.Screen name={AppPaths.Auth} component={Auth} /> */}
       <AppStack.Screen
         name={AppPaths.BottomTab}
         component={BottomTabsNavigator}

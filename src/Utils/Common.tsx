@@ -1,3 +1,4 @@
+export const noop = () => undefined;
 export const validateEmail = (email: string) => {
   return String(email)
     .toLowerCase()

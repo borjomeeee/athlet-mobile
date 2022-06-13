@@ -13,7 +13,7 @@ export const MayBeStringScheme = canBeNull(z.string());
 export const MayBeIntegerScheme = canBeNull(z.number().int());
 
 export const MayBeDateScheme = z.preprocess(arg => {
-  if (typeof arg === 'string' || arg instanceof Date) {
-    return new Date(arg);
+  if (typeof arg === 'string') {
+    return new Date(arg).getTime();
   }
-}, canBeNull(z.date()));
+}, canBeNull(z.number()));

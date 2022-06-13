@@ -2,6 +2,7 @@ import React from 'react';
 import {atom, selector, useSetRecoilState} from 'recoil';
 import {getKeyFabricForDomain} from 'src/Utils/Recoil';
 import {Exercise} from './Models/Training';
+import exercises from 'src/Lib/LocalData/exercises.json';
 
 const createKey = getKeyFabricForDomain('exercises');
 interface ExercisesStore {
@@ -9,7 +10,7 @@ interface ExercisesStore {
 }
 export const exercisesStore = atom<ExercisesStore>({
   key: createKey('self'),
-  default: {},
+  default: exercises as any,
 });
 
 export const exercisesIdsStore = selector({

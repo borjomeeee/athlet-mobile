@@ -1,21 +1,23 @@
 export class TimeUtils {
   static getFormattedTimeForTraining(time: number) {
-    if (time < 0) {
-      return undefined;
-    }
+    const timeInSecs = Math.abs(Math.floor(time / 1000));
 
-    const mins = Math.floor(time / 60);
-    const secs = time % 60;
+    const mins = Math.floor(timeInSecs / 60);
+    const secs = timeInSecs % 60;
 
     let res = '';
     if (mins > 0) {
-      res += `${mins} мин. `;
+      res += `${mins}м.`;
+    }
+    if (res) {
+      res += ' ';
     }
 
-    if (res === '' || secs > 0) {
-      res += `${secs} сек. `;
-    }
+    res += `${secs}с.`;
 
+    if (time < 0) {
+      res = '-' + res;
+    }
     return res;
   }
 }

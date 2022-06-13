@@ -32,7 +32,9 @@ export const TrainingElement: React.FC<TrainingElementProps> = ({training}) => {
               <UI.View style={s(`row`)}>
                 <Attribute label="CREATED AT" value={formattedCreationDate} />
                 <UI.VSpacer size={20} />
-                <Attribute label="AUTHOR" value={training.author.nickname} />
+                {training.author && (
+                  <Attribute label="AUTHOR" value={training.author.nickname} />
+                )}
               </UI.View>
               <UI.Pressable onPress={handlePressStart}>
                 <UI.View style={s(`w:30 h:30 bgc:green br:6 aic jcc`)}>

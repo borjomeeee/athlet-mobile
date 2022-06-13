@@ -31,15 +31,19 @@ export const useSubmitController = () => {
       return;
     }
 
-    const [createdTraining, err] = await createTraining({
-      title: trainingTitle,
-      elements: elements,
-    });
+    const [createdTrainingId, err] = await createTraining(
+      {
+        title: trainingTitle,
+        elements: elements,
+      },
+      // TODO
+      () => undefined,
+    );
 
     if (err) {
       defaultHandleError(err);
-    } else if (createdTraining) {
-      initWithTrainingId(createdTraining.id);
+    } else if (createdTrainingId) {
+      initWithTrainingId(createdTrainingId);
     }
   }, [
     defaultHandleError,
@@ -59,10 +63,14 @@ export const useSubmitController = () => {
       return;
     }
 
-    const [_, err] = await updateTraining(trainingId, {
-      title: trainingTitle,
-      elements: elements,
-    });
+    const [_, err] = await updateTraining(
+      trainingId,
+      {
+        title: trainingTitle,
+        elements: elements,
+      },
+      () => undefined,
+    );
 
     if (err) {
       defaultHandleError(err);

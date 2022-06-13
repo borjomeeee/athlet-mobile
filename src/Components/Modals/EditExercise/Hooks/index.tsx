@@ -68,7 +68,7 @@ export const useEditExerciseController = (id: string) => {
     show(SelectExercise, {
       onSelect: exercise => {
         setCurrentExercise(exercise);
-        setCompletionType(exercise.completionType);
+        setCompletionType(ExerciseCompletionType.REPS);
       },
     });
   }, [show, setCurrentExercise, setCompletionType]);
@@ -127,8 +127,7 @@ export const useEditExerciseSubmitController = (id: string) => {
     switch (selectedCompletionType) {
       case ExerciseCompletionType.REPS:
         props.onEdit?.({
-          restAfterComplete: 15,
-
+          restAfterComplete: 15_000,
           baseExercise: currentExercise,
           type: ElementType.EXERCISE,
           completionType: ExerciseCompletionType.REPS,
@@ -137,8 +136,7 @@ export const useEditExerciseSubmitController = (id: string) => {
         break;
       case ExerciseCompletionType.TIME:
         props.onEdit?.({
-          restAfterComplete: 15,
-
+          restAfterComplete: 15_000,
           baseExercise: currentExercise,
           type: ElementType.EXERCISE,
           completionType: ExerciseCompletionType.TIME,
@@ -147,8 +145,7 @@ export const useEditExerciseSubmitController = (id: string) => {
         break;
       case ExerciseCompletionType.GYM:
         props.onEdit?.({
-          restAfterComplete: 15,
-
+          restAfterComplete: 15_000,
           baseExercise: currentExercise,
           type: ElementType.EXERCISE,
           completionType: ExerciseCompletionType.GYM,
