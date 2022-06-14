@@ -8,7 +8,7 @@ import Animated, {
 
 import * as UI from 'src/Components';
 import {withHooks} from 'src/Utils/HOCs';
-import {useTrainingConstructorController} from './Hooks';
+import {useTrainingConstructorController} from './Controller';
 import {useTrainingConstructorHeader} from './Hooks/Header';
 import {useTrainingConstructorInitialTraining} from './Hooks/InitialTraining';
 import {useTrainingConstructorNavigationEffect} from './Hooks/NavigationEffect';

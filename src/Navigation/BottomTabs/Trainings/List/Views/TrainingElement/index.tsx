@@ -5,9 +5,8 @@ import * as UI from 'src/Components';
 import {Training} from 'src/Store/Models/Training';
 
 import dayjs from 'dayjs';
-import {useTrainingListTrainingElementController} from '../Hooks';
-
 import PlayIcon from 'src/Assets/Svg/Play';
+import {useTrainingListTrainingElementController} from './Hooks/Controller';
 
 interface TrainingElementProps {
   training: Training;

@@ -3,12 +3,12 @@ import React from 'react';
 import Animated, {FadeIn, FadeOut} from 'react-native-reanimated';
 import {useRecoilValue} from 'recoil';
 import * as UI from 'src/Components';
-import {useTrainingConstructorController} from '../Hooks';
-import {isEditingSelector} from '../Store';
+import {useAddElementButtonController} from './Controller';
+import {isEditingSelector} from '../../Store';
 
 export const AddElementButton = React.memo(() => {
   const isEditing = useRecoilValue(isEditingSelector);
-  const {handlePressAddElement} = useTrainingConstructorController();
+  const {handlePressAddElement} = useAddElementButtonController();
 
   return (
     <Animated.View entering={FadeIn} exiting={FadeOut}>

@@ -11,28 +11,28 @@ import {useAppController} from 'src/Services/App';
 import {useTrainingsService} from 'src/Services/Trainings';
 import {Training} from 'src/Store/Models/Training';
 import {myTrainingsList} from 'src/Store/Trainings';
-import {useTrainingListController} from './Hooks';
+import {useTrainingListController} from './Hooks/Controller';
 import {Header} from './Views/Header';
 import {TrainingElement} from './Views/TrainingElement';
 
 const BUTTON_PADDING_BOTTOM = 15;
 export const List = () => {
-  const {getMyTrainings} = useTrainingsService();
-  const {handlePressCreateTraining} = useTrainingListController();
-  const {defaultHandleError} = useAppController();
+  // const {getMyTrainings} = useTrainingsService();
+  // const {defaultHandleError} = useAppController();
 
+  const {handlePressCreateTraining} = useTrainingListController();
   const myTrainings = useRecoilValue(myTrainingsList);
   const {onLayout, ...layout} = useLayout();
 
-  useFocusEffect(
-    React.useCallback(() => {
-      getMyTrainings().then(([_, err]) => {
-        if (err) {
-          defaultHandleError(err);
-        }
-      });
-    }, [getMyTrainings, defaultHandleError]),
-  );
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     getMyTrainings().then(([_, err]) => {
+  //       if (err) {
+  //         defaultHandleError(err);
+  //       }
+  //     });
+  //   }, [getMyTrainings, defaultHandleError]),
+  // );
 
   return (
     <>

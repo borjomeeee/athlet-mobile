@@ -33,7 +33,7 @@ export const useTrainingConstructorStore = () => {
 
   const getInitialTraining = useGetRecoilState(initialTrainingAtom);
 
-  const swithToViewMode = React.useCallback(() => {
+  const switchToViewMode = React.useCallback(() => {
     setScreenState(ScreenState.VIEWING);
 
     const initialTraining = getInitialTraining();
@@ -89,7 +89,7 @@ export const useTrainingConstructorStore = () => {
     setTitle: setTitleHandler,
     resetAll,
 
-    swithToViewMode,
+    switchToViewMode,
     switchToEditMode,
   };
 };

@@ -2,11 +2,11 @@ import React from 'react';
 import * as UI from 'src/Components';
 import {useModal} from 'src/Lib/ModalRouter';
 import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
-import {Modals} from '../../../Const';
+import {Modals} from '../../Const';
 import {
   useTrainingConstructorExercise,
   useTrainingConstructorHistoryStore,
-} from '../../../Store';
+} from '../../Store';
 
 export const useTrainingExerciseController = (id: string) => {
   const {removeExercise, replaceExercise} =

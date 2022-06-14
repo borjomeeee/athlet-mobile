@@ -3,7 +3,7 @@ import React from 'react';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
 import {TrainingsStackParamList} from '../../index';
 import {BottomTabTrainingsPaths} from 'src/Navigation/Paths';
-import {useTrainingConstructorController} from './index';
+import {useTrainingConstructorController} from '../Controller';
 import {useTrainingConstructorChangesController} from './Changes';
 
 type ProfileScreenRouteProp = RouteProp<

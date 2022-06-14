@@ -5,8 +5,8 @@ import * as UI from 'src/Components';
 import {
   useTrainingConstructorSet,
   useTrainingConstructorHistoryStore,
-} from '../../../Store';
-import {Modals} from '../../../Const';
+} from '../../Store';
+import {Modals} from '../../Const';
 
 export const useSetFooterController = (id: string) => {
   const {set} = useTrainingConstructorSet(id);

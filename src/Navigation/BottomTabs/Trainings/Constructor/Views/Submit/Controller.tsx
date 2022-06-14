@@ -2,13 +2,13 @@ import React from 'react';
 import {useAppController} from 'src/Services/App';
 import {useTrainingService, useTrainingsService} from 'src/Services/Trainings';
 import {useGetRecoilState} from 'src/Utils/Recoil';
-import {useTrainingConstructorController} from '../../../Hooks';
+import {useTrainingConstructorController} from '../../Hooks';
 import {
   constructorElementsSelector,
   initialTrainingIdAtom,
   screenTrainingTitleAtom,
   useTrainingConstructorStore,
-} from '../../../Store';
+} from '../../Store';
 
 export const useSubmitController = () => {
   const getTrainingId = useGetRecoilState(initialTrainingIdAtom);
@@ -16,7 +16,7 @@ export const useSubmitController = () => {
   const getTrainingTitle = useGetRecoilState(screenTrainingTitleAtom);
   const getElements = useGetRecoilState(constructorElementsSelector);
 
-  const {swithToViewMode} = useTrainingConstructorStore();
+  const {switchToViewMode} = useTrainingConstructorStore();
   const {initWithTrainingId} = useTrainingConstructorController();
 
   const {createTraining} = useTrainingsService();
@@ -75,7 +75,7 @@ export const useSubmitController = () => {
     if (err) {
       defaultHandleError(err);
     } else {
-      swithToViewMode();
+      switchToViewMode();
     }
   }, [
     getTrainingId,
@@ -83,7 +83,7 @@ export const useSubmitController = () => {
     updateTraining,
     getTrainingTitle,
     getElements,
-    swithToViewMode,
+    switchToViewMode,
   ]);
 
   return {handlePressCreateTraining, handlePressUpdateTraining};

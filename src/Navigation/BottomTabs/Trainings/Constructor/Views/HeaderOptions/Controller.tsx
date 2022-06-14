@@ -1,20 +1,17 @@
 import React from 'react';
 
-import {
-  initialTrainingIdAtom,
-  useTrainingConstructorStore,
-} from '../../../Store';
+import {initialTrainingIdAtom, useTrainingConstructorStore} from '../../Store';
 
 import {useTrainingService} from 'src/Services/Trainings';
 import {useGetRecoilState} from 'src/Utils/Recoil';
 import {useNavigation} from '@react-navigation/core';
 import {useAppController} from 'src/Services/App';
 import {useConfirmDialog} from 'src/Hooks/ConfirmDialog';
-import {Modals} from '../../../Const';
-import {useTrainingConstructorChangesController} from '../../../Hooks/Changes';
+import {Modals} from '../../Const';
+import {useTrainingConstructorChangesController} from '../../Hooks/Changes';
 
 export const useHeaderOptionsController = () => {
-  const {swithToViewMode} = useTrainingConstructorStore();
+  const {switchToViewMode} = useTrainingConstructorStore();
   const {hasTrainingChanged, requestResetChanges} =
     useTrainingConstructorChangesController();
 
@@ -25,12 +22,12 @@ export const useHeaderOptionsController = () => {
       const isConfirmed = await requestResetChanges();
 
       if (isConfirmed) {
-        swithToViewMode();
+        switchToViewMode();
       }
     } else {
-      swithToViewMode();
+      switchToViewMode();
     }
-  }, [hasTrainingChanged, requestResetChanges, swithToViewMode]);
+  }, [hasTrainingChanged, requestResetChanges, switchToViewMode]);
 
   return {handlePressCancelEditingMode};
 };

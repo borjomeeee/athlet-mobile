@@ -2,7 +2,7 @@ import React from 'react';
 import {useRecoilValue} from 'recoil';
 import {useAppController} from 'src/Services/App';
 import {useTrainingService} from 'src/Services/Trainings';
-import {useTrainingConstructorController} from './index';
+import {useTrainingConstructorController} from '../Controller';
 import {initialTrainingIdAtom} from '../Store';
 import {useTraining} from 'src/Store/Trainings';
 

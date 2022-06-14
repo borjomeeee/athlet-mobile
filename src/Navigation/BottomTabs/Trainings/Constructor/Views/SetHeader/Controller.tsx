@@ -2,7 +2,7 @@ import React from 'react';
 import {
   useTrainingConstructorSet,
   useTrainingConstructorHistoryStore,
-} from '../../../Store';
+} from '../../Store';
 
 export const useSetHeaderController = (id: string) => {
   const {replaceSet} = useTrainingConstructorHistoryStore();

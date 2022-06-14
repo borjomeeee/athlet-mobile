@@ -13,7 +13,7 @@ import Animated, {
   interpolate,
   Extrapolate,
 } from 'react-native-reanimated';
-import {useTrainingConstructorController} from './index';
+import {useTrainingConstructorController} from '../Controller';
 import {ExerciseValuesStore, ExerciseValues} from '../Types';
 import {useWindowDimensions} from 'react-native';
 import {AnimationsContext} from '../Store/Animations';
