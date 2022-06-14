@@ -2,7 +2,8 @@ import React from 'react';
 import {useAppController} from 'src/Services/App';
 import {useTrainingService, useTrainingsService} from 'src/Services/Trainings';
 import {useGetRecoilState} from 'src/Utils/Recoil';
-import {useTrainingConstructorController} from '../../Hooks';
+import {useTrainingConstructorController} from '../../Controller';
+
 import {
   constructorElementsSelector,
   initialTrainingIdAtom,

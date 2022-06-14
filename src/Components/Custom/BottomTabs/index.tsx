@@ -15,8 +15,8 @@ export const BottomTabs = (props: BottomTabBarProps) => {
   const {bottom} = useSafeAreaInsets();
   const navigation = props.navigation;
 
-  const handlePressHome = React.useCallback(() => {
-    navigation.navigate(BottomTabPaths.Home);
+  const handlePressAccount = React.useCallback(() => {
+    navigation.navigate(BottomTabPaths.Account);
   }, [navigation]);
 
   const handlePressFitness = React.useCallback(() => {
@@ -27,8 +27,18 @@ export const BottomTabs = (props: BottomTabBarProps) => {
     <ShadowView dx={0} dy={4} blur={12} color={Colors.black + '05'}>
       <View style={s(`btrr:15 btlr:15 bgc:${Colors.white}`)}>
         <View style={s(`container pv:15 row jcsa`)}>
-          <Pressable onPress={handlePressHome}>
+          {/* <Pressable>
             <TabBarHome
+              fill={
+                props.state.index === 0
+                  ? Colors.tabBarActive
+                  : Colors.tabBarInactive
+              }
+            />
+          </Pressable> */}
+
+          <Pressable onPress={handlePressFitness}>
+            <TabBarFitness
               fill={
                 props.state.index === 0
                   ? Colors.tabBarActive
@@ -37,20 +47,10 @@ export const BottomTabs = (props: BottomTabBarProps) => {
             />
           </Pressable>
 
-          <Pressable onPress={handlePressFitness}>
-            <TabBarFitness
-              fill={
-                props.state.index === 1
-                  ? Colors.tabBarActive
-                  : Colors.tabBarInactive
-              }
-            />
-          </Pressable>
-
-          <Pressable>
+          <Pressable onPress={handlePressAccount}>
             <TabBarAccount
               fill={
-                props.state.index === 2
+                props.state.index === 1
                   ? Colors.tabBarActive
                   : Colors.tabBarInactive
               }

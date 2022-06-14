@@ -7,9 +7,11 @@ import * as UI from 'src/Components';
 import {TrainingEvent} from 'src/Store/Models/Training';
 import {trainingsEventsListSelector} from 'src/Store/TrainingsEvents';
 
+import UserIcon from 'src/Assets/Svg/TabBarAccount';
 import {TrainingEventCard} from './Views/TrainingEventCard';
+import {Colors} from 'src/Utils/Styles';
 
-export const TrainingsEventsList = () => {
+export const Account = () => {
   const trainingsEventsList = useRecoilValue(trainingsEventsListSelector);
 
   const trainingEventsSections = React.useMemo(() => {
@@ -42,6 +44,7 @@ export const TrainingsEventsList = () => {
       renderItem={renderItem}
       ItemSeparatorComponent={ItemSeparator}
       SectionSeparatorComponent={SectionSeparator}
+      bounces={false}
     />
   );
 };
@@ -74,9 +77,15 @@ function ItemSeparator() {
 export const Header = () => {
   const {top} = useSafeAreaInsets();
   return (
-    <UI.View style={s(`container`)}>
-      <UI.HSpacer size={top} />
-      <UI.Text style={s(`P3 semibold pt:40 pb:30`)}>Статистика</UI.Text>
-    </UI.View>
+    <>
+      <UI.View style={s(`container aic bgc:white`)}>
+        <UI.HSpacer size={top + 20} />
+        <UserIcon width={80} height={80} fill={'#CCCCCC'} />
+        <UI.Text style={s(`P5 medium`)}>Гость</UI.Text>
+        <UI.HSpacer size={15} />
+      </UI.View>
+      <UI.Headline label="История выполнения тренировок" />
+      <UI.HSpacer size={15} />
+    </>
   );
 };

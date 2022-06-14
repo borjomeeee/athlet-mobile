@@ -5,7 +5,7 @@ import {
 } from '@react-navigation/bottom-tabs';
 
 import {TrainingsStack} from './Trainings';
-import {TrainingsEventsStack} from './TrainingEvents';
+import {AccountStack} from './Account';
 
 import {BottomTabPaths} from '../Paths';
 
@@ -17,10 +17,10 @@ export const BottomTabsNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={tabNavigationOptions}
-      initialRouteName={BottomTabPaths.Home}
+      initialRouteName={BottomTabPaths.Trainings}
       tabBar={tabBar}>
-      <Tab.Screen name={BottomTabPaths.Home} component={TrainingsEventsStack} />
       <Tab.Screen name={BottomTabPaths.Trainings} component={TrainingsStack} />
+      <Tab.Screen name={BottomTabPaths.Account} component={AccountStack} />
     </Tab.Navigator>
   );
 };
