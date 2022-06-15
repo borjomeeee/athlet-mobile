@@ -27,4 +27,5 @@ export enum BottomTabTrainingsPaths {
 export enum BottomTabAccountPaths {
   Default = 'tabs/account/default',
   TrainingEvent = 'tabs/account/event',
+  Settings = 'tabs/account/settings',
 }

@@ -9,3 +9,4 @@ export * from './AnimatedHeightBox';
 export * from './SelectWheel';
 export * from './ShadowView';
 export * from './Headline';
+export * from './LabeledRow';

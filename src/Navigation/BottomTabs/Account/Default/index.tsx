@@ -9,7 +9,9 @@ import {trainingsEventsListSelector} from 'src/Store/TrainingsEvents';
 
 import UserIcon from 'src/Assets/Svg/TabBarAccount';
 import {TrainingEventCard} from './Views/TrainingEventCard';
-import {Colors} from 'src/Utils/Styles';
+
+import SettingsIcon from 'src/Assets/Svg/Settings';
+import {useAccountController} from './Controller';
 
 export const Account = () => {
   const trainingsEventsList = useRecoilValue(trainingsEventsListSelector);
@@ -76,13 +78,24 @@ function ItemSeparator() {
 
 export const Header = () => {
   const {top} = useSafeAreaInsets();
+  const {handlePressSettings} = useAccountController();
+
   return (
     <>
-      <UI.View style={s(`container aic bgc:white`)}>
+      <UI.View style={s(`container bgc:white`)}>
         <UI.HSpacer size={top + 20} />
-        <UserIcon width={80} height={80} fill={'#CCCCCC'} />
-        <UI.Text style={s(`P5 medium`)}>Гость</UI.Text>
-        <UI.HSpacer size={15} />
+
+        <UI.View style={s(`aic rel`)}>
+          <UserIcon width={80} height={80} fill={'#CCCCCC'} />
+          <UI.Text style={s(`P5 medium`)}>Гость</UI.Text>
+          <UI.HSpacer size={15} />
+
+          <UI.View style={s(`abs t:0 r:0`)}>
+            <UI.Pressable onPress={handlePressSettings}>
+              <SettingsIcon />
+            </UI.Pressable>
+          </UI.View>
+        </UI.View>
       </UI.View>
       <UI.Headline label="История выполнения тренировок" />
       <UI.HSpacer size={15} />
