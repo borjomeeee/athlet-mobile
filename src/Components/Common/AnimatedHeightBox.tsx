@@ -14,7 +14,7 @@ import s from '@borjomeeee/rn-styles';
 export const AnimatedHeightBox: React.FC<{
   style?: RN.ViewStyle;
   animatedMount?: boolean;
-}> = ({style, animatedMount = false, children}) => {
+}> = ({style: providedStyle, animatedMount = false, children}) => {
   const animatedRef = useAnimatedRef<Animated.View>();
   const [mounted, setMounted] = React.useState(false);
 
@@ -22,10 +22,6 @@ export const AnimatedHeightBox: React.FC<{
 
   const heightStyle = useAnimatedStyle(() => ({
     height: height.value,
-    overflow: 'hidden',
-    position: 'relative',
-
-    ...style,
   }));
 
   const handleLayout = React.useCallback(() => {
@@ -42,13 +38,19 @@ export const AnimatedHeightBox: React.FC<{
 
         height.value = withTiming(h, {
           easing: Easing.inOut(Easing.ease),
+          duration: 10_000,
         });
       });
     }
   }, [animatedRef, height, animatedMount, mounted]);
 
+  const style = React.useMemo(
+    () => [s(`rel ofh`), heightStyle, providedStyle],
+    [heightStyle, providedStyle],
+  );
+
   return (
-    <Animated.View style={heightStyle}>
+    <Animated.View style={style}>
       <RN.View style={s(`abs r:0 l:0`)}>
         <Animated.View
           ref={animatedRef}

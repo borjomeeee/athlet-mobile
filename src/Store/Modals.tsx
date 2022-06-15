@@ -34,12 +34,14 @@ export const useModalsStore = () => {
   const getModalsIds = useGetRecoilState(modalsIdsStore);
 
   const addModal = useRecoilTransaction_UNSTABLE(
-    ({set}) =>
+    ({set, get}) =>
       (modal: Modal<any>) => {
-        set(modalsIdsStore, prevIds => [...prevIds, modal.id]);
+        const modalsIds = get(modalsIdsStore);
+        if (!modalsIds.includes(modal.id)) {
+          set(modalsIdsStore, prevIds => [...prevIds, modal.id]);
+        }
 
         set(modalStore(modal.id), modal);
-        set(modalVisibilityStore(modal.id), true);
       },
     [],
   );

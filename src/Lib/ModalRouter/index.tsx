@@ -1,7 +1,7 @@
 import React from 'react';
 
 import * as UI from 'src/Components';
-import {useRecoilState, useRecoilValue, useSetRecoilState} from 'recoil';
+import {useRecoilValue, useSetRecoilState} from 'recoil';
 import {
   modalsIdsStore,
   modalStore,
