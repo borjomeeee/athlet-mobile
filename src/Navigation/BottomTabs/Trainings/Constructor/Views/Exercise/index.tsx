@@ -68,7 +68,7 @@ export const ExerciseView: React.FC<ExerciseViewProps> = React.memo(
           )}
 
           <UI.VSpacer size={8} />
-          <Animated.View style={s(`fill`)} layout={Layout}>
+          <Animated.View style={s(`fill`)}>
             <UI.Text>{title}</UI.Text>
             <Pressable
               style={s(`asfs`)}
@@ -77,7 +77,7 @@ export const ExerciseView: React.FC<ExerciseViewProps> = React.memo(
               <UI.Text style={s(`P8 medium c:gray`)}>{restInfo}</UI.Text>
             </Pressable>
           </Animated.View>
-          <Animated.View layout={Layout}>
+          <Animated.View>
             <UI.Text>{valueInfo}</UI.Text>
           </Animated.View>
 
@@ -193,7 +193,7 @@ export const Exercise: React.FC<ExerciseProps> = ({
       // TODO: animation not working
       // entering={isNew.value ? SlideInRight : undefined}
       // exiting={isNew.value ? SlideOutLeft : undefined}
-      layout={Layout}>
+    >
       <UI.ShadowView dx={10} dy={10} blur={10} color={color}>
         <ExerciseView
           title={exercise.baseExercise.title}

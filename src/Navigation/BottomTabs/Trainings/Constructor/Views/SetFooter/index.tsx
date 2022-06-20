@@ -53,6 +53,7 @@ export const SetFooter: React.FC<SetFooterProps> = ({
           lastOrder.value === order ? withTiming(tempOffsetY.value) : 0,
       },
     ],
+    zIndex: 2,
   }));
 
   React.useEffect(() => {
@@ -60,15 +61,9 @@ export const SetFooter: React.FC<SetFooterProps> = ({
   });
 
   return (
-    <Animated.View
-      // entering={isEditing ? SlideInRight : undefined}
-      // exiting={isEditing ? SlideOutLeft : undefined}
-      style={animatedStyle}
-      layout={Layout}>
+    <Animated.View style={animatedStyle}>
       {isEditing && (
-        <Animated.View
-          // entering={FadeIn} exiting={FadeOut}
-          layout={Layout}>
+        <Animated.View>
           <UI.Pressable
             style={s(
               `container h:${SET_FOOTER_ADD_EXERCISE_BUTTON_HEIGHT} bgc:white jcc`,
@@ -82,9 +77,7 @@ export const SetFooter: React.FC<SetFooterProps> = ({
         </Animated.View>
       )}
 
-      <Animated.View
-        style={s(`h:${SET_FOOTER_REST_BLOCK_HEIGHT} aic jcc`)}
-        layout={Layout}>
+      <Animated.View style={s(`h:${SET_FOOTER_REST_BLOCK_HEIGHT} aic jcc`)}>
         <UI.Pressable onPress={handlePressEditRest} disabled={!isEditing}>
           <UI.Text style={s(`P8 medium c:gray`)}>{formattedRest}</UI.Text>
         </UI.Pressable>
