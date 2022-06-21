@@ -118,5 +118,5 @@ export const training: TrainingApi = {
 
 export const exercises: ExerciseApi[] = [
   {id: '1', title: 'Подтягивания'},
-  {id: '2', title: 'Бег', completionType: ExerciseCompletionType.TIME},
+  {id: '2', title: 'Бег'},
 ];

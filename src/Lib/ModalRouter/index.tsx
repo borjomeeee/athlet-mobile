@@ -18,11 +18,9 @@ export const useModalRouter = () => {
   const {addModal, removeModal, removeAll} = useModalsStore();
 
   const showModal = React.useCallback(
-    <T,>(
+    <T extends {id: string}>(
       Component: React.FC<T>,
-      options: T extends Record<string, unknown>
-        ? {id?: string; props: T & {id?: string}}
-        : {id?: string; props?: undefined},
+      options: {id?: string; props: T},
     ) => {
       const {id = Id.generate(), props = {}} = options;
       addModal({
@@ -64,11 +62,11 @@ export const useModal = (id: string) => {
   const setIsVisible = useSetRecoilState(modalVisibilityStore(id));
 
   const show = React.useCallback(
-    <T,>(Component: React.FC<T>, props: Omit<T, 'id'>) => {
+    <T extends {id: string}>(Component: React.FC<T>, props: Omit<T, 'id'>) => {
       Keyboard.dismiss();
 
       setIsVisible(true);
-      showModal<T>(Component, {id, props} as any);
+      showModal(Component, {id, props: {id, ...props} as T});
     },
     [showModal, setIsVisible, id],
   );

@@ -1,20 +1,31 @@
-import {useFlow} from 'src/Hooks/Flow';
-import {useExercisesRepository} from 'src/Repositories/Exercises';
+import React from 'react';
+import {asyncCall} from 'src/Hooks/Flow';
+import {useOfflineExercisesRepository} from 'src/Repositories/OfflineExercises';
 import {useExercisesStore} from 'src/Store/Exercises';
-import {Exercise} from 'src/Store/Models/Training';
 
 export const useExercisesService = () => {
-  const {getExercises: fetchGetExercises} = useExercisesRepository();
-  const {setExercises} = useExercisesStore();
+  const {addExercise: addStoreExercise, setExercises} = useExercisesStore();
+  const {getExercises: offlineGetExercises, addExercise: offlineAddExercise} =
+    useOfflineExercisesRepository();
 
-  const getExercises = useFlow(
-    async () => {
-      // const {exercises} = await fetchGetExercises();
-      // setExercises(exercises);
-    },
-    [],
-    'exercisesService__downloadExercises',
+  const addExercise = React.useCallback(
+    (title: string) =>
+      asyncCall(async () => {
+        const exercise = await offlineAddExercise(title);
+        addStoreExercise(exercise);
+        return exercise;
+      }),
+    [offlineAddExercise, addStoreExercise],
   );
 
-  return {getExercises};
+  const getExercises = React.useCallback(
+    () =>
+      asyncCall(async () => {
+        const exercises = await offlineGetExercises();
+        setExercises(exercises);
+        return exercises;
+      }),
+    [offlineGetExercises, setExercises],
+  );
+  return {addExercise, getExercises};
 };

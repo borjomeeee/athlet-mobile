@@ -5,16 +5,18 @@ import {
 } from '@gorhom/bottom-sheet';
 import React from 'react';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {BottomSheetModal, HSpacer, Text} from 'src/Components';
-import {View} from 'src/Components/Common';
-import {SelectTimeWheel} from 'src/Components/Custom';
+import {BottomSheetModal, HSpacer, Text} from 'src/Components/Common';
+import {useCreateExerciseController} from './Hooks';
+import {ExerciseNameInput} from './Views/ExerciseNameInput';
 import {Submit} from './Views/Submit';
-import {useSelectRestController} from './Hooks';
-import {SelectRestProps} from './Types';
 
-export const SelectRest: React.FC<SelectRestProps> = ({id, defaultRest}) => {
-  const {handleChangeRest, reset} = useSelectRestController(id);
+interface CreateExerciseProps {
+  id: string;
+  onCreate?: (title: string) => void;
+}
+export const CreateExercise: React.FC<CreateExerciseProps> = ({id}) => {
   const {bottom} = useSafeAreaInsets();
+  const {reset} = useCreateExerciseController(id);
 
   const {
     animatedHandleHeight,
@@ -32,19 +34,12 @@ export const SelectRest: React.FC<SelectRestProps> = ({id, defaultRest}) => {
       handleHeight={animatedHandleHeight}
       contentHeight={animatedContentHeight}>
       <BottomSheetView style={s(`container`)} onLayout={handleContentLayout}>
-        <HSpacer size={5} />
-        <Text style={s(`text fsz:20 medium`)}>Выберите время отдыха</Text>
-
-        <HSpacer size={30} />
-        <View style={s(`aic`)}>
-          <SelectTimeWheel
-            onChangeValue={handleChangeRest}
-            defaultValue={defaultRest}
-          />
-        </View>
-        <HSpacer size={50} />
+        <HSpacer size={10} />
+        <Text style={s(`text fsz:20 medium`)}>Выберите упражнение</Text>
+        <HSpacer size={20} />
+        <ExerciseNameInput id={id} />
+        <HSpacer size={10} />
         <Submit id={id} />
-
         <HSpacer size={bottom + 20} />
       </BottomSheetView>
     </BottomSheetModal>

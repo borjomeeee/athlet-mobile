@@ -11,9 +11,7 @@ export const useExercisesRepository = () => {
       httpClient
         .get({url: ApiPaths.getExercises})
         .then(parseDefaultApiResponse)
-        .then(data => ({
-          exercises: z.array(ExerciseScheme).parse(data.json) as Exercise[],
-        })),
+        .then(data => z.array(ExerciseScheme).parse(data.json) as Exercise[]),
     [],
   );
 

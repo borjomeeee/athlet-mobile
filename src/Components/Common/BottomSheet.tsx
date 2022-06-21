@@ -38,8 +38,6 @@ export const BottomSheetModal: React.FC<BottomSheetModal> = ({
   animatedIndex,
   animatedPosition,
   onClose,
-  enablePanDownToClose = true,
-  index = 0,
   ...props
 }) => {
   const {isVisible, _onClose} = useModalInternal(id);
@@ -77,9 +75,11 @@ export const BottomSheetModal: React.FC<BottomSheetModal> = ({
       animatedPosition={animatedPosition || _animatedPosition}
       backdropComponent={BackdropComponent}
       onClose={handleClose}
-      enablePanDownToClose={enablePanDownToClose}
-      index={index}
+      enablePanDownToClose={true}
+      index={0}
       {...props}
+      keyboardBehavior="extend"
+      keyboardBlurBehavior="restore"
     />
   );
 };

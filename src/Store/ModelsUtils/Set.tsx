@@ -7,7 +7,7 @@ export class SetUtils {
       type: ElementType.SET,
       title: 'Сет',
       elements: [],
-      restAfterComplete: 10,
+      restAfterComplete: 120_000,
     };
   }
 
