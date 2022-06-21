@@ -4,7 +4,7 @@ import * as RN from 'react-native';
 import s from '@borjomeeee/rn-styles';
 
 export interface InputProps extends React.ComponentProps<typeof RN.TextInput> {
-  inputRef?: React.MutableRefObject<RN.TextInput>;
+  inputRef?: React.MutableRefObject<RN.TextInput | null>;
 }
 export const Input: React.FC<InputProps> = ({
   inputRef,

@@ -8,15 +8,17 @@ export interface SelectTimeWheelProps
   labelStyle?: TextStyle;
 }
 export const SelectTimeWheel: React.FC<SelectTimeWheelProps> = ({
-  defaultValue = 15,
+  defaultValue = 15_000,
   onChangeValue,
   labelStyle,
   ...props
 }) => {
   const [selectedMins, setSelectedMins] = React.useState(
-    Math.floor(defaultValue / 60),
+    Math.floor(defaultValue / 60_000),
   );
-  const [selectedSecs, setSelectedSecs] = React.useState(defaultValue % 60);
+  const [selectedSecs, setSelectedSecs] = React.useState(
+    (defaultValue / 1000) % 60,
+  );
 
   const time = React.useMemo(
     () => selectedMins * 60 + selectedSecs,

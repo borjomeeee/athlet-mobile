@@ -127,7 +127,7 @@ export const useEditExerciseSubmitController = (id: string) => {
     switch (selectedCompletionType) {
       case ExerciseCompletionType.REPS:
         props.onEdit?.({
-          restAfterComplete: 15_000,
+          restAfterComplete: 60_000,
           baseExercise: currentExercise,
           type: ElementType.EXERCISE,
           completionType: ExerciseCompletionType.REPS,
@@ -136,7 +136,7 @@ export const useEditExerciseSubmitController = (id: string) => {
         break;
       case ExerciseCompletionType.TIME:
         props.onEdit?.({
-          restAfterComplete: 15_000,
+          restAfterComplete: 60_000,
           baseExercise: currentExercise,
           type: ElementType.EXERCISE,
           completionType: ExerciseCompletionType.TIME,
@@ -145,7 +145,7 @@ export const useEditExerciseSubmitController = (id: string) => {
         break;
       case ExerciseCompletionType.GYM:
         props.onEdit?.({
-          restAfterComplete: 15_000,
+          restAfterComplete: 60_000,
           baseExercise: currentExercise,
           type: ElementType.EXERCISE,
           completionType: ExerciseCompletionType.GYM,

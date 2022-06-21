@@ -2,6 +2,7 @@ import React from 'react';
 import {Exercise} from 'src/Store/Models/Training';
 import {BottomSheetModal, HSpacer} from '../../Common';
 import {useSelectExerciseController} from './Hooks';
+import {CreateExercise} from './Views/CreateExercise';
 import {Header} from './Views/Header';
 import {List} from './Views/List';
 
@@ -20,6 +21,8 @@ export const SelectExercise: React.FC<SelectExerciseProps> = ({
     <BottomSheetModal id={id} snapPoints={['80%']}>
       <Header id={id} />
       <HSpacer size={10} />
+      <CreateExercise id={id} />
+      <HSpacer size={25} />
       <List id={id} onSelect={onSelect} />
     </BottomSheetModal>
   );

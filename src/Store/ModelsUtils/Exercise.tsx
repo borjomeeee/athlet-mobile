@@ -15,7 +15,7 @@ export class ExerciseUtils {
       completionType: ExerciseCompletionType.REPS,
       type: ElementType.EXERCISE,
       reps: 15,
-      restAfterComplete: 60,
+      restAfterComplete: 60_000,
     };
   }
 

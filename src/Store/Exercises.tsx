@@ -2,7 +2,6 @@ import React from 'react';
 import {atom, selector, useSetRecoilState} from 'recoil';
 import {getKeyFabricForDomain} from 'src/Utils/Recoil';
 import {Exercise} from './Models/Training';
-import exercises from 'src/Lib/LocalData/exercises.json';
 
 const createKey = getKeyFabricForDomain('exercises');
 interface ExercisesStore {
@@ -10,7 +9,7 @@ interface ExercisesStore {
 }
 export const exercisesStore = atom<ExercisesStore>({
   key: createKey('self'),
-  default: exercises as any,
+  default: {},
 });
 
 export const exercisesIdsStore = selector({
@@ -35,5 +34,15 @@ export const useExercisesStore = () => {
     [_setExercises],
   );
 
-  return {setExercises};
+  const addExercise = React.useCallback(
+    (exercise: Exercise) => {
+      _setExercises(currExercises => ({
+        ...currExercises,
+        [exercise.id]: exercise,
+      }));
+    },
+    [_setExercises],
+  );
+
+  return {addExercise, setExercises};
 };

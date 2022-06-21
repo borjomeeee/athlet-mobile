@@ -71,7 +71,7 @@ export const DefaultInput: React.FC<DefaultInputProps> = ({
   }, [error, animatedShakeValue]);
 
   const handlePressError = React.useCallback(() => {
-    inputRef.current.focus();
+    inputRef.current?.focus();
     onChangeText?.(value || '');
   }, [inputRef, value, onChangeText]);
 
@@ -134,9 +134,10 @@ export const DefaultInputWithLabel: React.FC<DefaultInputWithLabelProps> = ({
   ...props
 }) => {
   const handlePressLabel = React.useCallback(
-    () => inputRef.current.focus(),
+    () => inputRef.current?.focus(),
     [inputRef],
   );
+
   return (
     <View>
       <Pressable onPress={handlePressLabel} activeOpacity={1}>

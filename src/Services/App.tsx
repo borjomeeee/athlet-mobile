@@ -12,10 +12,12 @@ import {ApiResponse} from 'src/Api/Responses';
 import {LocalStorage} from 'src/Lib/LocalStorage';
 import {useModal} from 'src/Lib/ModalRouter';
 import {JobAlreadyStarted} from 'src/Utils/Exceptions';
+import {useExercisesService} from './Exercises';
 
 export const useAppController = () => {
   const navigation = useNavigation();
   const {checkAuth} = useAuthService();
+  const {getExercises} = useExercisesService();
 
   const {show: showBadNetworkConnection} = useModal('bad-network-connection');
   const {show: showBadApiResponse} = useModal('bad-api-response');
@@ -63,10 +65,12 @@ export const useAppController = () => {
     //   defaultHandleError(error);
     // }
 
+    // TODO: remove
+    getExercises();
     requestAnimationFrame(() => {
       navigation.dispatch(StackActions.replace(AppPaths.BottomTab));
     });
-  }, [navigation]);
+  }, [navigation, getExercises]);
 
   return {init, defaultHandleError};
 };
