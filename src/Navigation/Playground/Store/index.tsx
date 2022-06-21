@@ -1,5 +1,11 @@
 import React from 'react';
-import {atom, selector, useResetRecoilState, useSetRecoilState} from 'recoil';
+import {
+  atom,
+  selector,
+  useRecoilTransaction_UNSTABLE,
+  useResetRecoilState,
+  useSetRecoilState,
+} from 'recoil';
 import {Training} from 'src/Store/Models/Training';
 import {
   IterableTrainingElement,
@@ -13,6 +19,12 @@ export const isStartedStore = atom({
   key: createKey('isStarted'),
   default: false,
 });
+
+export const isFinishedStore = atom({
+  key: createKey('isFinished'),
+  default: false,
+});
+
 export const startTimeStore = atom({
   key: createKey('startTime'),
   default: undefined as number | undefined,
@@ -92,6 +104,9 @@ export const usePlaygroundStore = () => {
   const setIsStarted = useSetRecoilState(isStartedStore);
   const resetIsStarted = useResetRecoilState(isStartedStore);
 
+  const setIsFinished = useSetRecoilState(isFinishedStore);
+  const resetIsFinished = useResetRecoilState(isFinishedStore);
+
   const setStartTime = useSetRecoilState(startTimeStore);
   const resetStartTime = useResetRecoilState(startTimeStore);
 
@@ -126,6 +141,7 @@ export const usePlaygroundStore = () => {
     resetCompletedElements();
     resetIsPause();
     resetPauseTime();
+    resetIsFinished();
   }, [
     resetIsStarted,
     resetStartTime,
@@ -136,10 +152,12 @@ export const usePlaygroundStore = () => {
     resetCompletedElements,
     resetPauseTime,
     resetIsPause,
+    resetIsFinished,
   ]);
 
   return {
     setIsStarted,
+    setIsFinished,
     setTrainingId,
     setCurrentIndex,
     setStartTime,

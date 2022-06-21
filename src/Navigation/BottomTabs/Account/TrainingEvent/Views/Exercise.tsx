@@ -38,7 +38,9 @@ export const Exercise: React.FC<ExerciseProps> = ({
 
   const renderRest = React.useCallback(() => {
     if (diffRest === 0) {
-      return formattedInitialRest;
+      return (
+        <UI.Text style={s(`P8 medium c:gray`)}>{formattedInitialRest}</UI.Text>
+      );
     } else {
       const completedExerciseRest = TimeUtils.getFormattedTimeForTraining(
         completedExercise?.restAfterComplete || 0,

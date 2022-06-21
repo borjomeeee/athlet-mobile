@@ -10,9 +10,11 @@ import {
 } from '@gorhom/bottom-sheet';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useModal} from 'src/Lib/ModalRouter';
+import {useSuccessCompleteTrainingController} from './Hooks';
 
 interface SuccessCompleteTrainingProps {
   id: string;
+  trainingEventId: string;
 }
 export const SuccessCompleteTraining: React.FC<
   SuccessCompleteTrainingProps
@@ -26,6 +28,8 @@ export const SuccessCompleteTraining: React.FC<
     animatedContentHeight,
     handleContentLayout,
   } = useBottomSheetDynamicSnapPoints(['CONTENT_HEIGHT']);
+
+  const {handlePressShowStatistic} = useSuccessCompleteTrainingController(id);
 
   return (
     <UI.BottomSheetModal
@@ -42,7 +46,10 @@ export const SuccessCompleteTraining: React.FC<
           </UI.MultilineText>
           <UI.HSpacer size={30} />
         </UI.View>
-        <UI.GithubButton label="Посмотреть статистику" onPress={hide} />
+        <UI.GithubButton
+          label="Посмотреть статистику"
+          onPress={handlePressShowStatistic}
+        />
         <UI.HSpacer size={10} />
         <UI.View style={s(`aic`)}>
           <UI.Pressable onPress={hide}>

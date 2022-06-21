@@ -3,6 +3,7 @@ import {
   completedElementsStore,
   completingElementStore,
   currentIndexStore,
+  isFinishedStore,
   isStartedStore,
   pauseTimeStore,
   startTimeStore,
@@ -11,7 +12,7 @@ import {
   trainingStore,
   usePlaygroundStore,
 } from '../Store';
-import {useRecoilValue} from 'recoil';
+import {useRecoilCallback, useRecoilValue} from 'recoil';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
 import {AppPaths, ModalsPaths} from 'src/Navigation/Paths';
 import {ModalsGroupParamList} from 'src/Navigation';
@@ -39,6 +40,7 @@ export const usePlayground = () => {
     Modals.SuccessCompleteTraining,
   );
 
+  const getIsFinished = useGetRecoilState(isFinishedStore);
   const getTraining = useGetRecoilState(trainingStore);
   const getCompletedElements = useGetRecoilState(completedElementsStore);
   const getCompletingElement = useGetRecoilState(completingElementStore);
@@ -53,6 +55,7 @@ export const usePlayground = () => {
     setCompletingElement,
     setCompletedElements,
     setStartTime,
+    setIsFinished,
     setIsStarted,
     resetCompletingElement,
   } = usePlaygroundStore();
@@ -62,8 +65,6 @@ export const usePlayground = () => {
   const exit = React.useCallback(() => {
     if (navigation.canGoBack()) {
       navigation.goBack();
-    } else {
-      navigation.dispatch(StackActions.replace(AppPaths.BottomTab));
     }
   }, [navigation]);
 
@@ -102,8 +103,9 @@ export const usePlayground = () => {
       completedElements = [...completedElements, completingElement];
     }
 
+    const id = uuidv4();
     saveTrainingEvent({
-      id: uuidv4(),
+      id,
 
       duration: Date.now() - startTime - pauseTime,
       completedElements: TrainingUtils.fromIterable(completedElements),
@@ -116,6 +118,7 @@ export const usePlayground = () => {
 
       idempotanceKey: uuidv4(),
     });
+    return id;
   }, [
     getCompletingElement,
     getCompletedElements,
@@ -126,14 +129,11 @@ export const usePlayground = () => {
   ]);
 
   const saveAndClose = React.useCallback(() => {
-    setIsStarted(false);
+    const id = save();
+    setIsFinished(true);
 
-    // bug: navigation back called before isStarted value assigned
-    setTimeout(() => {
-      save();
-      exit();
-    }, 0);
-  }, [setIsStarted, save, exit]);
+    return id;
+  }, [setIsFinished, save]);
 
   const forceClose = React.useCallback(async () => {
     const isConfirmed = await requestForceClose();
@@ -148,6 +148,11 @@ export const usePlayground = () => {
   }, [setStartTime, setIsStarted]);
 
   const goNext = React.useCallback(() => {
+    const isFinished = getIsFinished();
+    if (isFinished) {
+      return;
+    }
+
     const currentIndex = getCurrentIndex();
     const elements = getTrainingElements();
 
@@ -161,8 +166,10 @@ export const usePlayground = () => {
     }
 
     if (currentIndex === elements.length - 1) {
-      saveAndClose();
-      showSuccessCompleteTraining(SuccessCompleteTraining, {});
+      const id = saveAndClose();
+      showSuccessCompleteTraining(SuccessCompleteTraining, {
+        trainingEventId: id!,
+      });
     } else {
       setCurrentIndex(i => ++i);
     }
@@ -175,6 +182,7 @@ export const usePlayground = () => {
     saveAndClose,
     showSuccessCompleteTraining,
     resetCompletingElement,
+    getIsFinished,
   ]);
 
   return {
@@ -199,10 +207,13 @@ export const usePlaygroundNavigationEffect = () => {
   const navigation = useNavigation();
   const route = useRoute<ProfileScreenRouteProp>();
 
-  const {requestForceClose, save} = usePlayground();
+  const {requestForceClose, exit, save} = usePlayground();
   const {setTrainingId} = usePlaygroundStore();
 
   const getIsStarted = useGetRecoilState(isStartedStore);
+  const getIsFinished = useGetRecoilState(isFinishedStore);
+
+  const isFinished = useRecoilValue(isFinishedStore);
 
   React.useEffect(() => {
     const params = route.params;
@@ -215,7 +226,9 @@ export const usePlaygroundNavigationEffect = () => {
   React.useEffect(() => {
     const callback = async (e: any) => {
       const isStarted = getIsStarted();
-      if (!isStarted) {
+      const _isFinished = getIsFinished();
+
+      if (!isStarted || _isFinished) {
         return;
       }
 
@@ -230,7 +243,13 @@ export const usePlaygroundNavigationEffect = () => {
 
     navigation.addListener('beforeRemove', callback);
     return () => navigation.removeListener('beforeRemove', callback);
-  }, [navigation, save, getIsStarted, requestForceClose]);
+  }, [navigation, save, getIsStarted, getIsFinished, requestForceClose]);
+
+  React.useEffect(() => {
+    if (isFinished) {
+      exit();
+    }
+  }, [exit, isFinished]);
 };
 
 export const usePlaygroundInitialTraining = () => {
