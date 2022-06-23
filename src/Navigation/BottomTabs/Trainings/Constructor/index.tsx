@@ -6,6 +6,7 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 
+import GymIcon from 'src/Assets/Svg/Gym';
 import * as UI from 'src/Components';
 import {withHooks} from 'src/Utils/HOCs';
 import {useTrainingConstructorController} from './Controller';

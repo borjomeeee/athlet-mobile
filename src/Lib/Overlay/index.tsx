@@ -41,7 +41,7 @@ export const useOverlay = () => {
   return {show, close};
 };
 
-interface OverlayWrapperProps {
+interface OverlayWrapperProps extends React.ComponentProps<typeof Pressable> {
   overlayRef?: React.RefObject<OverlayRef>;
   Component: React.FC;
 
@@ -53,7 +53,7 @@ export const OverlayWrapper: React.FC<OverlayWrapperProps> = ({
   overlayRef = React.createRef(),
   Component,
 
-  disabled,
+  ...props
 }) => {
   const animatedRef = useAnimatedRef<Animated.View>();
   const {show: showOverlay} = useOverlay();
@@ -88,7 +88,7 @@ export const OverlayWrapper: React.FC<OverlayWrapperProps> = ({
 
   return (
     <Animated.View ref={animatedRef}>
-      <Pressable onPress={handlePress} disabled={disabled}>
+      <Pressable onPress={handlePress} {...props}>
         {children}
       </Pressable>
     </Animated.View>
@@ -101,6 +101,7 @@ interface OverlayInstanceProps {
   height: number;
   width: number;
 
+  position?: 'bottomLeft' | 'bottomRight';
   Component: React.FC;
 }
 
@@ -108,17 +109,36 @@ export const OverlayInstance: React.FC<OverlayInstanceProps> = ({
   pageX,
   pageY,
 
+  width: parentWidth,
   height: parentHeight,
 
+  position = 'bottomRight',
   Component,
 }) => {
   const {onLayout, ...contentLayout} = useLayout();
   const {width} = useWindowDimensions();
 
+  const MIN_X = 20;
   const MAX_X = width - 20;
 
-  const absoluteLeft = pageX + contentLayout.width;
-  const left = absoluteLeft > MAX_X ? MAX_X - contentLayout.width : pageX;
+  const left = React.useMemo(() => {
+    if (position === 'bottomLeft') {
+      if (contentLayout.width + pageX >= MAX_X) {
+        return MAX_X - contentLayout.width;
+      } else {
+        return Math.max(pageX, MIN_X);
+      }
+    } else if (position === 'bottomRight') {
+      if (pageX + parentWidth - contentLayout.width <= MIN_X) {
+        return MIN_X;
+      } else {
+        return Math.min(
+          pageX + parentWidth - contentLayout.width,
+          MAX_X - contentLayout.width,
+        );
+      }
+    }
+  }, [contentLayout, MAX_X, MIN_X, pageX, parentWidth, position]);
 
   return (
     <Animated.View
