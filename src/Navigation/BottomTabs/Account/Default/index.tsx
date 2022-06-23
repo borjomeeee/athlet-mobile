@@ -13,6 +13,9 @@ import {TrainingEventCard} from './Views/TrainingEventCard';
 import SettingsIcon from 'src/Assets/Svg/Settings';
 import {useAccountController} from './Controller';
 
+import GymIcon from 'src/Assets/Svg/Gym';
+import {Colors} from 'src/Utils/Styles';
+
 export const Account = () => {
   const trainingsEventsList = useRecoilValue(trainingsEventsListSelector);
 
@@ -46,6 +49,7 @@ export const Account = () => {
       renderItem={renderItem}
       ItemSeparatorComponent={ItemSeparator}
       SectionSeparatorComponent={SectionSeparator}
+      ListEmptyComponent={EmptyComponent}
       bounces={false}
     />
   );
@@ -74,6 +78,19 @@ function SectionSeparator() {
 
 function ItemSeparator() {
   return <UI.HSpacer size={10} />;
+}
+
+function EmptyComponent() {
+  return (
+    <UI.View style={s(`aic container`)}>
+      <UI.HSpacer size={20} />
+      <GymIcon width={100} height={100} fill={'#CCCCCC'} />
+      <UI.HSpacer size={20} />
+      <UI.MultilineText style={s(`P5 semibold c:#CCCCCC`)}>
+        {['Выполненных', 'тренировок пока нет']}
+      </UI.MultilineText>
+    </UI.View>
+  );
 }
 
 export const Header = () => {

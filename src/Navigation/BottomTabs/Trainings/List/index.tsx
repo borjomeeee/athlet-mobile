@@ -1,38 +1,24 @@
 import s from '@borjomeeee/rn-styles';
 import {useLayout} from '@react-native-community/hooks';
-import {useFocusEffect} from '@react-navigation/core';
 
 import React from 'react';
 import {ListRenderItemInfo} from 'react-native';
 import {useRecoilValue} from 'recoil';
 
 import * as UI from 'src/Components';
-import {useAppController} from 'src/Services/App';
-import {useTrainingsService} from 'src/Services/Trainings';
 import {Training} from 'src/Store/Models/Training';
 import {myTrainingsList} from 'src/Store/Trainings';
 import {useTrainingListController} from './Hooks/Controller';
 import {Header} from './Views/Header';
 import {TrainingElement} from './Views/TrainingElement';
 
+import GymIcon from 'src/Assets/Svg/Gym';
+
 const BUTTON_PADDING_BOTTOM = 15;
 export const List = () => {
-  // const {getMyTrainings} = useTrainingsService();
-  // const {defaultHandleError} = useAppController();
-
   const {handlePressCreateTraining} = useTrainingListController();
   const myTrainings = useRecoilValue(myTrainingsList);
   const {onLayout, ...layout} = useLayout();
-
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     getMyTrainings().then(([_, err]) => {
-  //       if (err) {
-  //         defaultHandleError(err);
-  //       }
-  //     });
-  //   }, [getMyTrainings, defaultHandleError]),
-  // );
 
   return (
     <>
@@ -46,6 +32,7 @@ export const List = () => {
         )}
         ListHeaderComponent={Header}
         ItemSeparatorComponent={ItemSeparator}
+        ListEmptyComponent={EmptyComponent}
       />
 
       <UI.View
@@ -71,4 +58,17 @@ function renderItem({item}: ListRenderItemInfo<Training>) {
 
 function ItemSeparator() {
   return <UI.HSpacer size={15} />;
+}
+
+function EmptyComponent() {
+  return (
+    <UI.View style={s(`fill jcc aic container`)}>
+      <GymIcon width={100} height={100} fill={'#CCCCCC'} />
+      <UI.HSpacer size={20} />
+      <UI.MultilineText style={s(`P5 semibold c:#CCCCCC`)}>
+        {['Создайте первую', 'тренировку']}
+      </UI.MultilineText>
+      <UI.HSpacer size={40} />
+    </UI.View>
+  );
 }
