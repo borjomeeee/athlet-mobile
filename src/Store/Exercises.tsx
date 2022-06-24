@@ -44,5 +44,17 @@ export const useExercisesStore = () => {
     [_setExercises],
   );
 
-  return {addExercise, setExercises};
+  const removeExercise = React.useCallback(
+    (id: string) => {
+      _setExercises(currExercises => {
+        const newExercises = {...currExercises};
+        delete newExercises[id];
+
+        return newExercises;
+      });
+    },
+    [_setExercises],
+  );
+
+  return {addExercise, setExercises, removeExercise};
 };

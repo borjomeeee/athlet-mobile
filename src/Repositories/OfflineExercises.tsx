@@ -25,5 +25,16 @@ export const useOfflineExercisesRepository = (): IExercisesRepository => {
     [getExercises],
   );
 
-  return {getExercises, addExercise};
+  const removeExercise = React.useCallback(
+    async (id: string) => {
+      const exercises = await getExercises();
+      await setJsonToLocal(
+        MY_EXERCISES_KEY,
+        exercises.filter(exercise => exercise.id !== id),
+      );
+    },
+    [getExercises],
+  );
+
+  return {getExercises, addExercise, removeExercise};
 };

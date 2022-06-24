@@ -4,9 +4,16 @@ import {useOfflineExercisesRepository} from 'src/Repositories/OfflineExercises';
 import {useExercisesStore} from 'src/Store/Exercises';
 
 export const useExercisesService = () => {
-  const {addExercise: addStoreExercise, setExercises} = useExercisesStore();
-  const {getExercises: offlineGetExercises, addExercise: offlineAddExercise} =
-    useOfflineExercisesRepository();
+  const {
+    addExercise: addStoreExercise,
+    removeExercise: removeStoreExercise,
+    setExercises,
+  } = useExercisesStore();
+  const {
+    getExercises: offlineGetExercises,
+    addExercise: offlineAddExercise,
+    removeExercise: offlineRemoveExercise,
+  } = useOfflineExercisesRepository();
 
   const addExercise = React.useCallback(
     (title: string) =>
@@ -27,5 +34,16 @@ export const useExercisesService = () => {
       }),
     [offlineGetExercises, setExercises],
   );
-  return {addExercise, getExercises};
+
+  const removeExercise = React.useCallback(
+    (id: string) => {
+      return asyncCall(async () => {
+        await offlineRemoveExercise(id);
+        removeStoreExercise(id);
+      });
+    },
+    [offlineRemoveExercise, removeStoreExercise],
+  );
+
+  return {addExercise, getExercises, removeExercise};
 };

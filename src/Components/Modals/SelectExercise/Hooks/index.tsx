@@ -35,3 +35,18 @@ export const useSelectExerciseController = (id: string) => {
     reset,
   };
 };
+
+export const useSelectExerciseComponentController = (exerciseId: string) => {
+  const {defaultHandleError} = useAppController();
+  const {removeExercise} = useExercisesService();
+
+  const handlePressRemoveExercise = React.useCallback(async () => {
+    const [_, err] = await removeExercise(exerciseId);
+
+    if (err) {
+      defaultHandleError(err);
+    }
+  }, [removeExercise, defaultHandleError, exerciseId]);
+
+  return {handlePressRemoveExercise};
+};

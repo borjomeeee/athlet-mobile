@@ -33,7 +33,9 @@ export const Exercise: React.FC<ExerciseProps> = ({modalId, exercise}) => {
     <OverlayWrapper
       overlayRef={overlayRef}
       onPress={noop}
-      Component={OverlayComponent}>
+      Component={() => (
+        <OverlayComponent modalId={modalId} exercise={exercise} />
+      )}>
       <PressableItem
         style={s(`container pv:10 bgc:white`)}
         onPress={handlePress}
@@ -52,10 +54,16 @@ export const Exercise: React.FC<ExerciseProps> = ({modalId, exercise}) => {
   );
 };
 
-function OverlayComponent() {
+interface OverlayComponentProps {
+  modalId: string;
+  exercise: ExerciseModel;
+}
+function OverlayComponent({modalId, exercise}: OverlayComponentProps) {
+  const {handlePressRemove} = useExerciseController(modalId, exercise);
+
   return (
     <View style={s(`minW:150`)}>
-      <OverlayAction>
+      <OverlayAction onPress={handlePressRemove}>
         <Text style={s(`c:red`)}>Удалить</Text>
       </OverlayAction>
     </View>
