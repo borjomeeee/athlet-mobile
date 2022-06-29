@@ -13,11 +13,16 @@ import {LocalStorage} from 'src/Lib/LocalStorage';
 import {useModal} from 'src/Lib/ModalRouter';
 import {JobAlreadyStarted} from 'src/Utils/Exceptions';
 import {useExercisesService} from './Exercises';
+import {useTrainingsService} from './Trainings';
+import {useTrainingsEventsService} from './TrainingsEvents';
 
 export const useAppController = () => {
   const navigation = useNavigation();
   const {checkAuth} = useAuthService();
+
   const {getExercises} = useExercisesService();
+  const {getMyTrainings} = useTrainingsService();
+  const {getMyTrainingsEvents} = useTrainingsEventsService();
 
   const {show: showBadNetworkConnection} = useModal('bad-network-connection');
   const {show: showBadApiResponse} = useModal('bad-api-response');
@@ -67,10 +72,13 @@ export const useAppController = () => {
 
     // TODO: remove
     getExercises();
+    getMyTrainings();
+    getMyTrainingsEvents();
+
     requestAnimationFrame(() => {
       navigation.dispatch(StackActions.replace(AppPaths.BottomTab));
     });
-  }, [navigation, getExercises]);
+  }, [navigation, getExercises, getMyTrainings, getMyTrainingsEvents]);
 
   return {init, defaultHandleError};
 };

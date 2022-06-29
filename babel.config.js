@@ -11,6 +11,7 @@ module.exports = {
         },
       },
     ],
+    '@babel/plugin-proposal-numeric-separator',
     '@babel/plugin-syntax-dynamic-import',
     'react-native-reanimated/plugin',
   ],

@@ -12,6 +12,17 @@ export const trainingsEventsStore = atom({
 export const useTrainingEventsStore = () => {
   const setTrainingEvents = useSetRecoilState(trainingsEventsStore);
 
+  const replaceMyTrainingsEvents = React.useCallback(
+    (trainingsEvents: TrainingEvent[]) => {
+      const dict: Record<string, TrainingEvent> = {};
+      trainingsEvents.forEach(
+        trainingEvent => (dict[trainingEvent.id] = trainingEvent),
+      );
+      setTrainingEvents(dict);
+    },
+    [setTrainingEvents],
+  );
+
   const addTrainingEvent = React.useCallback(
     (trainingEvent: TrainingEvent) => {
       setTrainingEvents(currEvents => ({
@@ -22,7 +33,7 @@ export const useTrainingEventsStore = () => {
     [setTrainingEvents],
   );
 
-  return {addTrainingEvent};
+  return {addTrainingEvent, replaceMyTrainingsEvents};
 };
 
 export const trainingsEventsListSelector = selector({
