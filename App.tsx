@@ -19,6 +19,7 @@ import {OverlayProvider} from 'src/Lib/Overlay';
 import {DebugObserver} from 'src/Utils/Recoil';
 
 import localeRu from 'dayjs/locale/ru';
+import {TopMessageProvider} from 'src/Lib/TopMessage';
 dayjs.locale(localeRu);
 
 configureStyles();
@@ -29,10 +30,12 @@ LogBox.ignoreLogs([
 
 const AppContent = React.memo(() => {
   return (
-    <OverlayProvider>
-      <Navigation />
-      <ModalRouter />
-    </OverlayProvider>
+    <TopMessageProvider>
+      <OverlayProvider>
+        <Navigation />
+        <ModalRouter />
+      </OverlayProvider>
+    </TopMessageProvider>
   );
 });
 
