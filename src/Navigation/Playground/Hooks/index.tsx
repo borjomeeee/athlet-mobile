@@ -1,7 +1,9 @@
 import React from 'react';
+import notifee from '@notifee/react-native';
 import {
   completedElementsStore,
   completingElementStore,
+  currentElementStore,
   currentIndexStore,
   isFinishedStore,
   isStartedStore,
@@ -20,7 +22,11 @@ import {useTrainingService} from 'src/Services/Trainings';
 import {useAppController} from 'src/Services/App';
 import {StackActions} from '@react-navigation/native';
 import {useGetRecoilState} from 'src/Utils/Recoil';
-import {ElementType, ExerciseCompletionType} from 'src/Store/Models/Training';
+import {
+  ElementCompletionTypeScheme,
+  ElementType,
+  ExerciseCompletionType,
+} from 'src/Store/Models/Training';
 import {useConfirmDialog} from 'src/Hooks/ConfirmDialog';
 import {Modals} from '../Const';
 import {useModal} from 'src/Lib/ModalRouter';
@@ -29,8 +35,14 @@ import {useTrainingsEventsService} from 'src/Services/TrainingsEvents';
 import {v4 as uuidv4} from 'uuid';
 import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
 import {useTraining} from 'src/Store/Trainings';
+import {ExerciseUtils} from 'src/Store/ModelsUtils/Exercise';
+import {TimeUtils} from 'src/Store/ModelsUtils/Time';
+import dayjs from 'dayjs';
+import {Vibration} from 'react-native';
+import {updateTrainingNotification} from '../Utils';
 
 export const usePlayground = () => {
+  const {defaultHandleError} = useAppController();
   const {saveTrainingEvent} = useTrainingsEventsService();
   const {requestConfirm: requestForceCloseConfirm} = useConfirmDialog(
     Modals.ConfirmForceClose,
@@ -48,6 +60,7 @@ export const usePlayground = () => {
   const getCurrentIndex = useGetRecoilState(currentIndexStore);
   const getStartTime = useGetRecoilState(startTimeStore);
   const getPauseTime = useGetRecoilState(pauseTimeStore);
+  const getCurrentElement = useGetRecoilState(currentElementStore);
 
   const {
     reset,
@@ -78,7 +91,7 @@ export const usePlayground = () => {
     });
   }, [requestForceCloseConfirm]);
 
-  const save = React.useCallback(() => {
+  const save = React.useCallback(async () => {
     const training = getTraining();
     if (!training) {
       return;
@@ -103,10 +116,7 @@ export const usePlayground = () => {
       completedElements = [...completedElements, completingElement];
     }
 
-    const id = uuidv4();
-    saveTrainingEvent({
-      id,
-
+    const [event, e] = await saveTrainingEvent({
       duration: Date.now() - startTime - pauseTime,
       completedElements: TrainingUtils.fromIterable(completedElements),
       initialTraining: {
@@ -116,9 +126,17 @@ export const usePlayground = () => {
         title: training.title,
       },
 
-      idempotanceKey: uuidv4(),
+      // idempotanceKey: uuidv4(),
     });
-    return id;
+
+    if (e) {
+      defaultHandleError(e);
+      return;
+    } else if (!event) {
+      return;
+    }
+
+    return event.id;
   }, [
     getCompletingElement,
     getCompletedElements,
@@ -126,12 +144,14 @@ export const usePlayground = () => {
     getStartTime,
     getPauseTime,
     getTraining,
+    defaultHandleError,
   ]);
 
-  const saveAndClose = React.useCallback(() => {
-    const id = save();
+  const saveAndClose = React.useCallback(async () => {
+    const id = await save();
     setIsFinished(true);
 
+    notifee.stopForegroundService();
     return id;
   }, [setIsFinished, save]);
 
@@ -142,48 +162,114 @@ export const usePlayground = () => {
     }
   }, [requestForceClose, saveAndClose]);
 
-  const start = React.useCallback(() => {
+  const start = React.useCallback(async () => {
     setStartTime(Date.now());
     setIsStarted(true);
+
+    notifee.registerForegroundService(_ => {
+      return new Promise(res => {
+        updateTrainingNotification(
+          'Тренрировка началась',
+          'Тренировка началась',
+        );
+      });
+    });
   }, [setStartTime, setIsStarted]);
 
-  const goNext = React.useCallback(() => {
-    const isFinished = getIsFinished();
-    if (isFinished) {
-      return;
-    }
-
-    const currentIndex = getCurrentIndex();
-    const elements = getTrainingElements();
-
+  const updateNotification = React.useCallback(async () => {
     const completingElement = getCompletingElement();
-    if (completingElement) {
-      setCompletedElements(currElements => [
-        ...currElements,
-        completingElement,
-      ]);
-      resetCompletingElement();
-    }
+    const currentElement = getCurrentElement();
 
-    if (currentIndex === elements.length - 1) {
-      const id = saveAndClose();
-      showSuccessCompleteTraining(SuccessCompleteTraining, {
-        trainingEventId: id!,
-      });
-    } else {
-      setCurrentIndex(i => ++i);
+    if (
+      completingElement?.type === ElementType.EXERCISE &&
+      completingElement.completionType !== ExerciseCompletionType.TIME
+    ) {
+      let value = '';
+      if (ExerciseUtils.isRepsExercise(completingElement)) {
+        value = `${completingElement.reps} раз.`;
+      } else if (ExerciseUtils.isGymExercise(completingElement)) {
+        value = `${completingElement.reps} x ${completingElement.kg} кг.`;
+      }
+
+      updateTrainingNotification(
+        'Идет тренировка',
+        `${completingElement.baseExercise.title} - цель ${value}`,
+      );
+    } else if (
+      completingElement?.type === ElementType.EXERCISE &&
+      completingElement.completionType === ExerciseCompletionType.TIME
+    ) {
+      const diffTime = (currentElement as any).time - completingElement.time;
+
+      updateTrainingNotification(
+        'Идет тренировка',
+        `${completingElement.baseExercise.title}, осталось ${dayjs
+          .duration({
+            minutes: Math.floor(diffTime / 1000 / 60),
+            seconds: (diffTime / 1000) % 60,
+          })
+          .format('mm:ss')}`,
+      );
+    } else if (completingElement?.type === ElementType.REST) {
+      const diffTime =
+        (currentElement as any).duration - completingElement.duration;
+
+      updateTrainingNotification(
+        'Идет тренировка',
+        `Отдых, осталось ${dayjs
+          .duration({
+            minutes: Math.floor(diffTime / 1000 / 60),
+            seconds: (diffTime / 1000) % 60,
+          })
+          .format('mm:ss')}`,
+      );
     }
-  }, [
-    getCurrentIndex,
-    getTrainingElements,
-    setCurrentIndex,
-    getCompletingElement,
-    setCompletedElements,
-    saveAndClose,
-    showSuccessCompleteTraining,
-    resetCompletingElement,
-    getIsFinished,
-  ]);
+  }, [getCompletingElement, getCurrentElement]);
+
+  const goNext = React.useCallback(
+    async (vibrate?: boolean) => {
+      const isFinished = getIsFinished();
+      if (isFinished) {
+        return;
+      }
+
+      if (vibrate) {
+        Vibration.vibrate(200);
+      }
+
+      const currentIndex = getCurrentIndex();
+      const elements = getTrainingElements();
+
+      const completingElement = getCompletingElement();
+      if (completingElement) {
+        setCompletedElements(currElements => [
+          ...currElements,
+          completingElement,
+        ]);
+        resetCompletingElement();
+      }
+
+      if (currentIndex === elements.length - 1) {
+        const id = await saveAndClose();
+        showSuccessCompleteTraining(SuccessCompleteTraining, {
+          trainingEventId: id!,
+        });
+      } else {
+        setCurrentIndex(i => ++i);
+      }
+    },
+    [
+      getCurrentIndex,
+      getTrainingElements,
+      setCurrentIndex,
+      getCompletingElement,
+      setCompletedElements,
+      saveAndClose,
+      showSuccessCompleteTraining,
+      resetCompletingElement,
+      getIsFinished,
+    ],
+  );
 
   return {
     reset,
@@ -192,6 +278,7 @@ export const usePlayground = () => {
     goNext,
     setCompletingElement,
     requestForceClose,
+    updateNotification,
     forceClose,
     save,
     saveAndClose,

@@ -1236,6 +1236,11 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@notifee/react-native@^5.4.1":
+  version "5.4.1"
+  resolved "https://registry.yarnpkg.com/@notifee/react-native/-/react-native-5.4.1.tgz#1d0a2b77a1dfd9730367599371aae93c3463ca89"
+  integrity sha512-2ET24EEWMf9et9akuGGr7tr+ycyixADW/Ck/KpaVZpjY1xGf8MTwjNDoIPVSAeGiEOw/YZt+KX9YC3LO8ZwSWg==
+
 "@react-native-community/cli-debugger-ui@^6.0.0-rc.0":
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-debugger-ui/-/cli-debugger-ui-6.0.0.tgz#ef9eb1268d85c1bd3caf2c4d36dc350bb080f254"

@@ -18,7 +18,7 @@ export const SelectExercise: React.FC<SelectExerciseProps> = ({
   React.useEffect(() => () => reset(), [reset]);
 
   return (
-    <BottomSheetModal id={id} snapPoints={['80%']}>
+    <BottomSheetModal id={id} snapPoints={['80%']} keyboardBehavior={undefined}>
       <Header id={id} />
       <HSpacer size={10} />
       <CreateExercise id={id} />

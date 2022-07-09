@@ -13,6 +13,7 @@ export const useTrainingsEventsService = () => {
       asyncCall(async () => {
         const trainingEvent = await createEvent(creatingTrainingEvent);
         addTrainingEvent(trainingEvent);
+        return trainingEvent;
       }),
     [createEvent, addTrainingEvent],
   );

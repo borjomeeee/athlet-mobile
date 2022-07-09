@@ -1,7 +1,7 @@
+import 'react-native-gesture-handler';
 import 'react-native-get-random-values';
 import dayjs from 'dayjs';
 
-import 'react-native-gesture-handler';
 import React from 'react';
 import {LogBox} from 'react-native';
 
@@ -18,9 +18,14 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {OverlayProvider} from 'src/Lib/Overlay';
 import {DebugObserver} from 'src/Utils/Recoil';
 
+import notifee, {AndroidImportance} from '@notifee/react-native';
 import localeRu from 'dayjs/locale/ru';
+import duration from 'dayjs/plugin/duration';
 import {TopMessageProvider} from 'src/Lib/TopMessage';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import s from '@borjomeeee/rn-styles';
 dayjs.locale(localeRu);
+dayjs.extend(duration);
 
 configureStyles();
 
@@ -30,13 +35,23 @@ LogBox.ignoreLogs([
 
 const AppContent = React.memo(() => {
   return (
-    <TopMessageProvider>
-      <OverlayProvider>
-        <Navigation />
-        <ModalRouter />
-      </OverlayProvider>
-    </TopMessageProvider>
+    <GestureHandlerRootView style={s(`fill`)}>
+      <TopMessageProvider>
+        <OverlayProvider>
+          <Navigation />
+          <ModalRouter />
+        </OverlayProvider>
+      </TopMessageProvider>
+    </GestureHandlerRootView>
   );
+});
+
+notifee.createChannel({
+  id: 'training',
+  name: 'Show training progress',
+  lights: false,
+  vibration: false,
+  importance: AndroidImportance.HIGH,
 });
 
 const App = () => {

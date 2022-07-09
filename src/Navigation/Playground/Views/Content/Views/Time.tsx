@@ -2,6 +2,7 @@ import s from '@borjomeeee/rn-styles';
 import React from 'react';
 import {useRecoilValue} from 'recoil';
 import * as UI from 'src/Components';
+import {usePlayground} from 'src/Navigation/Playground/Hooks';
 import {
   isPauseStore,
   pauseTimeStore,
@@ -9,6 +10,7 @@ import {
 } from 'src/Navigation/Playground/Store';
 
 export const Time = () => {
+  const {updateNotification} = usePlayground();
   const [clockTime, setClockTime] = React.useState(Date.now());
 
   const startTime = useRecoilValue(startTimeStore);
@@ -26,6 +28,10 @@ export const Time = () => {
       return () => clearInterval(intervalId);
     }
   }, [isPause]);
+
+  React.useEffect(() => {
+    updateNotification();
+  }, [clockTime, updateNotification]);
 
   const formattedDuration = React.useMemo(() => {
     if (!startTime) {

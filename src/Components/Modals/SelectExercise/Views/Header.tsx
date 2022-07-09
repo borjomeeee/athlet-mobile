@@ -6,6 +6,7 @@ import {DefaultInput} from 'src/Components/Inputs';
 import {useRecoilValue} from 'recoil';
 import {searchInputStoreFamily} from '../Store';
 import {useSelectExerciseController} from '../Hooks';
+import {BottomSheetTextInput} from '@gorhom/bottom-sheet';
 
 interface HeaderProps {
   id: string;
@@ -20,9 +21,11 @@ export const Header: React.FC<HeaderProps> = ({id}) => {
       <Text style={s(`text fsz:20 medium`)}>Выберите упражнение</Text>
       <HSpacer size={10} />
       <DefaultInput
+        Variant={BottomSheetTextInput}
         value={searchValue}
         onChangeText={handleChangeSearchValue}
         placeholder="Введите название упражнения ..."
+        style={s(`text P7`)}
       />
     </View>
   );

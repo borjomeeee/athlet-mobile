@@ -13,14 +13,7 @@ export const Input: React.FC<InputProps> = ({
   ...props
 }) => {
   const inputStyle = React.useMemo(() => [s(`text P7`), style], [style]);
-  return (
-    <RN.TextInput
-      ref={inputRef}
-      style={inputStyle}
-      textAlignVertical="top"
-      {...props}
-    />
-  );
+  return <RN.TextInput ref={inputRef} style={inputStyle} {...props} />;
 };
 
 export interface InputWithVariantProps

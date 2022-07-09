@@ -1,15 +1,17 @@
 import s from '@borjomeeee/rn-styles';
 import GBottomSheet, {BottomSheetBackdropProps} from '@gorhom/bottom-sheet';
 import React from 'react';
-import {
+import {useWindowDimensions} from 'react-native';
+import Animated, {
   Extrapolate,
   interpolate,
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useModal, useModalInternal} from 'src/Lib/ModalRouter';
 import {Pressable} from '../Pressable';
-import {AnimatedView} from './View';
+import {AnimatedView, View} from './View';
 
 interface BottomSheetProps extends React.ComponentProps<typeof GBottomSheet> {
   bottomSheetRef?:
@@ -35,8 +37,9 @@ interface BottomSheetModal extends React.ComponentProps<typeof BottomSheet> {
 export const BottomSheetModal: React.FC<BottomSheetModal> = ({
   id,
   bottomSheetRef = React.createRef(),
-  animatedIndex,
-  animatedPosition,
+  animatedIndex: providedAnimatedIndex,
+  animatedPosition: providedAnimatedPosition,
+  backgroundStyle: providedBackgroundStyle,
   onClose,
   ...props
 }) => {
@@ -45,6 +48,10 @@ export const BottomSheetModal: React.FC<BottomSheetModal> = ({
   const _animatedIndex = useSharedValue(-1);
   const _animatedPosition = useSharedValue(0);
 
+  const animatedIndex = providedAnimatedIndex ?? _animatedIndex;
+  const animatedPosition = providedAnimatedPosition ?? _animatedPosition;
+
+  const {top} = useSafeAreaInsets();
   const handleClose = React.useCallback(() => {
     _onClose();
     onClose?.();
@@ -55,11 +62,11 @@ export const BottomSheetModal: React.FC<BottomSheetModal> = ({
       (
         <Backdrop
           id={id}
-          animatedIndex={animatedIndex || _animatedIndex}
-          animatedPosition={animatedPosition || _animatedPosition}
+          animatedIndex={animatedIndex}
+          animatedPosition={animatedPosition}
         />
       ),
-    [id, animatedIndex, animatedPosition, _animatedIndex, _animatedPosition],
+    [id, animatedIndex, animatedPosition],
   );
 
   React.useEffect(() => {
@@ -68,24 +75,31 @@ export const BottomSheetModal: React.FC<BottomSheetModal> = ({
     }
   }, [isVisible, bottomSheetRef]);
 
+  const backgroundStyle = React.useMemo(
+    () => [s(`br:0 btrr:15 btlr:15`), providedBackgroundStyle],
+    [providedBackgroundStyle],
+  );
+
   return (
     <BottomSheet
       bottomSheetRef={bottomSheetRef}
-      animatedIndex={animatedIndex || _animatedIndex}
-      animatedPosition={animatedPosition || _animatedPosition}
+      animatedIndex={animatedIndex}
+      animatedPosition={animatedPosition}
       backdropComponent={BackdropComponent}
       onClose={handleClose}
       enablePanDownToClose={true}
+      backgroundStyle={backgroundStyle}
+      keyboardBlurBehavior="restore"
+      topInset={top}
       index={0}
       {...props}
-      keyboardBehavior="extend"
-      keyboardBlurBehavior="restore"
     />
   );
 };
 
 const Backdrop: React.FC<BottomSheetBackdropProps & {id: string}> = ({
   id,
+  animatedPosition,
   animatedIndex,
 }) => {
   const {hide} = useModal(id);
@@ -102,12 +116,23 @@ const Backdrop: React.FC<BottomSheetBackdropProps & {id: string}> = ({
     ),
   }));
 
+  const backAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: animatedIndex.value >= 0 ? 1 : 0,
+    transform: [{translateY: animatedPosition.value + 100}],
+  }));
+
+  const backStyle = React.useMemo(
+    () => [s(`abs t:0 r:0 l:0 b:0 bgc:#fff`), backAnimatedStyle],
+    [backAnimatedStyle],
+  );
+
   return (
     <Pressable
       style={s(`abs t:0 b:0 r:0 l:0`)}
       onPress={hide}
       activeOpacity={1}>
       <AnimatedView style={animatedStyle} />
+      <AnimatedView style={backStyle} />
     </Pressable>
   );
 };

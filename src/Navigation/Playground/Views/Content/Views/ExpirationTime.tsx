@@ -27,10 +27,10 @@ export const ExpirationTime: React.FC<ExpirationTimeProps> = ({
   const pauseTime = useRecoilValue(pauseTimeStore);
 
   const [initialPauseTime] = React.useState(pauseTime);
-  const [clockTime, setClockTime] = React.useState(Date.now());
+  const [clockTime, setClockTime] = React.useState(startTime);
 
   const [expirationTime, setExpirationTime] = React.useState(
-    startTime + providedDuration + pauseTime,
+    clockTime + initialPauseTime + providedDuration,
   );
 
   const duration = React.useMemo(
@@ -41,10 +41,20 @@ export const ExpirationTime: React.FC<ExpirationTimeProps> = ({
   React.useEffect(() => {
     onChange?.(Math.floor(duration / 1000) * 1000);
 
-    if (expirationTime <= clockTime) {
-      onExpire?.();
-    }
-  }, [expirationTime, clockTime, duration, onExpire, onChange]);
+    setTimeout(() => {
+      if (expirationTime <= clockTime) {
+        onChange?.(providedDuration);
+        onExpire?.();
+      }
+    }, 0);
+  }, [
+    providedDuration,
+    expirationTime,
+    clockTime,
+    duration,
+    onExpire,
+    onChange,
+  ]);
 
   React.useEffect(() => {
     if (!isPause) {

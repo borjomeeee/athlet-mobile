@@ -40,7 +40,7 @@ export const ExerciseBody = () => {
         <ExpirationTime
           key={Date.now() + exercise.time}
           duration={exercise.time}
-          onExpire={goNext}
+          onExpire={() => goNext(true)}
           onChange={handleChangeTime}
         />
       )}

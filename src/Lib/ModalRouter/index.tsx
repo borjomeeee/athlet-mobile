@@ -108,9 +108,9 @@ export const ModalRouter = () => {
   return (
     <UI.View style={s(`abs t:0 l:0 r:0 b:0`)} pointerEvents="box-none">
       {modals.map(id => (
-        <Animated.View key={id} style={s(`abs t:0 r:0 l:0 b:0`)}>
+        <UI.View key={id} style={s(`abs t:0 r:0 l:0 b:0`)}>
           <Modal id={id} />
-        </Animated.View>
+        </UI.View>
       ))}
     </UI.View>
   );
