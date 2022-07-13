@@ -23,6 +23,8 @@ import localeRu from 'dayjs/locale/ru';
 import duration from 'dayjs/plugin/duration';
 import {TopMessageProvider} from 'src/Lib/TopMessage';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import SplashScreen from 'react-native-splash-screen';
+
 import s from '@borjomeeee/rn-styles';
 dayjs.locale(localeRu);
 dayjs.extend(duration);
@@ -72,7 +74,7 @@ const App = () => {
 
   return (
     <RecoilRoot>
-      <NavigationContainer>
+      <NavigationContainer onReady={() => SplashScreen.hide()}>
         <SafeAreaProvider>
           <AppContent />
         </SafeAreaProvider>
