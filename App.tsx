@@ -1,5 +1,9 @@
 import 'react-native-gesture-handler';
 import 'react-native-get-random-values';
+
+import {configureStyles} from 'src/Utils/Styles';
+configureStyles();
+
 import dayjs from 'dayjs';
 
 import React from 'react';
@@ -12,7 +16,7 @@ import {Config} from 'src/Config';
 
 import {FakeApiFabric} from 'fakeapi';
 import {Navigation} from 'src/Navigation';
-import {configureStyles} from 'src/Utils/Styles';
+
 import {ModalRouter} from 'src/Lib/ModalRouter';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {OverlayProvider} from 'src/Lib/Overlay';
@@ -28,8 +32,6 @@ import SplashScreen from 'react-native-splash-screen';
 import s from '@borjomeeee/rn-styles';
 dayjs.locale(localeRu);
 dayjs.extend(duration);
-
-configureStyles();
 
 LogBox.ignoreLogs([
   `[react-native-gesture-handler] Seems like you\'re using an old API with gesture components, check out new Gestures system!`,

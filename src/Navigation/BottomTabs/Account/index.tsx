@@ -2,7 +2,7 @@ import React from 'react';
 
 import {createStackNavigator} from '@react-navigation/stack';
 import {
-  settiongsOptions,
+  settingsOptions,
   trainingEventOptions,
   trainingsEventsStackOptions,
 } from './navigationOptions';
@@ -34,7 +34,7 @@ export const AccountStack = () => {
       <Stack.Screen
         name={BottomTabAccountPaths.Settings}
         component={Settings}
-        options={settiongsOptions}
+        options={settingsOptions}
       />
     </Stack.Navigator>
   );

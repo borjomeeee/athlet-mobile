@@ -2,6 +2,8 @@ import React from 'react';
 import * as UI from 'src/Components';
 import {StackNavigationOptions} from '@react-navigation/stack';
 import s from '@borjomeeee/rn-styles';
+import {StyleSheet} from 'react-native';
+import {Colors} from 'src/Utils/Styles';
 
 export const trainingsEventsStackOptions: StackNavigationOptions = {
   headerShown: false,
@@ -14,9 +16,15 @@ export const trainingEventOptions: StackNavigationOptions = {
   header: props => <UI.Header {...props} />,
 };
 
-export const settiongsOptions: StackNavigationOptions = {
+export const settingsOptions: StackNavigationOptions = {
   headerShown: true,
   headerTitle: '',
 
-  header: props => <UI.Header {...props} containerStyle={s(`bgc:layout`)} />,
+  header: props => (
+    <UI.Header {...props} containerStyle={style.containerStyle} />
+  ),
 };
+
+const style = StyleSheet.create({
+  containerStyle: {backgroundColor: Colors.layout},
+});

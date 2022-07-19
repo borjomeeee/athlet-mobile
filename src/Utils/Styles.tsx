@@ -88,7 +88,6 @@ export const configureStyles = () => {
 
   configureVariables({
     ...Colors,
-
     text: Colors.black,
   });
 };

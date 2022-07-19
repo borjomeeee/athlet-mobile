@@ -26,7 +26,7 @@ export const useCreateExerciseStore = (id: string) => {
 
   const setExerciseName = React.useCallback(
     (name: string) => {
-      _setExerciseName(name);
+      _setExerciseName(name.trimLeft());
       resetExerciseNameError();
     },
     [_setExerciseName, resetExerciseNameError],

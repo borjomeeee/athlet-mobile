@@ -22,7 +22,7 @@ export const repsStoreFamily = atomFamily({
 
 export const timeStoreFamily = atomFamily({
   key: createKey('time'),
-  default: 15,
+  default: 60_000,
 });
 
 export const gymRepsStoreFamily = atomFamily({

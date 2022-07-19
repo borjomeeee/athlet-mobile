@@ -66,7 +66,7 @@ export const useTrainingConstructorStore = () => {
 
   const setTitleHandler = React.useCallback(
     (text: string) => {
-      setTitle(text.trim());
+      setTitle(text.trimLeft());
     },
     [setTitle],
   );
