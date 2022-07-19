@@ -29,8 +29,8 @@ export const List: React.FC<ListProps> = ({id}) => {
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       ListEmptyComponent={EmptyComponent}
-      style={s(`fill pb:${20 + bottom}`)}
-      contentContainerStyle={s(`fill`)}
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={s(`pb:${20 + bottom}`)}
     />
   );
 };

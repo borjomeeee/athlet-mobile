@@ -7,13 +7,18 @@ import {useRecoilValue} from 'recoil';
 import {searchInputStoreFamily} from '../Store';
 import {useSelectExerciseController} from '../Hooks';
 import {BottomSheetTextInput} from '@gorhom/bottom-sheet';
+import {TextInput} from 'react-native';
 
 interface HeaderProps {
   id: string;
 }
 export const Header: React.FC<HeaderProps> = ({id}) => {
+  const inputRef = React.useRef<TextInput>(null);
+
   const searchValue = useRecoilValue(searchInputStoreFamily(id));
   const {handleChangeSearchValue} = useSelectExerciseController(id);
+
+  React.useEffect(() => inputRef.current?.focus(), []);
 
   return (
     <View style={s(`container`)}>
@@ -21,7 +26,8 @@ export const Header: React.FC<HeaderProps> = ({id}) => {
       <Text style={s(`text fsz:20 medium`)}>Выберите упражнение</Text>
       <HSpacer size={10} />
       <DefaultInput
-        Variant={BottomSheetTextInput}
+        inputRef={inputRef}
+        Variant={BottomSheetTextInput as any}
         value={searchValue}
         onChangeText={handleChangeSearchValue}
         placeholder="Введите название упражнения ..."

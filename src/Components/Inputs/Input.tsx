@@ -3,29 +3,26 @@ import * as RN from 'react-native';
 
 import s from '@borjomeeee/rn-styles';
 
-export interface InputProps extends React.ComponentProps<typeof RN.TextInput> {
-  inputRef?: React.MutableRefObject<RN.TextInput | null>;
-}
-export const Input: React.FC<InputProps> = ({
-  inputRef,
-
-  style,
-  ...props
-}) => {
-  const inputStyle = React.useMemo(() => [s(`text P7`), style], [style]);
-  return <RN.TextInput ref={inputRef} style={inputStyle} {...props} />;
-};
+export type InputProps = React.ComponentProps<typeof RN.TextInput>;
+export const Input = React.forwardRef<RN.TextInput, InputProps>(
+  ({style, ...props}, ref) => {
+    const inputStyle = React.useMemo(() => [s(`text P7`), style], [style]);
+    return <RN.TextInput ref={ref} style={inputStyle} {...props} />;
+  },
+);
 
 export interface InputWithVariantProps
   extends React.ComponentProps<typeof Input> {
+  inputRef?: React.RefObject<RN.TextInput>;
   Variant?: React.FC<React.ComponentProps<typeof Input>>;
 }
 
 export const InputWithVariant: React.FC<InputWithVariantProps> = ({
   Variant = Input,
+  inputRef,
   ...props
 }) => {
-  return <Variant {...props} />;
+  return <Variant ref={inputRef} {...props} />;
 };
 
 export const EmailVariant: React.FC<InputWithVariantProps> = props => (
