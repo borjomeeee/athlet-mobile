@@ -4,6 +4,7 @@ import React from 'react';
 import {useWindowDimensions} from 'react-native';
 import Animated, {
   FadeInUp,
+  FadeOut,
   FadeOutUp,
   useAnimatedRef,
 } from 'react-native-reanimated';
@@ -105,56 +106,59 @@ interface OverlayInstanceProps {
   Component: React.FC;
 }
 
-export const OverlayInstance: React.FC<OverlayInstanceProps> = ({
-  pageX,
-  pageY,
+export const OverlayInstance: React.FC<OverlayInstanceProps> = React.memo(
+  ({
+    pageX,
+    pageY,
 
-  width: parentWidth,
-  height: parentHeight,
+    width: parentWidth,
+    height: parentHeight,
 
-  position = 'bottomRight',
-  Component,
-}) => {
-  const {onLayout, ...contentLayout} = useLayout();
-  const {width} = useWindowDimensions();
+    position = 'bottomRight',
+    Component,
+  }) => {
+    const {onLayout, ...contentLayout} = useLayout();
+    const {width} = useWindowDimensions();
 
-  const MIN_X = 20;
-  const MAX_X = width - 20;
+    const MIN_X = 20;
+    const MAX_X = width - 20;
 
-  const left = React.useMemo(() => {
-    if (position === 'bottomLeft') {
-      if (contentLayout.width + pageX >= MAX_X) {
-        return MAX_X - contentLayout.width;
-      } else {
-        return Math.max(pageX, MIN_X);
+    const left = React.useMemo(() => {
+      if (position === 'bottomLeft') {
+        if (contentLayout.width + pageX >= MAX_X) {
+          return MAX_X - contentLayout.width;
+        } else {
+          return Math.max(pageX, MIN_X);
+        }
+      } else if (position === 'bottomRight') {
+        if (pageX + parentWidth - contentLayout.width <= MIN_X) {
+          return MIN_X;
+        } else {
+          return Math.min(
+            pageX + parentWidth - contentLayout.width,
+            MAX_X - contentLayout.width,
+          );
+        }
       }
-    } else if (position === 'bottomRight') {
-      if (pageX + parentWidth - contentLayout.width <= MIN_X) {
-        return MIN_X;
-      } else {
-        return Math.min(
-          pageX + parentWidth - contentLayout.width,
-          MAX_X - contentLayout.width,
-        );
-      }
-    }
-  }, [contentLayout, MAX_X, MIN_X, pageX, parentWidth, position]);
+    }, [contentLayout, MAX_X, MIN_X, pageX, parentWidth, position]);
 
-  return (
-    <Animated.View
-      style={s(`abs t:${pageY + parentHeight} l:${left}`)}
-      entering={FadeInUp}
-      exiting={FadeOutUp}>
-      <ShadowView dx={0} dy={1} blur={3} color="#1B1F2412">
-        <ShadowView dx={0} dy={8} blur={24} color="#424A5312">
-          <View style={s(`br:12 p:8 bgc:#fff`)} onLayout={onLayout}>
-            <Component />
-          </View>
+    return (
+      <Animated.View
+        style={s(
+          `abs t:${pageY + parentHeight} l:${left}`,
+          !contentLayout.width && `o:0`,
+        )}>
+        <ShadowView dx={0} dy={1} blur={3} color="#1B1F2412">
+          <ShadowView dx={0} dy={8} blur={24} color="#424A5312">
+            <View style={s(`br:12 p:8 bgc:#fff`)} onLayout={onLayout}>
+              <Component />
+            </View>
+          </ShadowView>
         </ShadowView>
-      </ShadowView>
-    </Animated.View>
-  );
-};
+      </Animated.View>
+    );
+  },
+);
 
 export const Overlay = () => {
   const {overlay} = useOverlayStore();
