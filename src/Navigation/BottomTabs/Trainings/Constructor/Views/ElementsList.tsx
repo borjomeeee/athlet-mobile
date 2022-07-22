@@ -87,7 +87,7 @@ export const ElementsList: React.FC<ElementsListProps> = React.memo(
 
     return (
       <AnimationsContext.Provider value={data}>
-        <UI.View key={JSON.stringify(viewElements)}>
+        <UI.View>
           {viewElements.map((element, indx) => {
             if (element.type === ConstructorElementType.EXERCISE) {
               return (

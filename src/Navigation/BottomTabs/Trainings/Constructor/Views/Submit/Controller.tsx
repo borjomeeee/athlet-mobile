@@ -1,7 +1,6 @@
-import React from 'react';
+import {useRecoilCallback} from 'recoil';
 import {useAppController} from 'src/Services/App';
 import {useTrainingService, useTrainingsService} from 'src/Services/Trainings';
-import {useGetRecoilState} from 'src/Utils/Recoil';
 import {useTrainingConstructorController} from '../../Controller';
 
 import {
@@ -12,11 +11,6 @@ import {
 } from '../../Store';
 
 export const useSubmitController = () => {
-  const getTrainingId = useGetRecoilState(initialTrainingIdAtom);
-
-  const getTrainingTitle = useGetRecoilState(screenTrainingTitleAtom);
-  const getElements = useGetRecoilState(constructorElementsSelector);
-
   const {switchToViewMode} = useTrainingConstructorStore();
   const {initWithTrainingId} = useTrainingConstructorController();
 
@@ -24,68 +18,56 @@ export const useSubmitController = () => {
   const {updateTraining} = useTrainingService();
   const {defaultHandleError} = useAppController();
 
-  const handlePressCreateTraining = React.useCallback(async () => {
-    const trainingTitle = getTrainingTitle();
-    const elements = getElements();
+  const handlePressCreateTraining = useRecoilCallback(
+    ({get}) =>
+      async () => {
+        if (!get(screenTrainingTitleAtom)) {
+          return;
+        }
 
-    if (!trainingTitle) {
-      return;
-    }
+        const [createdTrainingId, err] = await createTraining(
+          {
+            title: get(screenTrainingTitleAtom),
+            elements: get(constructorElementsSelector),
+          },
+          // TODO
+          () => undefined,
+        );
 
-    const [createdTrainingId, err] = await createTraining(
-      {
-        title: trainingTitle,
-        elements: elements,
+        if (err) {
+          defaultHandleError(err);
+        } else if (createdTrainingId) {
+          initWithTrainingId(createdTrainingId);
+        }
       },
-      // TODO
-      () => undefined,
-    );
+    [defaultHandleError, createTraining, initWithTrainingId],
+  );
 
-    if (err) {
-      defaultHandleError(err);
-    } else if (createdTrainingId) {
-      initWithTrainingId(createdTrainingId);
-    }
-  }, [
-    defaultHandleError,
-    createTraining,
-    getTrainingTitle,
-    getElements,
-    initWithTrainingId,
-  ]);
+  const handlePressUpdateTraining = useRecoilCallback(
+    ({get}) =>
+      async () => {
+        const trainingId = get(initialTrainingIdAtom);
+        if (!trainingId || !get(screenTrainingTitleAtom)) {
+          return;
+        }
 
-  const handlePressUpdateTraining = React.useCallback(async () => {
-    const trainingId = getTrainingId();
+        const [_, err] = await updateTraining(
+          trainingId,
+          {
+            title: get(screenTrainingTitleAtom),
+            elements: get(constructorElementsSelector),
+          },
+          () => undefined,
+        );
 
-    const trainingTitle = getTrainingTitle();
-    const elements = getElements();
-
-    if (!trainingId || !trainingTitle) {
-      return;
-    }
-
-    const [_, err] = await updateTraining(
-      trainingId,
-      {
-        title: trainingTitle,
-        elements: elements,
+        if (err) {
+          defaultHandleError(err);
+        } else {
+          switchToViewMode();
+        }
       },
-      () => undefined,
-    );
-
-    if (err) {
-      defaultHandleError(err);
-    } else {
-      switchToViewMode();
-    }
-  }, [
-    getTrainingId,
-    defaultHandleError,
-    updateTraining,
-    getTrainingTitle,
-    getElements,
-    switchToViewMode,
-  ]);
+    [defaultHandleError, updateTraining, switchToViewMode],
+  );
 
   return {handlePressCreateTraining, handlePressUpdateTraining};
 };
