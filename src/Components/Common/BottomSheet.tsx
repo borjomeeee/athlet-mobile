@@ -89,8 +89,7 @@ export const BottomSheetModal: React.FC<BottomSheetModal> = ({
       onClose={handleClose}
       enablePanDownToClose={true}
       backgroundStyle={backgroundStyle}
-      // keyboardBlurBehavior="restore"
-      keyboardBehavior="extend"
+      keyboardBlurBehavior="restore"
       topInset={top}
       index={0}
       {...props}
