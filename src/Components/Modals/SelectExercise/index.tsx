@@ -1,6 +1,7 @@
+import s from '@borjomeeee/rn-styles';
 import React from 'react';
 import {Exercise} from 'src/Store/Models/Training';
-import {BottomSheetModal, HSpacer} from '../../Common';
+import {BottomSheetModal, HSpacer, View} from '../../Common';
 import {useSelectExerciseController} from './Hooks';
 import {CreateExercise} from './Views/CreateExercise';
 import {Header} from './Views/Header';

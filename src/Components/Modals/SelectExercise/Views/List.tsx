@@ -1,4 +1,5 @@
 import s from '@borjomeeee/rn-styles';
+import {BottomSheetFlatList} from '@gorhom/bottom-sheet';
 import React from 'react';
 import {ListRenderItemInfo} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -24,7 +25,7 @@ export const List: React.FC<ListProps> = ({id}) => {
   );
 
   return (
-    <FlatList
+    <BottomSheetFlatList
       data={exercises}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
