@@ -6,9 +6,6 @@ import {ExerciseUtils} from 'src/Store/ModelsUtils/Exercise';
 import {TimeUtils} from 'src/Store/ModelsUtils/Time';
 import Animated, {
   interpolateColor,
-  Layout,
-  useAnimatedRef,
-  useAnimatedStyle,
   useDerivedValue,
   withTiming,
 } from 'react-native-reanimated';
@@ -16,7 +13,7 @@ import {Pressable} from 'src/Components';
 
 import DragIcon from 'src/Assets/Svg/Drag';
 import {GestureDetector} from 'react-native-gesture-handler';
-import {useDraggableController} from '../../Hooks/Draggable';
+import {useDraggableGesture} from '../../Hooks/Draggable';
 
 import RemoveIcon from 'src/Assets/Svg/Remove';
 import {useRecoilValue} from 'recoil';
@@ -27,7 +24,8 @@ import {
   useValue as useSkiaValue,
   useSharedValueEffect,
 } from '@shopify/react-native-skia';
-import {useLayout} from '@react-native-community/hooks';
+import {AnimationsContext} from '../../Store/Animations';
+import {DraggableListState} from '../../Types';
 
 interface ExerciseViewProps {
   title: string;
@@ -106,24 +104,10 @@ export const Exercise: React.FC<ExerciseProps> = ({
 
   order,
 }) => {
+  const {activeIndex, state} = React.useContext(AnimationsContext);
+
   const isEditing = useRecoilValue(isEditingSelector);
-  const animatedRef = useAnimatedRef<Animated.View>();
-
-  const {onLayout, ...layout} = useLayout();
-
-  const id = React.useMemo(() => exercise.elementId, [exercise]);
-
-  const {
-    isDragging,
-    isPressed,
-    initialScrollY,
-    draggingGesture,
-    gestureTranslateY,
-    tempOffsetY,
-    layout: handleLayout,
-    scrollY,
-    lastOrder,
-  } = useDraggableController(id);
+  const gesture = useDraggableGesture(order);
 
   const formattedRest = React.useMemo(() => {
     const restStr = TimeUtils.getFormattedTimeForTraining(
@@ -145,26 +129,14 @@ export const Exercise: React.FC<ExerciseProps> = ({
     return 'Undefined';
   }, [exercise]);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateY: isDragging.value
-            ? gestureTranslateY.value + (scrollY.value - initialScrollY.value)
-            : lastOrder.value === order
-            ? withTiming(tempOffsetY.value)
-            : 0,
-        },
-        {
-          scale: withTiming(isPressed.value ? 1.05 : 1, {duration: 50}),
-        },
-      ],
-
-      zIndex: isPressed.value ? 100 : 1,
-    };
-  });
-
-  const animatedIsPressed = useDerivedValue(() => withTiming(+isPressed.value));
+  const animatedIsPressed = useDerivedValue(() =>
+    withTiming(
+      +(
+        activeIndex.value === order &&
+        state.value === DraggableListState.DRAGGING
+      ),
+    ),
+  );
   const color = useSkiaValue('#00000000');
 
   useSharedValueEffect(() => {
@@ -181,18 +153,12 @@ export const Exercise: React.FC<ExerciseProps> = ({
     // @ts-ignore
   }, [animatedIsPressed]);
 
-  React.useEffect(() => {
-    layout.height && handleLayout(layout.height);
-  });
-
   return (
     <Animated.View
-      ref={animatedRef}
-      style={animatedStyle}
-      onLayout={onLayout}
-      // TODO: animation not working
-      // entering={isNew.value ? SlideInRight : undefined}
-      // exiting={isNew.value ? SlideOutLeft : undefined}
+
+    // TODO: animation not working
+    // entering={isNew.value ? SlideInRight : undefined}
+    // exiting={isNew.value ? SlideOutLeft : undefined}
     >
       <UI.ShadowView dx={10} dy={10} blur={10} color={color}>
         <ExerciseView
@@ -204,7 +170,7 @@ export const Exercise: React.FC<ExerciseProps> = ({
       </UI.ShadowView>
 
       {isEditing && (
-        <GestureDetector gesture={draggingGesture}>
+        <GestureDetector gesture={gesture}>
           <Animated.View
             style={s(`abs r:20 t:0 b:0 jcc`)}
             //  entering={ZoomIn}

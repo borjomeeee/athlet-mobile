@@ -15,14 +15,14 @@ index d44f72b..b11094a 100644
  
  var Recoil_useGetRecoilValueInfo = useGetRecoilValueInfo;
 diff --git a/node_modules/recoil/index.d.ts b/node_modules/recoil/index.d.ts
-index 41ccc84..ddaff55 100644
+index 41ccc84..e1cc8d4 100644
 --- a/node_modules/recoil/index.d.ts
 +++ b/node_modules/recoil/index.d.ts
 @@ -127,6 +127,7 @@
    reset(s: RecoilState<any>): void;
   }
   export interface CallbackInterface {
-+  get: <T>(recoilVal: RecoilState<T>) => T,
++  get: <T>(recoilVal: RecoilValue<T>) => T,
    set: <T>(recoilVal: RecoilState<T>, valOrUpdater: ((currVal: T) => T) | T) => void;
    reset: (recoilVal: RecoilState<any>) => void; // eslint-disable-line @typescript-eslint/no-explicit-any
    refresh: (recoilValue: RecoilValue<any>) => void;

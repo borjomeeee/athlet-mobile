@@ -1,5 +1,7 @@
 import {selector} from 'recoil';
 import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
+import {ConstructorElementType, ConstructorElementViewList} from '../Types';
+import {getSetFooterId, getSetHeaderId} from '../Utils';
 import {
   actionHistoryAtom,
   createKey,
@@ -168,4 +170,45 @@ export const constructorElementsSelector = selector({
 export const constructorElementsByIdSelector = selector({
   key: createKey('constructorElementsById'),
   get: ({get}) => getElementsByIdFromList(get(constructorElementsSelector)),
+});
+
+export const constructorViewElementsSelector = selector({
+  key: createKey('constructorViewElements'),
+  get: ({get}) => {
+    const elements = get(constructorElementsSelector);
+    const elems: ConstructorElementViewList = [];
+
+    elements.forEach(element => {
+      if (TrainingUtils.isSet(element)) {
+        const {elements: _, ...set} = element;
+
+        elems.push({
+          id: getSetHeaderId(set.elementId),
+          type: ConstructorElementType.SET_HEADER,
+          element: set,
+        });
+        element.elements.forEach(exercise => {
+          elems.push({
+            id: exercise.elementId,
+            type: ConstructorElementType.EXERCISE,
+            element: exercise,
+          });
+        });
+        elems.push({
+          id: getSetFooterId(set.elementId),
+          type: ConstructorElementType.SET_FOOTER,
+          element: set,
+        });
+        return;
+      }
+
+      elems.push({
+        id: element.elementId,
+        type: ConstructorElementType.EXERCISE,
+        element: element,
+      });
+    });
+
+    return elems;
+  },
 });
