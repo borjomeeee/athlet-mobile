@@ -8,6 +8,7 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   withTiming,
+  useAnimatedRef,
 } from 'react-native-reanimated';
 import {useRecoilValue} from 'recoil';
 
@@ -28,9 +29,9 @@ import {
   ConstructorElementViewListItem,
   DraggableListState,
 } from './Types';
-import {FlatList} from 'react-native-gesture-handler';
 import {CellContainerProps} from '@shopify/flash-list/dist/native/cell-container/CellContainer';
 import {
+  FlatList,
   FlatListProps,
   LayoutChangeEvent,
   ListRenderItemInfo,
@@ -40,10 +41,11 @@ import {TrainingExercise} from './Views/Exercise';
 import {SetHeader} from './Views/SetHeader';
 import {SetFooter} from './Views/SetFooter';
 
-const AnimatedFlatList =
-  Animated.createAnimatedComponent<
-    FlatListProps<ConstructorElementViewListItem>
-  >(FlatList);
+const AnimatedFlatList = Animated.createAnimatedComponent<
+  FlatListProps<ConstructorElementViewListItem> & {
+    ref?: React.RefObject<FlatList>;
+  }
+>(FlatList);
 
 export const Constructor = withHooks(
   [
@@ -52,10 +54,12 @@ export const Constructor = withHooks(
     useTrainingConstructorHeader,
   ],
   () => {
-    // const ref =
-    //   useAnimatedRef<Animated.FlatList<ConstructorElementViewListItem>>();
+    const flatListRef = useAnimatedRef<FlatList>();
 
     const scrollY = useSharedValue(0);
+
+    const containerHeight = useSharedValue(0);
+    const scrollViewHeight = useSharedValue(0);
 
     const handleScroll = useAnimatedScrollHandler(
       e => (scrollY.value = e.contentOffset.y),
@@ -81,6 +85,10 @@ export const Constructor = withHooks(
     const measurmentsStore = useSharedValue<Record<string, number>>({});
     const value = React.useMemo(
       () => ({
+        flatListRef,
+        scrollY,
+        containerHeight,
+        scrollViewHeight,
         activeIndex,
         guessActiveIndex,
         data: viewElements,
@@ -90,7 +98,11 @@ export const Constructor = withHooks(
         activeCellTranslateY,
       }),
       [
+        flatListRef,
         activeIndex,
+        scrollY,
+        containerHeight,
+        scrollViewHeight,
         guessActiveIndex,
         measurmentsStore,
         state,
@@ -202,15 +214,37 @@ export const Constructor = withHooks(
       })();
     }, [activeIndex, viewElements]);
 
+    const onLayout = React.useCallback(
+      (e: LayoutChangeEvent) => {
+        runOnUI(() => {
+          'worklet';
+          containerHeight.value = e.nativeEvent.layout.height;
+        })();
+      },
+      [containerHeight],
+    );
+
+    const onContentSizeChanged = React.useCallback(
+      (w: number, h: number) => {
+        runOnUI(() => {
+          'worklet';
+          scrollViewHeight.value = h;
+        })();
+      },
+      [scrollViewHeight],
+    );
+
     return (
       <AnimationsContext.Provider value={value}>
         <UI.View style={s(`fill bgc:layout`)}>
           <AnimatedFlatList
-            style={s(`fill`)}
+            ref={flatListRef}
             data={viewElements}
             renderItem={renderItem}
             keyExtractor={keyExtractor}
             contentContainerStyle={s(`pb:100`)}
+            onLayout={onLayout}
+            onContentSizeChange={onContentSizeChanged}
             scrollEventThrottle={16}
             ListHeaderComponent={() => (
               <>

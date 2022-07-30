@@ -1,11 +1,24 @@
 import React from 'react';
+import {useWindowDimensions} from 'react-native';
 import {Gesture} from 'react-native-gesture-handler';
-import {runOnJS, withTiming} from 'react-native-reanimated';
+import {
+  cancelAnimation,
+  Easing,
+  runOnJS,
+  useAnimatedReaction,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import {AnimationsContext} from '../Store/Animations';
 import {DraggableListState} from '../Types';
 
 export const useDraggableGesture = (index: number) => {
   const {
+    flatListRef,
+    scrollY,
+    scrollViewHeight,
+    containerHeight,
     state,
     activeIndex,
     activeCellTranslateY,
@@ -15,7 +28,72 @@ export const useDraggableGesture = (index: number) => {
     reorder,
   } = React.useContext(AnimationsContext);
 
-  return Gesture.Pan()
+  const {height: windowHeight} = useWindowDimensions();
+
+  const isOverScreen = useSharedValue(false);
+  const overScreenDirection = useSharedValue(1);
+
+  const scrollOffset = useSharedValue(scrollY.value);
+
+  useAnimatedReaction(
+    () => [isOverScreen.value, scrollY.value],
+    () => {
+      if (!isOverScreen.value) {
+        scrollOffset.value = scrollY.value;
+      }
+    },
+  );
+
+  useAnimatedReaction(
+    () => [isOverScreen.value, overScreenDirection.value],
+    () => {
+      cancelAnimation(scrollOffset);
+
+      function scroll() {
+        'worklet';
+        const newScroll =
+          overScreenDirection.value < 0
+            ? Math.max(0, scrollY.value + overScreenDirection.value * 100)
+            : Math.min(
+                scrollViewHeight.value - containerHeight.value,
+                scrollY.value + overScreenDirection.value * 100,
+              );
+
+        if (
+          (overScreenDirection.value < 0 && scrollOffset.value > 0) ||
+          (overScreenDirection.value > 0 &&
+            scrollOffset.value < scrollViewHeight.value - containerHeight.value)
+        ) {
+          scrollOffset.value = withTiming(
+            newScroll,
+            {duration: 400, easing: Easing.linear},
+            finished => finished && scroll(),
+          );
+        }
+      }
+
+      if (isOverScreen.value) {
+        scroll();
+      }
+    },
+  );
+
+  function flatListScroll(offset: number) {
+    if (flatListRef && 'current' in flatListRef) {
+      flatListRef.current?.scrollToOffset({
+        offset: offset > 0 ? offset : 0,
+        animated: false,
+      });
+    }
+  }
+
+  useDerivedValue(() => {
+    if (isOverScreen.value) {
+      runOnJS(flatListScroll)(scrollOffset.value);
+    }
+  });
+
+  const gesture = Gesture.Pan()
     .onBegin(() => {
       if (state.value !== DraggableListState.FREE) {
         return;
@@ -30,12 +108,20 @@ export const useDraggableGesture = (index: number) => {
       if (state.value !== DraggableListState.DRAGGING) {
         return;
       }
+
+      if (event.absoluteY < 120) {
+        isOverScreen.value = true;
+        overScreenDirection.value = -1;
+      } else if (event.absoluteY - windowHeight > -120) {
+        isOverScreen.value = true;
+        overScreenDirection.value = 1;
+      } else {
+        isOverScreen.value = false;
+      }
+
       activeCellTranslateY.value = event.translationY;
     })
     .onEnd(() => {
-      if (state.value !== DraggableListState.DRAGGING) {
-        return;
-      }
       if (
         activeIndex.value === undefined ||
         guessActiveIndex.value === undefined
@@ -73,7 +159,10 @@ export const useDraggableGesture = (index: number) => {
           }
         },
       );
-
+    })
+    .onTouchesUp(() => {
       state.value = DraggableListState.FREE;
     });
+
+  return gesture;
 };
