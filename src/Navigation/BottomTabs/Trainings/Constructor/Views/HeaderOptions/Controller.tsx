@@ -3,12 +3,12 @@ import React from 'react';
 import {initialTrainingIdAtom, useTrainingConstructorStore} from '../../Store';
 
 import {useTrainingService} from 'src/Services/Trainings';
-import {useGetRecoilState} from 'src/Utils/Recoil';
 import {useNavigation} from '@react-navigation/core';
 import {useAppController} from 'src/Services/App';
 import {useConfirmDialog} from 'src/Hooks/ConfirmDialog';
 import {Modals} from '../../Const';
 import {useTrainingConstructorChangesController} from '../../Hooks/Changes';
+import {useRecoilCallback} from 'recoil';
 
 export const useHeaderOptionsController = () => {
   const {switchToViewMode} = useTrainingConstructorStore();
@@ -39,45 +39,40 @@ export const useHeaderOptionsOverlayController = () => {
   const {switchToEditMode} = useTrainingConstructorStore();
   const {defaultHandleError} = useAppController();
 
-  const getTrainingId = useGetRecoilState(initialTrainingIdAtom);
-
   const {requestConfirm} = useConfirmDialog(Modals.ConfirmDelete);
 
-  const handlePressGoToEditMode = React.useCallback(() => {
-    switchToEditMode();
-  }, [switchToEditMode]);
+  const handlePressDelete = useRecoilCallback(
+    ({get}) =>
+      async () => {
+        const initialTrainingId = get(initialTrainingIdAtom);
+        if (!initialTrainingId) {
+          return;
+        }
 
-  const handlePressDelete = React.useCallback(async () => {
-    const initialTrainingId = getTrainingId();
-    if (!initialTrainingId) {
-      return;
-    }
+        const isConfirmed = await requestConfirm({
+          title: 'Удаление тренировки',
+          description: 'Вы действительно хотите удалить тренировку?',
 
-    const isConfirmed = await requestConfirm({
-      title: 'Удаление тренировки',
-      description: 'Вы действительно хотите удалить тренировку?',
+          acceptText: 'Да, хочу',
+          cancelText: 'Отмена',
+        });
 
-      acceptText: 'Да, хочу',
-      cancelText: 'Отмена',
-    });
+        if (!isConfirmed) {
+          return;
+        }
 
-    if (!isConfirmed) {
-      return;
-    }
+        const [_, err] = await removeTraining(
+          initialTrainingId,
+          () => undefined,
+        );
+        if (err) {
+          defaultHandleError(err);
+        } else {
+          navigation.goBack();
+        }
+      },
+    [defaultHandleError, removeTraining, requestConfirm, navigation],
+  );
 
-    const [_, err] = await removeTraining(initialTrainingId, () => undefined);
-    if (err) {
-      defaultHandleError(err);
-    } else {
-      navigation.goBack();
-    }
-  }, [
-    defaultHandleError,
-    removeTraining,
-    requestConfirm,
-    getTrainingId,
-    navigation,
-  ]);
-
-  return {handlePressGoToEditMode, handlePressDelete};
+  return {handlePressGoToEditMode: switchToEditMode, handlePressDelete};
 };

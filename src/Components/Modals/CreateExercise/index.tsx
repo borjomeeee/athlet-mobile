@@ -35,7 +35,7 @@ export const CreateExercise: React.FC<CreateExerciseProps> = ({id}) => {
       contentHeight={animatedContentHeight}>
       <BottomSheetView style={s(`container`)} onLayout={handleContentLayout}>
         <HSpacer size={10} />
-        <Text style={s(`text fsz:20 medium`)}>Выберите упражнение</Text>
+        <Text style={s(`text fsz:20 medium`)}>Создайте упражнение</Text>
         <HSpacer size={20} />
         <ExerciseNameInput id={id} />
         <HSpacer size={10} />

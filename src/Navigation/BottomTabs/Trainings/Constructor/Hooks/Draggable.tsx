@@ -1,268 +1,168 @@
 import React from 'react';
+import {useWindowDimensions} from 'react-native';
 import {Gesture} from 'react-native-gesture-handler';
-import Animated, {
+import {
+  cancelAnimation,
+  Easing,
   runOnJS,
-  runOnUI,
   useAnimatedReaction,
   useDerivedValue,
   useSharedValue,
   withTiming,
-  scrollTo,
-  cancelAnimation,
-  Easing,
-  interpolate,
-  Extrapolate,
 } from 'react-native-reanimated';
-import {useTrainingConstructorController} from '../Controller';
-import {ExerciseValuesStore, ExerciseValues} from '../Types';
-import {useWindowDimensions} from 'react-native';
 import {AnimationsContext} from '../Store/Animations';
+import {DraggableListState} from '../Types';
 
-export const useDraggableController = (id: string) => {
-  const {positions, scrollViewRef, scrollY} =
-    React.useContext(AnimationsContext);
-
-  const {reorder} = useTrainingConstructorController();
+export const useDraggableGesture = (index: number) => {
+  const {
+    flatListRef,
+    scrollY,
+    scrollViewHeight,
+    containerHeight,
+    state,
+    activeIndex,
+    activeCellTranslateY,
+    guessActiveIndex,
+    data: list,
+    measurmentsStore,
+    reorder,
+  } = React.useContext(AnimationsContext);
 
   const {height: windowHeight} = useWindowDimensions();
 
-  const isPressed = useSharedValue(false);
-  const isDragging = useSharedValue(false);
+  const isOverScreen = useSharedValue(false);
+  const overScreenDirection = useSharedValue(1);
 
-  const gestureTranslateY = useSharedValue(0);
+  const scrollOffset = useSharedValue(scrollY.value);
 
-  const initialScrollY = useSharedValue(0);
-  const startScrollY = useSharedValue(0);
-  const scrollSpeed = useSharedValue(0);
-
-  const tempOffsetY = useDerivedValue(
-    () => positions.value[id]?.tempOffsetY || 0,
-  );
-  const lastOrder = useDerivedValue(() => positions.value[id]?.order);
-
-  const animatedSortedPositions = useDerivedValue(() =>
-    Object.values(positions.value).sort(
-      (pos1, pos2) => pos1.tempOrder - pos2.tempOrder,
-    ),
+  useAnimatedReaction(
+    () => [isOverScreen.value, scrollY.value],
+    () => {
+      if (!isOverScreen.value) {
+        scrollOffset.value = scrollY.value;
+      }
+    },
   );
 
   useAnimatedReaction(
-    () => isDragging.value,
-    isDrag => {
-      if (isDrag) {
-        initialScrollY.value = scrollY.value;
+    () => [isOverScreen.value, overScreenDirection.value],
+    () => {
+      cancelAnimation(scrollOffset);
 
-        scrollSpeed.value = 0;
-        startScrollY.value = 0;
+      function scroll() {
+        'worklet';
+        const newScroll =
+          overScreenDirection.value < 0
+            ? Math.max(0, scrollY.value + overScreenDirection.value * 100)
+            : Math.min(
+                scrollViewHeight.value - containerHeight.value,
+                scrollY.value + overScreenDirection.value * 100,
+              );
+
+        if (
+          (overScreenDirection.value < 0 && scrollOffset.value > 0) ||
+          (overScreenDirection.value > 0 &&
+            scrollOffset.value < scrollViewHeight.value - containerHeight.value)
+        ) {
+          scrollOffset.value = withTiming(
+            newScroll,
+            {duration: 400, easing: Easing.linear},
+            finished => finished && scroll(),
+          );
+        }
+      }
+
+      if (isOverScreen.value) {
+        scroll();
       }
     },
   );
 
-  const layout = React.useCallback(
-    (height: number) => {
-      runOnUI(() => {
-        'worklet';
-        positions.value = {
-          ...positions.value,
-          [id]: {...positions.value[id], height},
-        };
-      })();
-    },
-    [id, positions],
-  );
+  function flatListScroll(offset: number) {
+    if (flatListRef && 'current' in flatListRef) {
+      flatListRef.current?.scrollToOffset({
+        offset: offset > 0 ? offset : 0,
+        animated: false,
+      });
+    }
+  }
 
-  const draggingGesture = Gesture.Pan()
-    .onTouchesDown(() => {
-      isPressed.value = true;
-    })
-    .onStart(() => {
-      gestureTranslateY.value = 0;
-      isDragging.value = true;
-    })
-    .onUpdate(e => {
-      if (!isPressed.value || !isDragging.value) {
+  useDerivedValue(() => {
+    if (isOverScreen.value) {
+      runOnJS(flatListScroll)(scrollOffset.value);
+    }
+  });
+
+  const gesture = Gesture.Pan()
+    .onBegin(() => {
+      if (state.value !== DraggableListState.FREE) {
         return;
       }
 
-      if (e.absoluteY < 120) {
-        cancelAnimation(startScrollY);
-        scrollSpeed.value = interpolate(
-          e.absoluteY,
-          [60, 120],
-          [100, 400],
-          Extrapolate.CLAMP,
-        );
+      state.value = DraggableListState.DRAGGING;
+      activeIndex.value = index;
 
-        runOnJS(scroll)({
-          scrollY: startScrollY,
-          speed: scrollSpeed,
-          value: -100,
-        });
-      } else if (e.absoluteY - windowHeight > -120) {
-        cancelAnimation(startScrollY);
-
-        scrollSpeed.value = interpolate(
-          e.absoluteY - windowHeight,
-          [-120, -60],
-          [400, 100],
-          Extrapolate.CLAMP,
-        );
-
-        runOnJS(scroll)({
-          scrollY: startScrollY,
-          speed: scrollSpeed,
-          value: 100,
-        });
+      activeCellTranslateY.value = 0;
+    })
+    .onUpdate(event => {
+      if (state.value !== DraggableListState.DRAGGING) {
+        return;
       }
 
-      gestureTranslateY.value = e.translationY;
+      if (event.absoluteY < 120) {
+        isOverScreen.value = true;
+        overScreenDirection.value = -1;
+      } else if (event.absoluteY - windowHeight > -120) {
+        isOverScreen.value = true;
+        overScreenDirection.value = 1;
+      } else {
+        isOverScreen.value = false;
+      }
+
+      activeCellTranslateY.value = event.translationY;
     })
     .onEnd(() => {
-      cancelAnimation(startScrollY);
+      if (
+        activeIndex.value === undefined ||
+        guessActiveIndex.value === undefined
+      ) {
+        return;
+      }
 
-      gestureTranslateY.value = withTiming(
-        tempOffsetY.value - (scrollY.value - initialScrollY.value),
+      const translateHeight =
+        activeIndex.value > guessActiveIndex.value
+          ? list
+              .slice(guessActiveIndex.value || 0, activeIndex.value)
+              .reduce(
+                (acc, _item) => acc + measurmentsStore.value[_item.id] || 0,
+                0,
+              )
+          : -list
+              .slice(activeIndex.value + 1, guessActiveIndex.value + 1)
+              .reduce(
+                (acc, _item) => acc + measurmentsStore.value[_item.id] || 0,
+                0,
+              );
+
+      activeCellTranslateY.value = withTiming(
+        -translateHeight,
         {},
         isFinished => {
           if (isFinished) {
-            isDragging.value = false;
-
-            const ids = animatedSortedPositions.value.map(val => val.elementId);
-            runOnJS(reorder)(ids);
+            if (
+              activeIndex.value !== undefined &&
+              guessActiveIndex.value !== undefined &&
+              activeIndex.value !== guessActiveIndex.value
+            ) {
+              runOnJS(reorder)(activeIndex.value, guessActiveIndex.value);
+            }
           }
         },
       );
     })
     .onTouchesUp(() => {
-      isPressed.value = false;
+      state.value = DraggableListState.FREE;
     });
 
-  useAnimatedReaction(
-    () => ({start: startScrollY.value, initial: initialScrollY.value}),
-    ({start, initial}) => {
-      if (isDragging.value) {
-        scrollTo(scrollViewRef, 0, initial + start, false);
-      }
-    },
-  );
-
-  useAnimatedReaction(
-    () => gestureTranslateY.value,
-    translateX => {
-      const currentPosition = positions.value[id];
-
-      if (isDragging.value && currentPosition) {
-        const sortedPositions = animatedSortedPositions.value;
-        const currentPositionOffset = getOffsetForOrder(
-          currentPosition.order,
-          sortedPositions,
-        );
-
-        let offsetY = 0;
-        for (const position of sortedPositions) {
-          if (currentPosition.tempOrder < position.tempOrder) {
-            if (
-              translateX +
-                currentPositionOffset +
-                scrollY.value -
-                initialScrollY.value >
-              offsetY
-            ) {
-              swap(currentPosition.elementId, position.elementId, positions);
-              break;
-            }
-          } else if (currentPosition.tempOrder > position.tempOrder) {
-            if (
-              translateX +
-                currentPositionOffset +
-                scrollY.value -
-                initialScrollY.value <
-              offsetY
-            ) {
-              swap(currentPosition.elementId, position.elementId, positions);
-              break;
-            }
-          }
-
-          offsetY += position.height;
-        }
-      }
-    },
-  );
-
-  return {
-    isDragging,
-    isPressed,
-    gestureTranslateY,
-    initialScrollY,
-    tempOffsetY,
-    draggingGesture,
-    layout,
-    scrollY,
-    lastOrder,
-  };
+  return gesture;
 };
-
-function scroll({
-  scrollY,
-  speed,
-  value,
-}: {
-  scrollY: Animated.SharedValue<number>;
-  speed: Animated.SharedValue<number>;
-  value: number;
-}) {
-  scrollY.value = withTiming(
-    scrollY.value + value,
-    {easing: Easing.linear, duration: speed.value},
-    finished => {
-      if (finished) {
-        runOnJS(scroll)({scrollY, speed, value});
-      }
-    },
-  );
-}
-
-function swap(
-  currentId: string,
-  withId: string,
-  exercisesPositions: Animated.SharedValue<ExerciseValuesStore>,
-) {
-  'worklet';
-
-  const currentPosition = exercisesPositions.value[currentId];
-  const position = exercisesPositions.value[withId];
-
-  if (!currentPosition || !position) {
-    return;
-  }
-
-  const k = currentPosition.tempOrder > position.tempOrder ? 1 : -1;
-
-  exercisesPositions.value = {
-    ...exercisesPositions.value,
-    [withId]: {
-      ...position,
-      tempOffsetY: position.tempOffsetY + k * (currentPosition.height || 0),
-      tempOrder: currentPosition.tempOrder,
-    },
-    [currentId]: {
-      ...currentPosition,
-      tempOffsetY: currentPosition.tempOffsetY - k * (position.height || 0),
-      tempOrder: position.tempOrder,
-    },
-  };
-}
-
-function getOffsetForOrder(order: number, positionsList: ExerciseValues[]) {
-  'worklet';
-  let offsetY = 0;
-  for (let i = 0; i < positionsList.length; i++) {
-    if (i === order) {
-      return offsetY;
-    }
-
-    offsetY += positionsList[i].height || 0;
-  }
-  return 0;
-}

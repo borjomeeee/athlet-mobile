@@ -7,6 +7,14 @@ export enum ConstructorElementType {
   SET_FOOTER = 'set-footer',
 }
 
+export enum DraggableListState {
+  CALCULATING_LAYOUT,
+  RENDERING,
+  FREE,
+  DRAGGING,
+  POST_DRAGGING,
+}
+
 export interface ExerciseValues {
   elementId: string;
 
@@ -24,7 +32,7 @@ export type ExerciseValuesStore = {
 export type AnimatedExerciseValuesStore =
   Animated.SharedValue<ExerciseValuesStore>;
 
-export type ConstructorElementViewList = (
+export type ConstructorElementViewListItem =
   | {
       id: string;
       type: ConstructorElementType.EXERCISE;
@@ -36,8 +44,8 @@ export type ConstructorElementViewList = (
         | ConstructorElementType.SET_FOOTER
         | ConstructorElementType.SET_HEADER;
       element: Omit<SetWithId, 'elements'>;
-    }
-)[];
+    };
+export type ConstructorElementViewList = ConstructorElementViewListItem[];
 
 // export type ConstructorSetHeader = {setId: string; title: string};
 // export type ConstructorFooter = {set: Exercise};
