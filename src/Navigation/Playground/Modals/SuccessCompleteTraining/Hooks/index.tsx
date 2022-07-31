@@ -13,6 +13,7 @@ export const useSuccessCompleteTrainingController = (id: string) => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     navigation.navigate(BottomTabPaths.Account, {
+      initial: false,
       screen: BottomTabAccountPaths.TrainingEvent,
       params: {id: props.trainingEventId},
     });
