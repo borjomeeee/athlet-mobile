@@ -30,7 +30,7 @@ export const useSetFooterController = (id: string) => {
     [showSelectExercise, showEditExercise, addExerciseToSet, id],
   );
 
-  const {show: showEditRest} = useModal('trainingConstructor__editRest');
+  const {show: showEditRest} = useModal(Modals.EditRest);
 
   const handlePressEditRest = React.useCallback(() => {
     if (!set) {

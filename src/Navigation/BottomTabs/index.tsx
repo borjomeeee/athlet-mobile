@@ -11,6 +11,7 @@ import {BottomTabPaths} from '../Paths';
 
 import {tabNavigationOptions} from './navigationOptions';
 import {BottomTabs} from 'src/Components';
+import {BottomTabsParamList} from './Types';
 
 const Tab = createBottomTabNavigator<BottomTabsParamList>();
 export const BottomTabsNavigator = () => {
@@ -28,8 +29,3 @@ export const BottomTabsNavigator = () => {
 function tabBar(props: BottomTabBarProps) {
   return <BottomTabs {...props} />;
 }
-
-export type BottomTabsParamList = {
-  [BottomTabPaths.Trainings]: undefined;
-  [BottomTabPaths.Account]: undefined;
-};

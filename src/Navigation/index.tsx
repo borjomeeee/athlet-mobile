@@ -7,7 +7,7 @@ import {Init} from './Init';
 import {AppPaths, ModalsPaths} from './Paths';
 import {appNavigationOptions, modalsGroupOptions} from './navigationOptions';
 import {Playground} from './Playground';
-import {StackNavigationProp} from '@react-navigation/stack';
+import {AppStackParamList} from './Types';
 
 const AppStack = createNativeStackNavigator<AppStackParamList>();
 export const Navigation = () => {
@@ -28,19 +28,3 @@ export const Navigation = () => {
     </AppStack.Navigator>
   );
 };
-
-export type AppStackParamList = {
-  [AppPaths.Init]: undefined;
-  [AppPaths.BottomTab]: undefined;
-
-  [ModalsPaths.Playground]: {trainingId?: string} | undefined;
-};
-
-export type InitScreenNavigation = StackNavigationProp<
-  AppStackParamList,
-  AppPaths.Init
->;
-export type PlaygroundScreenNavigation = StackNavigationProp<
-  AppStackParamList,
-  ModalsPaths.Playground
->;

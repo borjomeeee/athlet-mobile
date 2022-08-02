@@ -9,13 +9,11 @@ import Animated, {
   useDerivedValue,
   withTiming,
 } from 'react-native-reanimated';
-import {Pressable} from 'src/Components';
 
 import DragIcon from 'src/Assets/Svg/Drag';
 import {GestureDetector} from 'react-native-gesture-handler';
 import {useDraggableGesture} from '../../Hooks/Draggable';
 
-import RemoveIcon from 'src/Assets/Svg/Remove';
 import {useRecoilValue} from 'recoil';
 import {isEditingSelector} from '../../Store';
 import {useTrainingExerciseController} from './Controller';
@@ -26,85 +24,19 @@ import {
 } from '@shopify/react-native-skia';
 import {AnimationsContext} from '../../Store/Animations';
 import {DraggableListState} from '../../Types';
+import {ExerciseView} from './Views/ExerciseView';
 
-interface ExerciseViewProps {
-  title: string;
-
-  restInfo: string;
-  valueInfo: string;
-
-  handlePressRest?: () => void;
-  handlePress?: () => void;
-  handlePressRemove?: () => void;
-}
-export const ExerciseView: React.FC<ExerciseViewProps> = React.memo(
-  ({
-    handlePress,
-    handlePressRest,
-    handlePressRemove,
-
-    title,
-    restInfo,
-    valueInfo,
-  }) => {
-    const isEditing = useRecoilValue(isEditingSelector);
-
-    return (
-      <UI.PressableItem
-        style={s(`bgc:white pv:8 ofv pr:20 pl:12`, `bbw:1 btw:1 bc:#DADADA`)}
-        onPress={handlePress}
-        disabled={!isEditing}>
-        <UI.View style={s(`row aic`)}>
-          {isEditing && (
-            <Animated.View
-            // entering={ZoomIn} exiting={ZoomOut}
-            >
-              <UI.Pressable onPress={handlePressRemove}>
-                <RemoveIcon />
-              </UI.Pressable>
-            </Animated.View>
-          )}
-
-          <UI.VSpacer size={8} />
-          <Animated.View style={s(`fill`)}>
-            <UI.Text>{title}</UI.Text>
-            <Pressable
-              style={s(`asfs`)}
-              onPress={handlePressRest}
-              disabled={!isEditing}>
-              <UI.Text style={s(`P8 medium c:gray`)}>{restInfo}</UI.Text>
-            </Pressable>
-          </Animated.View>
-          <Animated.View>
-            <UI.Text>{valueInfo}</UI.Text>
-          </Animated.View>
-
-          {isEditing && <UI.VSpacer size={28} />}
-        </UI.View>
-      </UI.PressableItem>
-    );
-  },
-);
-
-interface ExerciseProps {
+interface TrainingExerciseProps {
   exercise: ExerciseWithId;
-
-  handlePressRest?: () => void;
-  handlePress?: () => void;
-  handlePressRemove?: () => void;
-
   order: number;
 }
-export const Exercise: React.FC<ExerciseProps> = ({
+export const TrainingExercise: React.FC<TrainingExerciseProps> = ({
   exercise,
-
-  handlePressRest,
-  handlePress,
-  handlePressRemove,
-
   order,
 }) => {
   const {activeIndex, state} = React.useContext(AnimationsContext);
+  const {handlePress, handlePressRest, handlePressRemove} =
+    useTrainingExerciseController(exercise.elementId);
 
   const isEditing = useRecoilValue(isEditingSelector);
   const gesture = useDraggableGesture(order);
@@ -181,23 +113,5 @@ export const Exercise: React.FC<ExerciseProps> = ({
         </GestureDetector>
       )}
     </Animated.View>
-  );
-};
-
-export const TrainingExercise: React.FC<ExerciseProps> = ({
-  exercise,
-  ...props
-}) => {
-  const {handlePress, handlePressEditRest, handlePressRemove} =
-    useTrainingExerciseController(exercise.elementId);
-
-  return (
-    <Exercise
-      handlePress={handlePress}
-      handlePressRest={handlePressEditRest}
-      handlePressRemove={handlePressRemove}
-      exercise={exercise}
-      {...props}
-    />
   );
 };

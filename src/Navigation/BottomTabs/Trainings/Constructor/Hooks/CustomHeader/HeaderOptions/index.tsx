@@ -3,14 +3,14 @@ import {useRecoilValue} from 'recoil';
 
 import * as UI from 'src/Components';
 import HeaderOptionsIcon from 'src/Assets/Svg/HeaderOptions';
-import {isCreatingSelector, isEditingSelector} from '../../Store';
+
 import {OverlayWrapper} from 'src/Lib/Overlay';
 import {OverlayRef} from 'src/Lib/Overlay/Types';
 import s from '@borjomeeee/rn-styles';
-import {
-  useHeaderOptionsController,
-  useHeaderOptionsOverlayController,
-} from './Controller';
+import {useHeaderOptionsController} from './Controller';
+import {isCreatingSelector, isEditingSelector} from '../../../Store';
+import {HeaderOptionsOverlay} from './Views/Overlay';
+
 export const HeaderOptions = () => {
   const overlayRef = React.useRef<OverlayRef>(null);
 
@@ -33,23 +33,6 @@ export const HeaderOptions = () => {
           <HeaderOptionsIcon />
         </OverlayWrapper>
       )}
-    </UI.View>
-  );
-};
-
-const HeaderOptionsOverlay = () => {
-  const {handlePressGoToEditMode, handlePressDelete} =
-    useHeaderOptionsOverlayController();
-
-  return (
-    <UI.View style={s(`minW:150`)}>
-      <UI.OverlayAction onPress={handlePressGoToEditMode}>
-        <UI.Text>Изменить</UI.Text>
-      </UI.OverlayAction>
-
-      <UI.OverlayAction onPress={handlePressDelete}>
-        <UI.Text style={s(`c:red`)}>Удалить</UI.Text>
-      </UI.OverlayAction>
     </UI.View>
   );
 };

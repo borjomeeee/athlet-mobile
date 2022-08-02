@@ -1,13 +1,11 @@
 import React from 'react';
 import {useNavigation} from '@react-navigation/core';
 import {BottomTabTrainingsPaths, ModalsPaths} from 'src/Navigation/Paths';
-import {PlaygroundScreenNavigation} from 'src/Navigation';
-import {ConstructorScreenNavigation} from '../../..';
+import {TrainingsListScreenNavigationProps} from '../../../Types';
 
 export const useTrainingElementController = (id: string) => {
-  const navigation = useNavigation<
-    PlaygroundScreenNavigation & ConstructorScreenNavigation
-  >();
+  const navigation =
+    useNavigation<TrainingsListScreenNavigationProps['navigation']>();
 
   const handlePress = React.useCallback(() => {
     navigation.navigate(BottomTabTrainingsPaths.Constructor, {

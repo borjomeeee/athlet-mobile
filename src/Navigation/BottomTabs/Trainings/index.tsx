@@ -9,10 +9,8 @@ import {
   trainingsStackOptions,
 } from './navigationOptions';
 
-import {
-  createStackNavigator,
-  StackNavigationProp,
-} from '@react-navigation/stack';
+import {createStackNavigator} from '@react-navigation/stack';
+import {TrainingsStackParamList} from './Types';
 
 const Stack = createStackNavigator<TrainingsStackParamList>();
 export const TrainingsStack = () => {
@@ -29,22 +27,3 @@ export const TrainingsStack = () => {
     </Stack.Navigator>
   );
 };
-
-export type TrainingsStackParamList = {
-  [BottomTabTrainingsPaths.List]: undefined;
-  [BottomTabTrainingsPaths.Constructor]:
-    | {
-        trainingId?: string;
-      }
-    | undefined;
-};
-
-export type TrainingsListScreenNavigation = StackNavigationProp<
-  TrainingsStackParamList,
-  BottomTabTrainingsPaths.List
->;
-
-export type ConstructorScreenNavigation = StackNavigationProp<
-  TrainingsStackParamList,
-  BottomTabTrainingsPaths.Constructor
->;

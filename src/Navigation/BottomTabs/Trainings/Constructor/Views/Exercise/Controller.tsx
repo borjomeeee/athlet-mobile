@@ -33,7 +33,7 @@ export const useTrainingExerciseController = (id: string) => {
     });
   }, [showEditExercise, id, exercise, replaceExercise]);
 
-  const handlePressEditRest = React.useCallback(() => {
+  const handlePressRest = React.useCallback(() => {
     if (!exercise) {
       return;
     }
@@ -52,5 +52,5 @@ export const useTrainingExerciseController = (id: string) => {
     removeExercise(id);
   }, [id, removeExercise]);
 
-  return {handlePress, handlePressEditRest, handlePressRemove};
+  return {handlePress, handlePressRest, handlePressRemove};
 };

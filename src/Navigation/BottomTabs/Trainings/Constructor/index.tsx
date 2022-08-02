@@ -15,7 +15,7 @@ import {useRecoilValue} from 'recoil';
 import * as UI from 'src/Components';
 import {withHooks} from 'src/Utils/HOCs';
 import {useTrainingConstructorController} from './Controller';
-import {useTrainingConstructorHeader} from './Hooks/Header';
+import {useTrainingConstructorCustomHeader} from './Hooks/CustomHeader';
 import {useTrainingConstructorInitialTraining} from './Hooks/InitialTraining';
 import {useTrainingConstructorNavigationEffect} from './Hooks/NavigationEffect';
 import {constructorViewElementsSelector} from './Store';
@@ -51,7 +51,7 @@ export const Constructor = withHooks(
   [
     useTrainingConstructorInitialTraining,
     useTrainingConstructorNavigationEffect,
-    useTrainingConstructorHeader,
+    useTrainingConstructorCustomHeader,
   ],
   () => {
     const flatListRef = useAnimatedRef<FlatList>();
