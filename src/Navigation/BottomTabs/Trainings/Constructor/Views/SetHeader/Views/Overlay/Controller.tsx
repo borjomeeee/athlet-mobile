@@ -1,9 +1,9 @@
 import React from 'react';
-import {useTrainingConstructorHistoryStore} from '../../../../Store';
+import {useTrainingConstructorHistory} from '../../../../Store';
 
 export const useSetHeaderOverlayController = (id: string) => {
   const {swapWithNext, swapWithPrev, removeSet} =
-    useTrainingConstructorHistoryStore();
+    useTrainingConstructorHistory();
 
   const handlePressRemoveSet = React.useCallback(() => {
     removeSet(id);

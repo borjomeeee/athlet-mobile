@@ -4,13 +4,13 @@ import {ExerciseUtils} from 'src/Store/ModelsUtils/Exercise';
 import * as UI from 'src/Components';
 import {
   useTrainingConstructorSet,
-  useTrainingConstructorHistoryStore,
+  useTrainingConstructorHistory,
 } from '../../Store';
 import {Modals} from '../../Const';
 
 export const useSetFooterController = (id: string) => {
   const {set} = useTrainingConstructorSet(id);
-  const {addExerciseToSet, replaceSet} = useTrainingConstructorHistoryStore();
+  const {addExerciseToSet, replaceSet} = useTrainingConstructorHistory();
 
   const {show: showSelectExercise} = useModal(Modals.SelectExercise);
   const {show: showEditExercise} = useModal(Modals.EditExercise);

@@ -1,11 +1,11 @@
 import React from 'react';
 import {
   useTrainingConstructorSet,
-  useTrainingConstructorHistoryStore,
+  useTrainingConstructorHistory,
 } from '../../Store';
 
 export const useSetHeaderController = (id: string) => {
-  const {replaceSet} = useTrainingConstructorHistoryStore();
+  const {replaceSet} = useTrainingConstructorHistory();
 
   const {set} = useTrainingConstructorSet(id);
   const handleChangeSetTitle = React.useCallback((title: string) => {
