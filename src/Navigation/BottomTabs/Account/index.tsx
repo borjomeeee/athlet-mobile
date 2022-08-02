@@ -11,13 +11,8 @@ import {Account} from './Default';
 import {TrainingEvent} from './TrainingEvent';
 import {Settings} from './Settings';
 
-const Stack = createStackNavigator();
-export type AccountStackParamList = {
-  [BottomTabAccountPaths.TrainingEvent]: {
-    id?: string;
-  };
-  [BottomTabAccountPaths.Default]: undefined;
-};
+const Stack = createStackNavigator<AccountStackParamList>();
+
 export const AccountStack = () => {
   return (
     <Stack.Navigator
@@ -38,4 +33,12 @@ export const AccountStack = () => {
       />
     </Stack.Navigator>
   );
+};
+
+export type AccountStackParamList = {
+  [BottomTabAccountPaths.TrainingEvent]: {
+    id?: string;
+  };
+  [BottomTabAccountPaths.Default]: undefined;
+  [BottomTabAccountPaths.Settings]: undefined;
 };
