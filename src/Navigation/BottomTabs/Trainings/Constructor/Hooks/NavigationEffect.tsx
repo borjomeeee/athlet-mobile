@@ -1,29 +1,23 @@
 import React from 'react';
 
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
-import {TrainingsStackParamList} from '../../index';
-import {BottomTabTrainingsPaths} from 'src/Navigation/Paths';
+import {useNavigation, useRoute} from '@react-navigation/native';
+
 import {useTrainingConstructorController} from '../Controller';
 import {useTrainingConstructorChangesController} from './Changes';
-
-type ProfileScreenRouteProp = RouteProp<
-  TrainingsStackParamList,
-  BottomTabTrainingsPaths.Constructor
->;
+import {ConstructorScreenNavigationProps} from '../../Types';
 
 export const useTrainingConstructorNavigationEffect = () => {
-  const navigation = useNavigation();
-  const route = useRoute<ProfileScreenRouteProp>();
+  const navigation =
+    useNavigation<ConstructorScreenNavigationProps['navigation']>();
+  const route = useRoute<ConstructorScreenNavigationProps['route']>();
 
   const {initWithTrainingId} = useTrainingConstructorController();
   const {requestResetChanges, hasTrainingChanged} =
     useTrainingConstructorChangesController();
 
   React.useEffect(() => {
-    const params = route.params;
-
-    if (params?.trainingId) {
-      initWithTrainingId(params?.trainingId);
+    if (route.params?.trainingId) {
+      initWithTrainingId(route.params?.trainingId);
     }
   }, [route, initWithTrainingId]);
 

@@ -12,21 +12,36 @@ export const Text: React.FC<React.ComponentProps<typeof RN.Text>> = ({
   return <RN.Text style={textStyle} {...props} />;
 };
 
-export const MultilineText: React.FC<React.ComponentProps<typeof Text>> = ({
-  children,
-  ...props
-}) => {
-  if (Array.isArray(children)) {
-    return (
-      <>
-        {children.map(child => (
-          <View key={child}>
-            <Text {...props}>{child}</Text>
-          </View>
-        ))}
-      </>
-    );
-  }
+export const MultilineText: React.FC<React.ComponentProps<typeof Text>> =
+  React.memo(
+    ({children, ...props}) => {
+      if (Array.isArray(children)) {
+        return (
+          <>
+            {children.map(child => (
+              <View key={child}>
+                <Text {...props}>{child}</Text>
+              </View>
+            ))}
+          </>
+        );
+      }
 
-  return <Text {...{children, ...props}} />;
-};
+      return <Text {...{children, ...props}} />;
+    },
+    (prevProps, nextProps) => {
+      const {children, ...otherPrevProps} = prevProps;
+      const {children: nextChildren, ...otherNextProps} = nextProps;
+
+      return (
+        Object.keys(prevProps).length === Object.keys(nextProps).length &&
+        typeof children === typeof nextChildren &&
+        (Array.isArray(children)
+          ? children.join('') === (nextChildren as []).join('')
+          : false) &&
+        Object.entries(otherPrevProps).every(
+          ([key, value]) => (otherNextProps as any)[key] === value,
+        )
+      );
+    },
+  );

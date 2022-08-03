@@ -1,10 +1,10 @@
-import React from 'react';
 import {useRecoilCallback} from 'recoil';
 
 import {
   useTrainingConstructorStore,
-  useTrainingConstructorHistoryStore,
+  useTrainingConstructorHistory,
   constructorViewElementsSelector,
+  initialTrainingIdAtom,
 } from './Store';
 import {ConstructorElementViewListItem} from './Types';
 
@@ -12,19 +12,18 @@ export const useTrainingConstructorController = () => {
   const {
     resetAll,
     setInitialTraining,
-    resetInitialTraining,
 
     switchToViewMode,
-    setInitialTrainingId,
   } = useTrainingConstructorStore();
-  const {reorder: _reorder} = useTrainingConstructorHistoryStore();
+  const {reorder: _reorder} = useTrainingConstructorHistory();
 
-  const initWithTrainingId = React.useCallback(
-    (trainingId: string) => {
-      setInitialTrainingId(trainingId);
-      switchToViewMode();
-    },
-    [setInitialTrainingId, switchToViewMode],
+  const initWithTrainingId = useRecoilCallback(
+    ({set}) =>
+      (trainingId: string) => {
+        set(initialTrainingIdAtom, trainingId);
+        switchToViewMode();
+      },
+    [switchToViewMode],
   );
 
   const reorder = useRecoilCallback(
@@ -65,8 +64,6 @@ export const useTrainingConstructorController = () => {
 
   return {
     setInitialTraining,
-    resetInitialTraining,
-
     initWithTrainingId,
 
     reorder,

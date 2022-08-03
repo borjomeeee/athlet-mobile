@@ -8,11 +8,11 @@ import {useRecoilValue} from 'recoil';
 import * as UI from 'src/Components';
 import {Training} from 'src/Store/Models/Training';
 import {myTrainingsList} from 'src/Store/Trainings';
-import {useTrainingListController} from './Hooks/Controller';
 import {Header} from './Views/Header';
 import {TrainingElement} from './Views/TrainingElement';
 
 import GymIcon from 'src/Assets/Svg/Gym';
+import {useTrainingListController} from './Controller';
 
 const BUTTON_PADDING_BOTTOM = 15;
 export const List = () => {

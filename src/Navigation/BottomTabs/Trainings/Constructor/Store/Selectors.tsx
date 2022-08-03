@@ -17,12 +17,15 @@ import {
 } from './Utils';
 
 export const initialTrainingTitleSelector = selector({
-  key: createKey('training title'),
-  get: ({get}) => get(initialTrainingAtom)?.title,
+  key: createKey('trainingTitle'),
+  get: ({get}) => {
+    const training = get(initialTrainingAtom);
+    return training ? training.title : undefined;
+  },
 });
 
 export const initialTrainingElementsSelector = selector({
-  key: createKey('training elements'),
+  key: createKey('trainingElements'),
   get: ({get}) => {
     const training = get(initialTrainingAtom);
     return training ? getConstructorElementsFromTraining(training) : [];

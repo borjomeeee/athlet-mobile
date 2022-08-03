@@ -1,11 +1,11 @@
 import React from 'react';
 import {
   useTrainingConstructorSet,
-  useTrainingConstructorHistoryStore,
+  useTrainingConstructorHistory,
 } from '../../Store';
 
 export const useSetHeaderController = (id: string) => {
-  const {replaceSet} = useTrainingConstructorHistoryStore();
+  const {replaceSet} = useTrainingConstructorHistory();
 
   const {set} = useTrainingConstructorSet(id);
   const handleChangeSetTitle = React.useCallback((title: string) => {
@@ -18,27 +18,4 @@ export const useSetHeaderController = (id: string) => {
   }, []);
 
   return {handleChangeSetTitle, handleBlurSetTitle};
-};
-
-export const useSetHeaderOptionsController = (id: string) => {
-  const {swapWithNext, swapWithPrev, removeSet} =
-    useTrainingConstructorHistoryStore();
-
-  const handlePressRemoveSet = React.useCallback(() => {
-    removeSet(id);
-  }, [id, removeSet]);
-
-  const handlePressSwapWithPrevious = React.useCallback(() => {
-    swapWithPrev(id);
-  }, [swapWithPrev, id]);
-
-  const handlePressSwapWithNext = React.useCallback(() => {
-    swapWithNext(id);
-  }, [swapWithNext, id]);
-
-  return {
-    handlePressRemoveSet,
-    handlePressSwapWithNext,
-    handlePressSwapWithPrevious,
-  };
 };

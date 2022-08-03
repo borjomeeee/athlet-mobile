@@ -5,12 +5,11 @@ import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
 import {Modals} from '../../Const';
 import {
   useTrainingConstructorExercise,
-  useTrainingConstructorHistoryStore,
+  useTrainingConstructorHistory,
 } from '../../Store';
 
 export const useTrainingExerciseController = (id: string) => {
-  const {removeExercise, replaceExercise} =
-    useTrainingConstructorHistoryStore();
+  const {removeExercise, replaceExercise} = useTrainingConstructorHistory();
 
   const {show: showEditRest} = useModal(Modals.EditRest);
   const {show: showEditExercise} = useModal(Modals.EditExercise);
@@ -33,7 +32,7 @@ export const useTrainingExerciseController = (id: string) => {
     });
   }, [showEditExercise, id, exercise, replaceExercise]);
 
-  const handlePressEditRest = React.useCallback(() => {
+  const handlePressRest = React.useCallback(() => {
     if (!exercise) {
       return;
     }
@@ -52,5 +51,5 @@ export const useTrainingExerciseController = (id: string) => {
     removeExercise(id);
   }, [id, removeExercise]);
 
-  return {handlePress, handlePressEditRest, handlePressRemove};
+  return {handlePress, handlePressRest, handlePressRemove};
 };

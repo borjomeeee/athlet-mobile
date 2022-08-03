@@ -15,21 +15,19 @@ import {useRecoilValue} from 'recoil';
 import * as UI from 'src/Components';
 import {withHooks} from 'src/Utils/HOCs';
 import {useTrainingConstructorController} from './Controller';
-import {useTrainingConstructorHeader} from './Hooks/Header';
+import {useTrainingConstructorCustomHeader} from './Hooks/CustomHeader';
 import {useTrainingConstructorInitialTraining} from './Hooks/InitialTraining';
 import {useTrainingConstructorNavigationEffect} from './Hooks/NavigationEffect';
 import {constructorViewElementsSelector} from './Store';
 import {AddElementButton} from './Views/AddElementButton';
 import {Header} from './Views/Header';
 import {Submit} from './Views/Submit';
-import {AnimationsContext} from './Store/Animations';
+import {AnimationsContext, useAnimationsValues} from './Store/Animations';
 import {
   ConstructorElementType,
   ConstructorElementViewList,
   ConstructorElementViewListItem,
-  DraggableListState,
 } from './Types';
-import {CellContainerProps} from '@shopify/flash-list/dist/native/cell-container/CellContainer';
 import {
   FlatList,
   FlatListProps,
@@ -51,22 +49,10 @@ export const Constructor = withHooks(
   [
     useTrainingConstructorInitialTraining,
     useTrainingConstructorNavigationEffect,
-    useTrainingConstructorHeader,
+    useTrainingConstructorCustomHeader,
   ],
   () => {
     const flatListRef = useAnimatedRef<FlatList>();
-
-    const scrollY = useSharedValue(0);
-
-    const containerHeight = useSharedValue(0);
-    const scrollViewHeight = useSharedValue(0);
-
-    const handleScroll = useAnimatedScrollHandler(
-      e => (scrollY.value = e.contentOffset.y),
-    );
-
-    const {reset, reorder} = useTrainingConstructorController();
-    React.useEffect(() => () => reset(), [reset]);
 
     const _viewElements = useRecoilValue(constructorViewElementsSelector);
     const viewElements = React.useMemo(
@@ -75,14 +61,24 @@ export const Constructor = withHooks(
       [_viewElements],
     );
 
-    const activeIndex = useSharedValue<number | undefined>(undefined);
-    const guessActiveIndex = useSharedValue<number | undefined>(undefined);
+    const {
+      scrollY,
+      containerHeight,
+      scrollViewHeight,
+      activeIndex,
+      guessActiveIndex,
+      activeCellTranslateY,
+      state,
+      measurmentsStore,
+    } = useAnimationsValues(viewElements);
 
-    const activeCellTranslateY = useSharedValue(0);
+    const handleScroll = useAnimatedScrollHandler(
+      e => (scrollY.value = e.contentOffset.y),
+    );
 
-    const state = useSharedValue(DraggableListState.CALCULATING_LAYOUT);
+    const {reset, reorder} = useTrainingConstructorController();
+    React.useEffect(() => () => reset(), [reset]);
 
-    const measurmentsStore = useSharedValue<Record<string, number>>({});
     const value = React.useMemo(
       () => ({
         flatListRef,
@@ -110,101 +106,6 @@ export const Constructor = withHooks(
         activeCellTranslateY,
         reorder,
       ],
-    );
-
-    useAnimatedReaction(
-      () => activeIndex.value,
-      indx => {
-        guessActiveIndex.value = indx;
-      },
-    );
-
-    useAnimatedReaction(
-      () => measurmentsStore.value,
-      measurments => {
-        if (
-          state.value === DraggableListState.CALCULATING_LAYOUT ||
-          state.value === DraggableListState.FREE
-        ) {
-          const measuredItems = Object.keys(measurments);
-          state.value = viewElements.every(item =>
-            measuredItems.includes(item.id),
-          )
-            ? DraggableListState.FREE
-            : DraggableListState.CALCULATING_LAYOUT;
-        }
-      },
-    );
-
-    useAnimatedReaction(
-      () => [
-        activeCellTranslateY.value,
-        guessActiveIndex.value,
-        activeIndex.value,
-      ],
-      () => {
-        if (
-          guessActiveIndex.value === undefined ||
-          activeIndex.value === undefined
-        ) {
-          return;
-        }
-
-        const prevItemIndex = guessActiveIndex.value - 1;
-        const prevItem =
-          guessActiveIndex.value > 0 ? viewElements[prevItemIndex] : undefined;
-
-        const nextItemIndex = guessActiveIndex.value + 1;
-        const nextItem =
-          guessActiveIndex.value < viewElements.length - 1
-            ? viewElements[nextItemIndex]
-            : undefined;
-
-        if (prevItem) {
-          const heightBeforeItem =
-            activeIndex.value > prevItemIndex
-              ? viewElements
-                  .slice(prevItemIndex, activeIndex.value)
-                  .reduce(
-                    (acc, _item) => acc + measurmentsStore.value[_item.id] || 0,
-                    0,
-                  )
-              : -viewElements
-                  .slice(activeIndex.value, prevItemIndex)
-                  .reduce(
-                    (acc, _item) => acc + measurmentsStore.value[_item.id] || 0,
-                    0,
-                  );
-
-          if (-activeCellTranslateY.value > heightBeforeItem) {
-            guessActiveIndex.value = guessActiveIndex.value - 1;
-            return;
-          }
-        }
-
-        if (nextItem) {
-          const heightAfterItem =
-            activeIndex.value >= nextItemIndex
-              ? viewElements
-                  .slice(nextItemIndex, activeIndex.value)
-                  .reduce(
-                    (acc, _item) => acc + measurmentsStore.value[_item.id] || 0,
-                    0,
-                  )
-              : -viewElements
-                  .slice(activeIndex.value, nextItemIndex)
-                  .reduce(
-                    (acc, _item) => acc + measurmentsStore.value[_item.id] || 0,
-                    0,
-                  );
-
-          if (-activeCellTranslateY.value < heightAfterItem) {
-            guessActiveIndex.value = guessActiveIndex.value + 1;
-            return;
-          }
-        }
-      },
-      [viewElements],
     );
 
     React.useEffect(() => {
@@ -246,22 +147,8 @@ export const Constructor = withHooks(
             onLayout={onLayout}
             onContentSizeChange={onContentSizeChanged}
             scrollEventThrottle={16}
-            ListHeaderComponent={() => (
-              <>
-                <Header />
-                <UI.HSpacer size={8} />
-              </>
-            )}
-            ListFooterComponent={() => (
-              <>
-                <UI.HSpacer size={20} />
-
-                <Animated.View style={s(`zi:1`)}>
-                  <AddElementButton />
-                  <UI.HSpacer size={20} />
-                </Animated.View>
-              </>
-            )}
+            ListHeaderComponent={ListHeaderComponent}
+            ListFooterComponent={ListFooterComponent}
             CellRendererComponent={renderCell}
             onScroll={handleScroll}
             removeClippedSubviews={false}
@@ -277,7 +164,7 @@ export const Constructor = withHooks(
   },
 );
 
-const CellRendererComponent: React.FC<CellContainerProps> = React.memo(
+const CellRendererComponent: React.FC<any> = React.memo(
   ({style: providedStyle, index, onLayout, ...props}) => {
     const ctx = React.useContext(AnimationsContext);
     const {
@@ -385,3 +272,25 @@ const renderItem = ({
   return null;
 };
 const keyExtractor = (item: ConstructorElementViewListItem) => item.id;
+
+function ListHeaderComponent() {
+  return (
+    <>
+      <Header />
+      <UI.HSpacer size={8} />
+    </>
+  );
+}
+
+function ListFooterComponent() {
+  return (
+    <>
+      <UI.HSpacer size={20} />
+
+      <Animated.View style={s(`zi:1`)}>
+        <AddElementButton />
+        <UI.HSpacer size={20} />
+      </Animated.View>
+    </>
+  );
+}

@@ -7,15 +7,15 @@ import {Init} from './Init';
 import {AppPaths, ModalsPaths} from './Paths';
 import {appNavigationOptions, modalsGroupOptions} from './navigationOptions';
 import {Playground} from './Playground';
+import {AppStackParamList} from './Types';
 
-const AppStack = createNativeStackNavigator();
+const AppStack = createNativeStackNavigator<AppStackParamList>();
 export const Navigation = () => {
   return (
     <AppStack.Navigator
       screenOptions={appNavigationOptions}
       initialRouteName={AppPaths.Init}>
       <AppStack.Screen name={AppPaths.Init} component={Init} />
-      {/* <AppStack.Screen name={AppPaths.Auth} component={Auth} /> */}
       <AppStack.Screen
         name={AppPaths.BottomTab}
         component={BottomTabsNavigator}
@@ -27,10 +27,4 @@ export const Navigation = () => {
       </AppStack.Group>
     </AppStack.Navigator>
   );
-};
-
-export type ModalsGroupParamList = {
-  [ModalsPaths.Playground]: {
-    trainingId?: string;
-  };
 };

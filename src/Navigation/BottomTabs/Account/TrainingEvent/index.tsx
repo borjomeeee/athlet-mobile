@@ -1,19 +1,16 @@
 import React from 'react';
 import {withHooks} from 'src/Utils/HOCs';
-import {
-  useTrainingEventController,
-  useTrainingEventNavigationEffect,
-} from './Hooks';
+import {useTrainingEventNavigationEffect} from './Hooks/NavigationEffect';
 import * as UI from 'src/Components';
 import s from '@borjomeeee/rn-styles';
 import {Header} from './Views/Header';
 import {Content} from './Views/Content';
+import {useTrainingEventController} from './Controller';
 
 export const TrainingEvent = withHooks(
   [useTrainingEventNavigationEffect],
   () => {
     const {reset} = useTrainingEventController();
-
     React.useEffect(() => () => reset(), [reset]);
 
     return (

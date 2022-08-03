@@ -1,7 +1,5 @@
-import React from 'react';
-import {useRecoilValue, useResetRecoilState, useSetRecoilState} from 'recoil';
+import {useRecoilCallback, useRecoilValue} from 'recoil';
 import {Training} from 'src/Store/Models/Training';
-import {useGetRecoilState} from 'src/Utils/Recoil';
 import {
   actionHistoryAtom,
   initialTrainingAtom,
@@ -9,6 +7,7 @@ import {
   screenStateAtom,
   screenTrainingTitleAtom,
 } from './Atoms';
+
 import {constructorElementsByIdSelector} from './Selectors';
 import {ExerciseWithId, ScreenState, SetWithId} from './Types';
 
@@ -17,74 +16,62 @@ export * from './Selectors';
 export * from './History';
 
 export const useTrainingConstructorStore = () => {
-  const setTitle = useSetRecoilState(screenTrainingTitleAtom);
-  const resetTitle = useResetRecoilState(screenTrainingTitleAtom);
+  const switchToViewMode = useRecoilCallback(
+    ({get, set, reset}) =>
+      () => {
+        set(screenStateAtom, ScreenState.VIEWING);
 
-  const setScreenState = useSetRecoilState(screenStateAtom);
-  const resetScreenState = useResetRecoilState(screenStateAtom);
+        const initialTraining = get(initialTrainingAtom);
+        if (initialTraining) {
+          set(screenTrainingTitleAtom, initialTraining.title);
+        } else {
+          reset(screenTrainingTitleAtom);
+        }
 
-  const resetHistory = useResetRecoilState(actionHistoryAtom);
-
-  const setInitialTrainingId = useSetRecoilState(initialTrainingIdAtom);
-  const resetInitialTrainingId = useResetRecoilState(initialTrainingIdAtom);
-
-  const setInitialTraining = useSetRecoilState(initialTrainingAtom);
-  const resetInitialTraining = useResetRecoilState(initialTrainingAtom);
-
-  const getInitialTraining = useGetRecoilState(initialTrainingAtom);
-
-  const switchToViewMode = React.useCallback(() => {
-    setScreenState(ScreenState.VIEWING);
-
-    const initialTraining = getInitialTraining();
-    if (initialTraining) {
-      setTitle(initialTraining.title);
-    } else {
-      resetTitle();
-    }
-
-    resetHistory();
-  }, [setScreenState, resetTitle, resetHistory, getInitialTraining, setTitle]);
-
-  const switchToEditMode = React.useCallback(() => {
-    setScreenState(ScreenState.EDITING);
-  }, [setScreenState]);
-
-  const resetAll = React.useCallback(() => {
-    resetTitle();
-    resetScreenState();
-    resetHistory();
-    resetInitialTraining();
-    resetInitialTrainingId();
-  }, [
-    resetTitle,
-    resetInitialTraining,
-    resetScreenState,
-    resetHistory,
-    resetInitialTrainingId,
-  ]);
-
-  const setTitleHandler = React.useCallback(
-    (text: string) => {
-      setTitle(text.trimLeft());
-    },
-    [setTitle],
+        reset(actionHistoryAtom);
+      },
+    [],
   );
 
-  const setInitialTrainingHandler = React.useCallback(
-    (training: Training) => {
-      setInitialTraining(training);
-      setTitle(training.title);
-    },
-    [setInitialTraining, setTitle],
+  const switchToEditMode = useRecoilCallback(
+    ({set}) =>
+      () => {
+        set(screenStateAtom, ScreenState.EDITING);
+      },
+    [],
+  );
+
+  const resetAll = useRecoilCallback(
+    ({reset}) =>
+      () => {
+        reset(initialTrainingIdAtom);
+        reset(initialTrainingAtom);
+        reset(screenStateAtom);
+        reset(screenTrainingTitleAtom);
+        reset(actionHistoryAtom);
+      },
+    [],
+  );
+
+  const setTitleHandler = useRecoilCallback(
+    ({set}) =>
+      (text: string) => {
+        set(screenTrainingTitleAtom, text.trimLeft());
+      },
+    [],
+  );
+
+  const setInitialTrainingHandler = useRecoilCallback(
+    ({set}) =>
+      (training: Training) => {
+        set(initialTrainingAtom, training);
+        set(screenTrainingTitleAtom, training.title);
+      },
+    [],
   );
 
   return {
     setInitialTraining: setInitialTrainingHandler,
-    resetInitialTraining,
-
-    setInitialTrainingId,
-    resetInitialTrainingId,
 
     setTitle: setTitleHandler,
     resetAll,

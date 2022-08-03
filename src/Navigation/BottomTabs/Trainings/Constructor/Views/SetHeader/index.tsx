@@ -9,7 +9,7 @@ import OptionsIcon from 'src/Assets/Svg/Options';
 import {OverlayWrapper} from 'src/Lib/Overlay';
 import {useRecoilValue} from 'recoil';
 import {isEditingSelector} from '../../Store';
-import {useSetHeaderOptionsController} from './Controller';
+import {SetHeaderOptions} from './Views/Overlay';
 
 interface SetHeaderProps {
   setId: string;
@@ -41,33 +41,6 @@ export const SetHeader: React.FC<SetHeaderProps> = ({setId, title}) => {
           </OverlayWrapper>
         </Animated.View>
       )}
-    </UI.View>
-  );
-};
-
-interface SetHeaderOptionsProps {
-  id: string;
-}
-const SetHeaderOptions: React.FC<SetHeaderOptionsProps> = ({id}) => {
-  const {
-    handlePressRemoveSet,
-    handlePressSwapWithNext,
-    handlePressSwapWithPrevious,
-  } = useSetHeaderOptionsController(id);
-
-  return (
-    <UI.View>
-      <UI.OverlayAction
-        style={s(`pr:20`)}
-        onPress={handlePressSwapWithPrevious}>
-        <UI.Text>Переместить вверх</UI.Text>
-      </UI.OverlayAction>
-      <UI.OverlayAction onPress={handlePressSwapWithNext}>
-        <UI.Text>Переместить вниз</UI.Text>
-      </UI.OverlayAction>
-      <UI.OverlayAction onPress={handlePressRemoveSet}>
-        <UI.Text style={s(`c:red`)}>Удалить</UI.Text>
-      </UI.OverlayAction>
     </UI.View>
   );
 };

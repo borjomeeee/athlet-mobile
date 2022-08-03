@@ -10,12 +10,8 @@ import {
 } from './navigationOptions';
 
 import {createStackNavigator} from '@react-navigation/stack';
-export type TrainingsStackParamList = {
-  [BottomTabTrainingsPaths.Constructor]: {
-    trainingId?: string;
-  };
-  [BottomTabTrainingsPaths.List]: undefined;
-};
+import {TrainingsStackParamList} from './Types';
+
 const Stack = createStackNavigator<TrainingsStackParamList>();
 export const TrainingsStack = () => {
   return (

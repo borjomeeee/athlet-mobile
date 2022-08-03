@@ -11,8 +11,9 @@ import {BottomTabPaths} from '../Paths';
 
 import {tabNavigationOptions} from './navigationOptions';
 import {BottomTabs} from 'src/Components';
+import {BottomTabsParamList} from './Types';
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<BottomTabsParamList>();
 export const BottomTabsNavigator = () => {
   return (
     <Tab.Navigator

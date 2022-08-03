@@ -6,14 +6,15 @@ import {Training} from 'src/Store/Models/Training';
 
 import dayjs from 'dayjs';
 import PlayIcon from 'src/Assets/Svg/Play';
-import {useTrainingListTrainingElementController} from './Hooks/Controller';
+import {useTrainingElementController} from './Controller';
 
 interface TrainingElementProps {
   training: Training;
 }
 export const TrainingElement: React.FC<TrainingElementProps> = ({training}) => {
-  const {handlePress, handlePressStart} =
-    useTrainingListTrainingElementController(training.id);
+  const {handlePress, handlePressStart} = useTrainingElementController(
+    training.id,
+  );
 
   const formattedCreationDate = React.useMemo(
     () => dayjs(training.createdAt).format('DD/MM/YYYY'),

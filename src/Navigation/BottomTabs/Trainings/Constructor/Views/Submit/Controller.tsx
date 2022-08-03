@@ -30,7 +30,6 @@ export const useSubmitController = () => {
             title: get(screenTrainingTitleAtom),
             elements: get(constructorElementsSelector),
           },
-          // TODO
           () => undefined,
         );
 

@@ -12,7 +12,7 @@ import {
   SetWithId,
 } from '../Types';
 
-export const useTrainingConstructorHistoryStore = () => {
+export const useTrainingConstructorHistory = () => {
   const setActionHistory = useSetRecoilState(actionHistoryAtom);
 
   const addToHistory = React.useCallback(
