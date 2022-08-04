@@ -30,7 +30,8 @@ export const List: React.FC<ListProps> = ({id}) => {
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       ListEmptyComponent={EmptyComponent}
-      showsVerticalScrollIndicator={false}
+      showsVerticalScrollIndicator={true}
+      keyboardShouldPersistTaps="handled"
       style={s(exercises.length === 0 && `fill`)}
       contentContainerStyle={s(
         `pb:${20 + bottom}`,
