@@ -2,7 +2,7 @@ import {atom} from 'recoil';
 import {Training} from 'src/Store/Models/Training';
 import {getKeyFabricForDomain} from 'src/Utils/Recoil';
 
-import {HistoryAction, ScreenState} from './Types';
+import {ConstructorElement, HistoryAction, ScreenState} from './Types';
 
 export const createKey = getKeyFabricForDomain('training constructor');
 
@@ -27,5 +27,10 @@ export const screenTrainingTitleAtom = atom({
 
 export const actionHistoryAtom = atom<HistoryAction<any>[]>({
   key: createKey('history'),
+  default: [],
+});
+
+export const historySnapshotAtom = atom<ConstructorElement[]>({
+  key: createKey('historySnapshot'),
   default: [],
 });
