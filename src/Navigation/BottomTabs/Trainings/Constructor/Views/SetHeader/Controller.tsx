@@ -1,21 +1,23 @@
 import React from 'react';
+import {useRecoilCallback} from 'recoil';
 import {
-  useTrainingConstructorSet,
   useTrainingConstructorHistory,
+  constructorElementsByIdSelector,
 } from '../../Store';
+import {SetWithId} from '../../Store/Types';
 
 export const useSetHeaderController = (id: string) => {
   const {replaceSet} = useTrainingConstructorHistory();
 
-  const {set} = useTrainingConstructorSet(id);
-  const handleChangeSetTitle = React.useCallback((title: string) => {
-    // TODO: hmmm
-    return;
-  }, []);
+  const handleChangeSetTitle = useRecoilCallback(
+    ({get}) =>
+      (title: string) => {
+        console.log('change title', title);
+        const set = get(constructorElementsByIdSelector)[id] as SetWithId;
+        replaceSet(id, {...set, title});
+      },
+    [replaceSet, id],
+  );
 
-  const handleBlurSetTitle = React.useCallback(() => {
-    // TODO: remove
-  }, []);
-
-  return {handleChangeSetTitle, handleBlurSetTitle};
+  return {handleChangeSetTitle};
 };
