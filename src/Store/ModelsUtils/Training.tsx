@@ -74,6 +74,7 @@ export class TrainingUtils {
         iterableElements.push({
           duration: set.restAfterComplete,
           type: ElementType.REST,
+          setInfo: currentSet,
           closeSet: true,
         });
 

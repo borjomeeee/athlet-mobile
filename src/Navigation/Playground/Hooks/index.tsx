@@ -17,7 +17,6 @@ import {
 import {useRecoilCallback, useRecoilValue} from 'recoil';
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
 import {AppPaths, ModalsPaths} from 'src/Navigation/Paths';
-import {ModalsGroupParamList} from 'src/Navigation';
 import {useTrainingService} from 'src/Services/Trainings';
 import {useAppController} from 'src/Services/App';
 import {StackActions} from '@react-navigation/native';
@@ -40,6 +39,8 @@ import {TimeUtils} from 'src/Store/ModelsUtils/Time';
 import dayjs from 'dayjs';
 import {Vibration} from 'react-native';
 import {updateTrainingNotification} from '../Utils';
+import {AccountScreenNavigationProps} from 'src/Navigation/BottomTabs/Account/Types';
+import {PlaygroundScreenNavigationProps} from 'src/Navigation/Types';
 
 export const usePlayground = () => {
   const {defaultHandleError} = useAppController();
@@ -285,14 +286,9 @@ export const usePlayground = () => {
   };
 };
 
-type ProfileScreenRouteProp = RouteProp<
-  ModalsGroupParamList,
-  ModalsPaths.Playground
->;
-
 export const usePlaygroundNavigationEffect = () => {
   const navigation = useNavigation();
-  const route = useRoute<ProfileScreenRouteProp>();
+  const route = useRoute<PlaygroundScreenNavigationProps['route']>();
 
   const {requestForceClose, exit, save} = usePlayground();
   const {setTrainingId} = usePlaygroundStore();
@@ -303,11 +299,7 @@ export const usePlaygroundNavigationEffect = () => {
   const isFinished = useRecoilValue(isFinishedStore);
 
   React.useEffect(() => {
-    const params = route.params;
-
-    if (params?.trainingId) {
-      setTrainingId(params?.trainingId);
-    }
+    setTrainingId(route.params?.trainingId);
   }, [route, setTrainingId]);
 
   React.useEffect(() => {
