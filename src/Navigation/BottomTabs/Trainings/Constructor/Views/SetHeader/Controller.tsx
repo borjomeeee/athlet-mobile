@@ -12,7 +12,6 @@ export const useSetHeaderController = (id: string) => {
   const handleChangeSetTitle = useRecoilCallback(
     ({get}) =>
       (title: string) => {
-        console.log('change title', title);
         const set = get(constructorElementsByIdSelector)[id] as SetWithId;
         replaceSet(id, {...set, title});
       },
