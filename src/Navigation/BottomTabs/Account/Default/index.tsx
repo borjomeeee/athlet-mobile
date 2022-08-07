@@ -4,7 +4,7 @@ import React from 'react';
 import {useRecoilValue} from 'recoil';
 import * as UI from 'src/Components';
 import {TrainingEvent} from 'src/Store/Models/Training';
-import {trainingsEventsListSelector} from 'src/Store/TrainingsEvents';
+import {sortedTrainingsEventsListSelector} from 'src/Store/TrainingsEvents';
 
 import {TrainingEventCard} from './Views/TrainingEventCard';
 
@@ -12,7 +12,7 @@ import GymIcon from 'src/Assets/Svg/Gym';
 import {Header} from './Views/Header';
 
 export const Account = () => {
-  const trainingsEventsList = useRecoilValue(trainingsEventsListSelector);
+  const trainingsEventsList = useRecoilValue(sortedTrainingsEventsListSelector);
 
   const trainingEventsSections = React.useMemo(() => {
     const byId: Record<string, {title: string; data: TrainingEvent[]}> = {};
@@ -31,7 +31,7 @@ export const Account = () => {
     });
 
     return Object.entries(byId)
-      .sort((s1, s2) => +s1[0] - +s2[0])
+      .sort((s1, s2) => +s2[0] - +s1[0])
       .map(ss => ss[1]);
   }, [trainingsEventsList]);
 
