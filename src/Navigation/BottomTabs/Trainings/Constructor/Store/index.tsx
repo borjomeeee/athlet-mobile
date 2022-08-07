@@ -2,6 +2,7 @@ import {useRecoilCallback, useRecoilValue} from 'recoil';
 import {Training} from 'src/Store/Models/Training';
 import {
   actionHistoryAtom,
+  historySnapshotAtom,
   initialTrainingAtom,
   initialTrainingIdAtom,
   screenStateAtom,
@@ -10,6 +11,7 @@ import {
 
 import {constructorElementsByIdSelector} from './Selectors';
 import {ExerciseWithId, ScreenState, SetWithId} from './Types';
+import {getConstructorElementsFromTraining} from './Utils';
 
 export * from './Atoms';
 export * from './Selectors';
@@ -24,8 +26,13 @@ export const useTrainingConstructorStore = () => {
         const initialTraining = get(initialTrainingAtom);
         if (initialTraining) {
           set(screenTrainingTitleAtom, initialTraining.title);
+          set(
+            historySnapshotAtom,
+            getConstructorElementsFromTraining(initialTraining),
+          );
         } else {
           reset(screenTrainingTitleAtom);
+          reset(historySnapshotAtom);
         }
 
         reset(actionHistoryAtom);
@@ -49,6 +56,7 @@ export const useTrainingConstructorStore = () => {
         reset(screenStateAtom);
         reset(screenTrainingTitleAtom);
         reset(actionHistoryAtom);
+        reset(historySnapshotAtom);
       },
     [],
   );
@@ -65,6 +73,8 @@ export const useTrainingConstructorStore = () => {
     ({set}) =>
       (training: Training) => {
         set(initialTrainingAtom, training);
+        set(historySnapshotAtom, getConstructorElementsFromTraining(training));
+
         set(screenTrainingTitleAtom, training.title);
       },
     [],

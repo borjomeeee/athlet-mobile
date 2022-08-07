@@ -1,9 +1,10 @@
 import React from 'react';
 
-import {useSetRecoilState} from 'recoil';
+import {useRecoilCallback, useSetRecoilState} from 'recoil';
 import {SetUtils} from 'src/Store/ModelsUtils/Set';
 import {Id} from 'src/Utils/Id';
-import {actionHistoryAtom} from '../Atoms';
+import {actionHistoryAtom, historySnapshotAtom} from '../Atoms';
+import {applyAction} from '../Selectors';
 import {
   ExerciseWithId,
   HistoryAction,
@@ -15,10 +16,21 @@ import {
 export const useTrainingConstructorHistory = () => {
   const setActionHistory = useSetRecoilState(actionHistoryAtom);
 
-  const addToHistory = React.useCallback(
-    <T extends HistoryActionType>(action: HistoryAction<T>) => {
-      setActionHistory(history => [...history, action]);
-    },
+  const addToHistory = useRecoilCallback(
+    ({get, set}) =>
+      <T extends HistoryActionType>(action: HistoryAction<T>) => {
+        const currentHistoryAction = [...get(actionHistoryAtom)];
+        let currentHistorySnapshot = [...get(historySnapshotAtom)];
+
+        if (currentHistoryAction.length === 10) {
+          currentHistorySnapshot = applyAction(action, currentHistorySnapshot);
+
+          set(historySnapshotAtom, currentHistorySnapshot);
+          set(actionHistoryAtom, [...currentHistoryAction.splice(1), action]);
+        } else {
+          set(actionHistoryAtom, [...currentHistoryAction, action]);
+        }
+      },
     [setActionHistory],
   );
 

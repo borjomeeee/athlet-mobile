@@ -7,8 +7,14 @@ import {
   createKey,
   screenStateAtom,
   initialTrainingAtom,
+  historySnapshotAtom,
 } from './Atoms';
-import {HistoryActionType, ScreenState} from './Types';
+import {
+  ConstructorElement,
+  HistoryAction,
+  HistoryActionType,
+  ScreenState,
+} from './Types';
 import {
   getConstructorElementsFromTraining,
   getElementsByIdFromList,
@@ -45,125 +51,11 @@ export const isCreatingSelector = selector({
 export const constructorElementsSelector = selector({
   key: createKey('constructorElements'),
   get: ({get}) => {
-    let elements = [...get(initialTrainingElementsSelector)];
+    let elements = [...get(historySnapshotAtom)];
 
     const actionHistory = get(actionHistoryAtom);
     actionHistory.forEach(action => {
-      if (HistoryUtils.is(action, HistoryActionType.ADD_EXERCISE)) {
-        elements.push(action.payload.exercise);
-      } else if (
-        HistoryUtils.is(action, HistoryActionType.ADD_EXERCISE_TO_SET)
-      ) {
-        elements = elements.map(element => {
-          if (
-            TrainingUtils.isSet(element) &&
-            element.elementId === action.payload.setId
-          ) {
-            return {
-              ...element,
-              elements: [...element.elements, action.payload.exercise],
-            };
-          }
-
-          return element;
-        });
-      } else if (HistoryUtils.is(action, HistoryActionType.REMOVE_EXERCISE)) {
-        elements = elements
-          .map(element => {
-            if (TrainingUtils.isSet(element)) {
-              const id = action.payload.id;
-              if (
-                element.elements.findIndex(
-                  exercise => exercise.elementId === id,
-                ) !== -1
-              ) {
-                return {
-                  ...element,
-                  elements: element.elements.filter(
-                    exercise => exercise.elementId !== id,
-                  ),
-                };
-              }
-            }
-            return element;
-          })
-          .filter(
-            element =>
-              TrainingUtils.isSet(element) ||
-              element.elementId !== action.payload.id,
-          );
-      } else if (HistoryUtils.is(action, HistoryActionType.ADD_SET)) {
-        elements.push(action.payload.set);
-      } else if (HistoryUtils.is(action, HistoryActionType.REMOVE_SET)) {
-        elements = elements.filter(
-          element => element.elementId !== action.payload.id,
-        );
-      } else if (HistoryUtils.is(action, HistoryActionType.REPLACE_EXERCISE)) {
-        elements = elements.map(element => {
-          if (TrainingUtils.isSet(element)) {
-            const id = action.payload.id;
-            if (
-              element.elements.findIndex(
-                exercise => exercise.elementId === id,
-              ) !== -1
-            ) {
-              return {
-                ...element,
-                elements: element.elements.map(exercise =>
-                  exercise.elementId === id
-                    ? {
-                        ...action.payload.exercise,
-                        setId: element.elementId,
-                      }
-                    : exercise,
-                ),
-              };
-            }
-
-            return element;
-          }
-
-          return element.elementId === action.payload.id
-            ? action.payload.exercise
-            : element;
-        });
-      } else if (HistoryUtils.is(action, HistoryActionType.REPLACE_SET)) {
-        elements = elements.map(element =>
-          element.elementId === action.payload.id
-            ? action.payload.set
-            : element,
-        );
-      } else if (HistoryUtils.is(action, HistoryActionType.SWAP_WITH_PREV)) {
-        const elementIndex = elements.findIndex(
-          element => element.elementId === action.payload.id,
-        );
-
-        if (elementIndex < 1) {
-          return;
-        }
-
-        const currentElementForPrev = elements[elementIndex];
-        const prevElement = elements[elementIndex - 1];
-
-        elements[elementIndex] = prevElement;
-        elements[elementIndex - 1] = currentElementForPrev;
-      } else if (HistoryUtils.is(action, HistoryActionType.SWAP_WITH_NEXT)) {
-        const elementIndex = elements.findIndex(
-          element => element.elementId === action.payload.id,
-        );
-
-        if (elementIndex >= elements.length - 1 || elementIndex === -1) {
-          return;
-        }
-
-        const currentElement = elements[elementIndex];
-        const nextElement = elements[elementIndex + 1];
-
-        elements[elementIndex] = nextElement;
-        elements[elementIndex + 1] = currentElement;
-      } else if (HistoryUtils.is(action, HistoryActionType.REORDER)) {
-        elements = reorder(elements, action.payload.ids);
-      }
+      elements = applyAction(action, elements);
     });
 
     return elements;
@@ -215,3 +107,122 @@ export const constructorViewElementsSelector = selector({
     return elems;
   },
 });
+
+export function applyAction(
+  action: HistoryAction<any>,
+  initialElements: ConstructorElement[],
+) {
+  let elements = [...initialElements];
+  if (HistoryUtils.is(action, HistoryActionType.ADD_EXERCISE)) {
+    elements.push(action.payload.exercise);
+  } else if (HistoryUtils.is(action, HistoryActionType.ADD_EXERCISE_TO_SET)) {
+    elements = elements.map(element => {
+      if (
+        TrainingUtils.isSet(element) &&
+        element.elementId === action.payload.setId
+      ) {
+        return {
+          ...element,
+          elements: [...element.elements, action.payload.exercise],
+        };
+      }
+
+      return element;
+    });
+  } else if (HistoryUtils.is(action, HistoryActionType.REMOVE_EXERCISE)) {
+    elements = elements
+      .map(element => {
+        if (TrainingUtils.isSet(element)) {
+          const id = action.payload.id;
+          if (
+            element.elements.findIndex(
+              exercise => exercise.elementId === id,
+            ) !== -1
+          ) {
+            return {
+              ...element,
+              elements: element.elements.filter(
+                exercise => exercise.elementId !== id,
+              ),
+            };
+          }
+        }
+        return element;
+      })
+      .filter(
+        element =>
+          TrainingUtils.isSet(element) ||
+          element.elementId !== action.payload.id,
+      );
+  } else if (HistoryUtils.is(action, HistoryActionType.ADD_SET)) {
+    elements.push(action.payload.set);
+  } else if (HistoryUtils.is(action, HistoryActionType.REMOVE_SET)) {
+    elements = elements.filter(
+      element => element.elementId !== action.payload.id,
+    );
+  } else if (HistoryUtils.is(action, HistoryActionType.REPLACE_EXERCISE)) {
+    elements = elements.map(element => {
+      if (TrainingUtils.isSet(element)) {
+        const id = action.payload.id;
+        if (
+          element.elements.findIndex(exercise => exercise.elementId === id) !==
+          -1
+        ) {
+          return {
+            ...element,
+            elements: element.elements.map(exercise =>
+              exercise.elementId === id
+                ? {
+                    ...action.payload.exercise,
+                    setId: element.elementId,
+                  }
+                : exercise,
+            ),
+          };
+        }
+
+        return element;
+      }
+
+      return element.elementId === action.payload.id
+        ? action.payload.exercise
+        : element;
+    });
+  } else if (HistoryUtils.is(action, HistoryActionType.REPLACE_SET)) {
+    elements = elements.map(element =>
+      element.elementId === action.payload.id ? action.payload.set : element,
+    );
+  } else if (HistoryUtils.is(action, HistoryActionType.SWAP_WITH_PREV)) {
+    const elementIndex = elements.findIndex(
+      element => element.elementId === action.payload.id,
+    );
+
+    if (elementIndex < 1) {
+      return elements;
+    }
+
+    const currentElementForPrev = elements[elementIndex];
+    const prevElement = elements[elementIndex - 1];
+
+    elements[elementIndex] = prevElement;
+    elements[elementIndex - 1] = currentElementForPrev;
+  } else if (HistoryUtils.is(action, HistoryActionType.SWAP_WITH_NEXT)) {
+    const elementIndex = elements.findIndex(
+      element => element.elementId === action.payload.id,
+    );
+
+    if (elementIndex >= elements.length - 1 || elementIndex === -1) {
+      return elements;
+    }
+
+    const currentElement = elements[elementIndex];
+    const nextElement = elements[elementIndex + 1];
+
+    elements[elementIndex] = nextElement;
+    elements[elementIndex + 1] = currentElement;
+  } else if (HistoryUtils.is(action, HistoryActionType.REORDER)) {
+    elements = reorder(elements, action.payload.ids);
+  }
+
+  return elements;
+}
