@@ -43,6 +43,15 @@ export const trainingsEventsListSelector = selector({
   },
 });
 
+export const sortedTrainingsEventsListSelector = selector({
+  key: createKey('sorted trainings events list'),
+  get: ({get}) => {
+    return [...get(trainingsEventsListSelector)].sort((ev1, ev2) =>
+      (ev2.completedAt || 0) > (ev1.completedAt || 0) ? 1 : -1,
+    );
+  },
+});
+
 export const useTrainingEvent = (id?: string) => {
   const trainingEvents = useRecoilValue(trainingsEventsStore);
   return id ? trainingEvents[id] : undefined;
