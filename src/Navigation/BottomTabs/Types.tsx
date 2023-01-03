@@ -12,7 +12,13 @@ import {TrainingsStackParamList} from './Trainings/Types';
 export type BottomTabsParamList = {
   [BottomTabPaths.Trainings]: NavigatorScreenParams<TrainingsStackParamList>;
   [BottomTabPaths.Account]: NavigatorScreenParams<AccountStackParamList>;
+  [BottomTabPaths.Calendar]: NavigatorScreenParams<AccountStackParamList>;
 };
+
+export type BottomTabsCalendarNavigationProps = CompositeScreenProps<
+  BottomTabScreenProps<BottomTabsParamList, BottomTabPaths.Calendar>,
+  StackScreenProps<AppStackParamList>
+>;
 
 export type BottomTabsTrainingsNavigationProps = CompositeScreenProps<
   BottomTabScreenProps<BottomTabsParamList, BottomTabPaths.Trainings>,
