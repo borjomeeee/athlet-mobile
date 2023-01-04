@@ -20,16 +20,17 @@ export const useTrainingConstructorHistory = () => {
     ({get, set}) =>
       <T extends HistoryActionType>(action: HistoryAction<T>) => {
         const currentHistoryAction = [...get(actionHistoryAtom)];
-        let currentHistorySnapshot = [...get(historySnapshotAtom)];
+        // let currentHistorySnapshot = [...get(historySnapshotAtom)];
 
-        if (currentHistoryAction.length === 10) {
-          currentHistorySnapshot = applyAction(action, currentHistorySnapshot);
+        // if (currentHistoryAction.length === 10) {
+        //   currentHistorySnapshot = applyAction(action, currentHistorySnapshot);
 
-          set(historySnapshotAtom, currentHistorySnapshot);
-          set(actionHistoryAtom, [...currentHistoryAction.splice(1), action]);
-        } else {
-          set(actionHistoryAtom, [...currentHistoryAction, action]);
-        }
+        //   set(historySnapshotAtom, currentHistorySnapshot);
+        //   set(actionHistoryAtom, [...currentHistoryAction.splice(1), action]);
+        // } else {
+        // }
+
+        set(actionHistoryAtom, [...currentHistoryAction, action]);
       },
     [setActionHistory],
   );

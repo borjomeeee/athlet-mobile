@@ -77,6 +77,7 @@ export const usePlayground = () => {
   const navigation = useNavigation();
 
   const exit = React.useCallback(() => {
+    console.log('exit');
     if (navigation.canGoBack()) {
       navigation.goBack();
     }
@@ -148,12 +149,11 @@ export const usePlayground = () => {
     defaultHandleError,
   ]);
 
-  const saveAndClose = React.useCallback(async () => {
-    const id = await save();
+  const saveAndClose = React.useCallback(() => {
     setIsFinished(true);
-
     notifee.stopForegroundService();
-    return id;
+
+    return save();
   }, [setIsFinished, save]);
 
   const forceClose = React.useCallback(async () => {
@@ -175,6 +175,8 @@ export const usePlayground = () => {
         );
       });
     });
+
+    Vibration.vibrate();
   }, [setStartTime, setIsStarted]);
 
   const updateNotification = React.useCallback(async () => {
@@ -235,7 +237,7 @@ export const usePlayground = () => {
       }
 
       if (vibrate) {
-        Vibration.vibrate(200);
+        Vibration.vibrate();
       }
 
       const currentIndex = getCurrentIndex();
