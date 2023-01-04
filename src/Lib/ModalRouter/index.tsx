@@ -91,7 +91,7 @@ export const useModalProps = <T extends Record<string, any> = any>(
 interface ModalProps {
   id: string;
 }
-export const Modal: React.FC<ModalProps> = React.memo(({id}) => {
+export const Modal: React.FC<ModalProps> = ({id}) => {
   const modal = useRecoilValue(modalStore(id));
 
   if (!modal) {
@@ -99,8 +99,12 @@ export const Modal: React.FC<ModalProps> = React.memo(({id}) => {
   }
 
   const {props, Component} = modal;
-  return <Component id={id} {...props} />;
-});
+  return (
+    <UI.View style={s(`abs t:0 r:0 l:0 b:0`)}>
+      <Component id={id} {...props} />
+    </UI.View>
+  );
+};
 
 export const ModalRouter = () => {
   const modals = useRecoilValue(modalsIdsStore);
@@ -108,9 +112,7 @@ export const ModalRouter = () => {
   return (
     <UI.View style={s(`abs t:0 l:0 r:0 b:0`)} pointerEvents="box-none">
       {modals.map(id => (
-        <UI.View key={id} style={s(`abs t:0 r:0 l:0 b:0`)}>
-          <Modal id={id} />
-        </UI.View>
+        <Modal key={id} id={id} />
       ))}
     </UI.View>
   );
