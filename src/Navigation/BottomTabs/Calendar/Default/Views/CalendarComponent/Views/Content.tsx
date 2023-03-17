@@ -42,7 +42,7 @@ export const generateDaysGridForDate = (date: number) => {
 
   const daysByWeek: number[][] = [];
   let cursorDate = dDate.startOf('week');
-  console.log(cursorDate);
+
   while (
     cursorDate.get('month') <= month &&
     cursorDate.get('year') === dDate.get('year')
