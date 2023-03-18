@@ -17,7 +17,7 @@ export const useHeaderOptionsOverlayController = () => {
   const {switchToEditMode} = useTrainingConstructorStore();
   const {defaultHandleError} = useAppController();
 
-  const {requestConfirm} = useConfirmDialog(Modals.ConfirmDelete);
+  const {requestConfirm} = useConfirmDialog();
 
   const handlePressDelete = useRecoilCallback(
     ({get}) =>

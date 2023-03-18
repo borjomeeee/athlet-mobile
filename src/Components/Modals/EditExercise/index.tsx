@@ -14,6 +14,7 @@ import {
 import {useRecoilValue} from 'recoil';
 import {
   completionTypeStoreFamily,
+  currentExerciseStoreFamily,
   gymRepsStoreFamily,
   gymWeightStoreFamily,
   repsStoreFamily,
@@ -27,6 +28,7 @@ import {bottomSheet} from 'src/Lib/ShowablePortal/Variants/BottomSheet';
 
 export const EditExercise = bottomSheet<EditExerciseProps>(
   ({id, exercise}) => {
+    const currentExercise = useRecoilValue(currentExerciseStoreFamily(id));
     const selectedCompletionType = useRecoilValue(
       completionTypeStoreFamily(id),
     );
@@ -38,6 +40,9 @@ export const EditExercise = bottomSheet<EditExerciseProps>(
     }, [exercise, changeCurrentExercise]);
 
     React.useEffect(() => () => reset(), [reset]);
+    if (!currentExercise) {
+      return null;
+    }
 
     return (
       <View style={s(`container`)}>
@@ -97,7 +102,13 @@ function SelectReps({id}: SelectProps) {
   const selectedReps = useRecoilValue(repsStoreFamily(id));
   const {resetReps, handleChangeReps} = useEditExerciseController(id);
 
-  React.useEffect(() => () => resetReps(), [resetReps]);
+  React.useEffect(
+    () => () => {
+      resetReps();
+    },
+    [resetReps],
+  );
+
   return (
     <SelectRepsWheel
       defaultValue={selectedReps}

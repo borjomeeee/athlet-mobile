@@ -6,7 +6,7 @@ export const blankShowable =
   (props: ShowableComponentProps) => {
     React.useImperativeHandle(
       props.componentRef,
-      React.useCallback(() => ({close: () => undefined}), []),
+      React.useCallback(() => ({close: async () => undefined}), []),
     );
 
     return <Component {...props} />;
