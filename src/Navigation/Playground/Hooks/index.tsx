@@ -215,18 +215,22 @@ export const usePlayground = () => {
   }, [getCompletingElement, getCurrentElement]);
 
   const goNext = React.useCallback(
-    async (vibrate?: boolean) => {
+    async (index: number, vibrate?: boolean) => {
       const isFinished = getIsFinished();
       if (isFinished) {
+        return;
+      }
+
+      const currentIndex = getCurrentIndex();
+      const elements = getTrainingElements();
+
+      if (currentIndex !== index) {
         return;
       }
 
       if (vibrate) {
         Vibration.vibrate();
       }
-
-      const currentIndex = getCurrentIndex();
-      const elements = getTrainingElements();
 
       const completingElement = getCompletingElement();
       if (completingElement) {

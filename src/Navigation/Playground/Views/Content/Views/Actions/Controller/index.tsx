@@ -1,10 +1,16 @@
 import React from 'react';
 import {usePlayground} from 'src/Navigation/Playground/Hooks';
-import {usePlaygroundStore} from 'src/Navigation/Playground/Store';
+import {
+  currentIndexStore,
+  usePlaygroundStore,
+} from 'src/Navigation/Playground/Store';
+import {useGetRecoilState} from 'src/Utils/Recoil';
 
 export const useActionsController = () => {
   const {forceClose, goNext} = usePlayground();
   const {setIsPause} = usePlaygroundStore();
+
+  const getCurrentIndex = useGetRecoilState(currentIndexStore);
 
   const handlePressPause = React.useCallback(() => {
     setIsPause(true);
@@ -15,8 +21,8 @@ export const useActionsController = () => {
   }, [forceClose]);
 
   const handlePressSkip = React.useCallback(() => {
-    goNext();
-  }, [goNext]);
+    goNext(getCurrentIndex());
+  }, [goNext, getCurrentIndex]);
 
   return {handlePressFinish, handlePressPause, handlePressSkip};
 };

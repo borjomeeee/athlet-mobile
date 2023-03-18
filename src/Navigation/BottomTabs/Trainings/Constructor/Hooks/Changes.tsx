@@ -2,7 +2,6 @@ import React from 'react';
 import {useRecoilCallback} from 'recoil';
 import {useConfirmDialog} from 'src/Hooks/ConfirmDialog';
 import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
-import {Modals} from '../Const';
 import {
   constructorElementsSelector,
   initialTrainingAtom,
@@ -11,9 +10,7 @@ import {
 } from '../Store';
 
 export const useTrainingConstructorChangesController = () => {
-  const {requestConfirm: requestResetConfirm} = useConfirmDialog(
-    Modals.ConfirmResetChanges,
-  );
+  const {requestConfirm: requestResetConfirm} = useConfirmDialog();
 
   const hasTrainingChanged = useRecoilCallback(
     ({get}) =>

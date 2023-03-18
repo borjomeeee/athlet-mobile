@@ -66,7 +66,7 @@ export const CurrentElement = () => {
             key={`ExpirationTime(index=${currentIndex.toString()})`}
             duration={currentElement.duration}
             onChange={handleChangeRest}
-            onExpire={() => goNext(true)}
+            onExpire={() => goNext(currentIndex)}
           />
         )}
       </UI.View>
