@@ -3,7 +3,10 @@ import React from 'react';
 import {useRecoilValue} from 'recoil';
 import * as UI from 'src/Components';
 import {usePlayground} from 'src/Navigation/Playground/Hooks';
-import {currentElementStore} from 'src/Navigation/Playground/Store';
+import {
+  currentElementStore,
+  currentIndexStore,
+} from 'src/Navigation/Playground/Store';
 import {ElementType, ExerciseCompletionType} from 'src/Store/Models/Training';
 import {Colors} from 'src/Utils/Styles';
 import {useCurrentElementController} from '../CurrentElement/Controller';
@@ -11,6 +14,8 @@ import {ExpirationTime} from '../ExpirationTime';
 
 export const ExerciseBody = () => {
   const currentElement = useRecoilValue(currentElementStore);
+  const currentIndex = useRecoilValue(currentIndexStore);
+
   const {goNext} = usePlayground();
   const {handleChangeReps, handleChangeTime} = useCurrentElementController();
 
@@ -40,7 +45,7 @@ export const ExerciseBody = () => {
         <ExpirationTime
           key={Date.now() + exercise.time}
           duration={exercise.time}
-          onExpire={() => goNext(true)}
+          onExpire={() => goNext(currentIndex)}
           onChange={handleChangeTime}
         />
       )}

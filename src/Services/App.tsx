@@ -10,22 +10,18 @@ import {
 } from 'src/Api/Exceptions';
 import {ApiResponse} from 'src/Api/Responses';
 import {LocalStorage} from 'src/Lib/LocalStorage';
-import {useModal} from 'src/Lib/ModalRouter';
 import {JobAlreadyStarted} from 'src/Utils/Exceptions';
 import {useExercisesService} from './Exercises';
 import {useTrainingsService} from './Trainings';
 import {useTrainingsEventsService} from './TrainingsEvents';
+import {bottomSheetsShowablePortal} from 'src/Lib/ShowablePortal/Portal';
 
 export const useAppController = () => {
   const navigation = useNavigation();
-  const {checkAuth} = useAuthService();
 
   const {getExercises} = useExercisesService();
   const {getMyTrainings} = useTrainingsService();
   const {getMyTrainingsEvents} = useTrainingsEventsService();
-
-  const {show: showBadNetworkConnection} = useModal('bad-network-connection');
-  const {show: showBadApiResponse} = useModal('bad-api-response');
 
   const handleAuthorizationError = React.useCallback(() => {
     LocalStorage.deleteJwt();
@@ -37,18 +33,31 @@ export const useAppController = () => {
       if (error instanceof JobAlreadyStarted) {
         return;
       } else if (error instanceof BadNetworkConnectionError) {
-        showBadNetworkConnection(UI.BadNetworkConnection, {});
+        bottomSheetsShowablePortal.current?.show(
+          'bad-network-connection',
+          UI.BadNetworkConnection,
+          {},
+        );
       } else if (error instanceof BadApiResponseError) {
         if (error.reason === ApiResponse.AUTHORIZATION_ERROR) {
           handleAuthorizationError();
           return;
         }
-        showBadApiResponse(UI.BadApiResponse, {});
+
+        bottomSheetsShowablePortal.current?.show(
+          'bad-api-response',
+          UI.BadApiResponse,
+          {},
+        );
       } else {
-        showBadApiResponse(UI.BadApiResponse, {});
+        bottomSheetsShowablePortal.current?.show(
+          'bad-api-response',
+          UI.BadApiResponse,
+          {},
+        );
       }
     },
-    [showBadNetworkConnection, showBadApiResponse, handleAuthorizationError],
+    [handleAuthorizationError],
   );
 
   const init = React.useCallback(async () => {

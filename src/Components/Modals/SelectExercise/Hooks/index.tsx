@@ -1,5 +1,5 @@
 import React from 'react';
-import {useModal} from 'src/Lib/ModalRouter';
+import {bottomSheetsShowablePortal} from 'src/Lib/ShowablePortal/Portal';
 import {useAppController} from 'src/Services/App';
 import {useExercisesService} from 'src/Services/Exercises';
 import {CreateExercise} from '../../CreateExercise';
@@ -11,23 +11,26 @@ export const useSelectExerciseController = (id: string) => {
 
   const {defaultHandleError} = useAppController();
   const {addExercise} = useExercisesService();
-  const {show: showCreateExercise} = useModal(Modals.CreateExercise);
 
   const reset = React.useCallback(() => {
     setSearchValue('');
   }, [setSearchValue]);
 
   const handlePressCreateExercise = React.useCallback(() => {
-    showCreateExercise(CreateExercise, {
-      onCreate: async name => {
-        const [_, err] = await addExercise(name);
+    bottomSheetsShowablePortal.current?.show(
+      Modals.CreateExercise,
+      CreateExercise,
+      {
+        onCreate: async name => {
+          const [_, err] = await addExercise(name);
 
-        if (err) {
-          defaultHandleError(err);
-        }
+          if (err) {
+            defaultHandleError(err);
+          }
+        },
       },
-    });
-  }, [showCreateExercise, addExercise, defaultHandleError]);
+    );
+  }, [addExercise, defaultHandleError]);
 
   return {
     handleChangeSearchValue: setSearchValue,

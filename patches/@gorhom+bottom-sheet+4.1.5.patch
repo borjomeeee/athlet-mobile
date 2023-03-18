@@ -1,0 +1,14 @@
+diff --git a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
+index 0f5ac23..a9c10cd 100644
+--- a/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
++++ b/node_modules/@gorhom/bottom-sheet/src/components/bottomSheet/BottomSheet.tsx
+@@ -657,7 +657,8 @@ const BottomSheetComponent = forwardRef<BottomSheet, BottomSheetProps>(
+           position === animatedPosition.value ||
+           position === undefined ||
+           (animatedAnimationState.value === ANIMATION_STATE.RUNNING &&
+-            position === animatedNextPosition.value)
++            position === animatedNextPosition.value) || 
++            animatedAnimationSource.value === ANIMATION_SOURCE.USER
+         ) {
+           return;
+         }

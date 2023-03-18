@@ -1,10 +1,10 @@
 import React from 'react';
 import {useRecoilValue} from 'recoil';
+import {useShowableInstance} from 'src/Lib/ShowablePortal/Hooks/useShowableInstance';
+import {bottomSheetsShowablePortal} from 'src/Lib/ShowablePortal/Portal';
 
-import {useModal, useModalProps} from 'src/Lib/ModalRouter';
 import {
   ElementType,
-  Exercise,
   ExerciseCompletionType,
   ExerciseElement,
 } from 'src/Store/Models/Training';
@@ -35,7 +35,6 @@ export const useEditExerciseController = (id: string) => {
     resetTime,
   } = useEditExerciseStore(id);
 
-  const {show} = useModal(`${id} -> editExercise__selectExercise`);
   const changeCurrentExercise = React.useCallback(
     (exercise: ExerciseElement) => {
       setCurrentExercise(exercise.baseExercise);
@@ -65,13 +64,17 @@ export const useEditExerciseController = (id: string) => {
   );
 
   const handlePressEditExercise = React.useCallback(() => {
-    show(SelectExercise, {
-      onSelect: exercise => {
-        setCurrentExercise(exercise);
-        setCompletionType(ExerciseCompletionType.REPS);
+    bottomSheetsShowablePortal.current?.show(
+      `${id} -> editExercise__selectExercise`,
+      SelectExercise,
+      {
+        onSelect: exercise => {
+          setCurrentExercise(exercise);
+          setCompletionType(ExerciseCompletionType.REPS);
+        },
       },
-    });
-  }, [show, setCurrentExercise, setCompletionType]);
+    );
+  }, [id, setCurrentExercise, setCompletionType]);
 
   const reset = React.useCallback(() => {
     resetCurrentExercise();
@@ -108,11 +111,10 @@ export const useEditExerciseController = (id: string) => {
 };
 
 export const useEditExerciseSubmitController = (id: string) => {
-  const {hide} = useModal(id);
+  const {close, props} = useShowableInstance<EditExerciseProps>();
 
   const currentExercise = useRecoilValue(currentExerciseStoreFamily(id));
   const selectedCompletionType = useRecoilValue(completionTypeStoreFamily(id));
-  const {props} = useModalProps<EditExerciseProps>(id);
 
   const selectedReps = useRecoilValue(repsStoreFamily(id));
   const selectedTime = useRecoilValue(timeStoreFamily(id));
@@ -155,7 +157,7 @@ export const useEditExerciseSubmitController = (id: string) => {
         break;
     }
 
-    hide();
+    close();
   }, [
     props,
     currentExercise,
@@ -164,7 +166,7 @@ export const useEditExerciseSubmitController = (id: string) => {
     selectedTime,
     selectedGymReps,
     selectedGymWeight,
-    hide,
+    close,
   ]);
 
   return {handleSubmit};

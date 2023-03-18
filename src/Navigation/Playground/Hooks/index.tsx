@@ -14,44 +14,30 @@ import {
   trainingStore,
   usePlaygroundStore,
 } from '../Store';
-import {useRecoilCallback, useRecoilValue} from 'recoil';
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
-import {AppPaths, ModalsPaths} from 'src/Navigation/Paths';
+import {useRecoilValue} from 'recoil';
+import {useNavigation, useRoute} from '@react-navigation/core';
 import {useTrainingService} from 'src/Services/Trainings';
 import {useAppController} from 'src/Services/App';
-import {StackActions} from '@react-navigation/native';
 import {useGetRecoilState} from 'src/Utils/Recoil';
-import {
-  ElementCompletionTypeScheme,
-  ElementType,
-  ExerciseCompletionType,
-} from 'src/Store/Models/Training';
+import {ElementType, ExerciseCompletionType} from 'src/Store/Models/Training';
 import {useConfirmDialog} from 'src/Hooks/ConfirmDialog';
 import {Modals} from '../Const';
-import {useModal} from 'src/Lib/ModalRouter';
 import {SuccessCompleteTraining} from '../Modals/SuccessCompleteTraining';
 import {useTrainingsEventsService} from 'src/Services/TrainingsEvents';
-import {v4 as uuidv4} from 'uuid';
 import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
 import {useTraining} from 'src/Store/Trainings';
 import {ExerciseUtils} from 'src/Store/ModelsUtils/Exercise';
-import {TimeUtils} from 'src/Store/ModelsUtils/Time';
 import dayjs from 'dayjs';
 import {Vibration} from 'react-native';
 import {updateTrainingNotification} from '../Utils';
-import {AccountScreenNavigationProps} from 'src/Navigation/BottomTabs/Account/Types';
 import {PlaygroundScreenNavigationProps} from 'src/Navigation/Types';
+import {bottomSheetsShowablePortal} from 'src/Lib/ShowablePortal/Portal';
 
 export const usePlayground = () => {
   const {defaultHandleError} = useAppController();
   const {saveTrainingEvent} = useTrainingsEventsService();
-  const {requestConfirm: requestForceCloseConfirm} = useConfirmDialog(
-    Modals.ConfirmForceClose,
-  );
 
-  const {show: showSuccessCompleteTraining} = useModal(
-    Modals.SuccessCompleteTraining,
-  );
+  const {requestConfirm: requestForceCloseConfirm} = useConfirmDialog();
 
   const getIsFinished = useGetRecoilState(isFinishedStore);
   const getTraining = useGetRecoilState(trainingStore);
@@ -77,7 +63,6 @@ export const usePlayground = () => {
   const navigation = useNavigation();
 
   const exit = React.useCallback(() => {
-    console.log('exit');
     if (navigation.canGoBack()) {
       navigation.goBack();
     }
@@ -230,18 +215,22 @@ export const usePlayground = () => {
   }, [getCompletingElement, getCurrentElement]);
 
   const goNext = React.useCallback(
-    async (vibrate?: boolean) => {
+    async (index: number, vibrate?: boolean) => {
       const isFinished = getIsFinished();
       if (isFinished) {
+        return;
+      }
+
+      const currentIndex = getCurrentIndex();
+      const elements = getTrainingElements();
+
+      if (currentIndex !== index) {
         return;
       }
 
       if (vibrate) {
         Vibration.vibrate();
       }
-
-      const currentIndex = getCurrentIndex();
-      const elements = getTrainingElements();
 
       const completingElement = getCompletingElement();
       if (completingElement) {
@@ -254,9 +243,12 @@ export const usePlayground = () => {
 
       if (currentIndex === elements.length - 1) {
         const id = await saveAndClose();
-        showSuccessCompleteTraining(SuccessCompleteTraining, {
-          trainingEventId: id!,
-        });
+
+        bottomSheetsShowablePortal.current?.show(
+          Modals.SuccessCompleteTraining,
+          SuccessCompleteTraining,
+          {trainingEventId: id!},
+        );
       } else {
         setCurrentIndex(i => ++i);
       }
@@ -268,7 +260,6 @@ export const usePlayground = () => {
       getCompletingElement,
       setCompletedElements,
       saveAndClose,
-      showSuccessCompleteTraining,
       resetCompletingElement,
       getIsFinished,
     ],

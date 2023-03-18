@@ -1,35 +1,40 @@
 import React from 'react';
-import {useModal} from 'src/Lib/ModalRouter';
 import * as UI from 'src/Components';
 import {ExerciseUtils} from 'src/Store/ModelsUtils/Exercise';
 import {useTrainingConstructorHistory} from '../../Store';
 import {Modals} from '../../Const';
+import {bottomSheetsShowablePortal} from 'src/Lib/ShowablePortal/Portal';
 
 export const useAddElementBottomSheetController = () => {
   const {addExercise, addSet} = useTrainingConstructorHistory();
 
-  const {hide: hideAddElement} = useModal(Modals.AddElement);
-  const {show: showSelectExercise} = useModal(Modals.SelectExercise);
-  const {show: showEditExercise} = useModal(Modals.EditExercise);
-
   const handlePressAddExercise = React.useCallback(() => {
-    hideAddElement();
-    showSelectExercise(UI.SelectExercise, {
-      onSelect: exercise => {
-        showEditExercise(UI.EditExercise, {
-          exercise: ExerciseUtils.getExerciseElementFromBase(exercise),
-          onEdit: editedExercise => {
-            addExercise(editedExercise);
-          },
-        });
+    bottomSheetsShowablePortal.current?.close(Modals.AddElement);
+
+    bottomSheetsShowablePortal.current?.show(
+      Modals.SelectExercise,
+      UI.SelectExercise,
+      {
+        onSelect: exercise => {
+          bottomSheetsShowablePortal.current?.show(
+            Modals.EditExercise,
+            UI.EditExercise,
+            {
+              exercise: ExerciseUtils.getExerciseElementFromBase(exercise),
+              onEdit: editedExercise => {
+                addExercise(editedExercise);
+              },
+            },
+          );
+        },
       },
-    });
-  }, [hideAddElement, showSelectExercise, showEditExercise, addExercise]);
+    );
+  }, [addExercise]);
 
   const handlePressAddSet = React.useCallback(() => {
-    hideAddElement();
+    bottomSheetsShowablePortal.current?.close(Modals.AddElement);
     addSet();
-  }, [hideAddElement, addSet]);
+  }, [addSet]);
 
   return {handlePressAddExercise, handlePressAddSet};
 };

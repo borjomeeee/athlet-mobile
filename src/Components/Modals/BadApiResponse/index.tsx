@@ -1,44 +1,20 @@
 import React from 'react';
 
 import s from '@borjomeeee/rn-styles';
-import {
-  BottomSheetModal,
-  HSpacer,
-  MultilineText,
-  Text,
-  View,
-} from '../../Common';
+import {HSpacer, MultilineText, Text, View} from '../../Common';
 
 import ErrorIcon from 'src/Assets/Svg/ErrorBig';
-import {
-  useBottomSheetDynamicSnapPoints,
-  BottomSheetView,
-} from '@gorhom/bottom-sheet';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+
 import {Button} from '../../Pressable';
-import {useModal} from 'src/Lib/ModalRouter';
+import {bottomSheet} from 'src/Lib/ShowablePortal/Variants/BottomSheet';
+import {useShowable} from 'src/Lib/ShowablePortal/Hooks/useShowable';
 
-interface BadApiResponseProps {
-  id: string;
-}
-export const BadApiResponse: React.FC<BadApiResponseProps> = ({id}) => {
-  const {hide} = useModal(id);
+export const BadApiResponse = bottomSheet(
+  ({id}) => {
+    const {close} = useShowable(id);
 
-  const {bottom} = useSafeAreaInsets();
-  const {
-    animatedHandleHeight,
-    animatedSnapPoints,
-    animatedContentHeight,
-    handleContentLayout,
-  } = useBottomSheetDynamicSnapPoints(['CONTENT_HEIGHT']);
-
-  return (
-    <BottomSheetModal
-      id={id}
-      snapPoints={animatedSnapPoints}
-      handleHeight={animatedHandleHeight}
-      contentHeight={animatedContentHeight}>
-      <BottomSheetView style={s(`container`)} onLayout={handleContentLayout}>
+    return (
+      <View style={s(`container`)}>
         <View style={s(`aic jcc`)}>
           <ErrorIcon />
           <HSpacer size={20} />
@@ -51,9 +27,9 @@ export const BadApiResponse: React.FC<BadApiResponseProps> = ({id}) => {
           </Text>
           <HSpacer size={20} />
         </View>
-        <Button label="Хорошо" style={s(`bgc:red`)} onPress={hide} />
-        <HSpacer size={20 + bottom} />
-      </BottomSheetView>
-    </BottomSheetModal>
-  );
-};
+        <Button label="Хорошо" style={s(`bgc:red`)} onPress={close} />
+      </View>
+    );
+  },
+  {snapPoints: ['CONTENT_HEIGHT'], dynamic: true},
+);

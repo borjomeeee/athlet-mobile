@@ -1,41 +1,19 @@
 import React from 'react';
 
-import * as UI from 'src/Components';
-import {
-  BottomSheetView,
-  useBottomSheetDynamicSnapPoints,
-} from '@gorhom/bottom-sheet';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {SelectableItem} from './Views/SelectableItem';
 
 import SetIcon from 'src/Assets/Svg/Set';
 import GymIcon from 'src/Assets/Svg/Gym';
 import {useAddElementBottomSheetController} from './Controller';
+import {bottomSheet} from 'src/Lib/ShowablePortal/Variants/BottomSheet';
 
-interface AddElementBottomSheetProps {
-  id: string;
-}
-export const AddElementBottomSheet: React.FC<AddElementBottomSheetProps> = ({
-  id,
-}) => {
-  const {bottom} = useSafeAreaInsets();
-  const {handlePressAddExercise, handlePressAddSet} =
-    useAddElementBottomSheetController();
+export const AddElementBottomSheet = bottomSheet(
+  _ => {
+    const {handlePressAddExercise, handlePressAddSet} =
+      useAddElementBottomSheetController();
 
-  const {
-    animatedHandleHeight,
-    animatedSnapPoints,
-    animatedContentHeight,
-    handleContentLayout,
-  } = useBottomSheetDynamicSnapPoints(['CONTENT_HEIGHT']);
-
-  return (
-    <UI.BottomSheetModal
-      id={id}
-      snapPoints={animatedSnapPoints}
-      handleHeight={animatedHandleHeight}
-      contentHeight={animatedContentHeight}>
-      <BottomSheetView onLayout={handleContentLayout}>
+    return (
+      <>
         <SelectableItem
           LeftIcon={SetIcon}
           label="Добавить сет"
@@ -46,9 +24,11 @@ export const AddElementBottomSheet: React.FC<AddElementBottomSheetProps> = ({
           label="Добавить упражнение"
           onPress={handlePressAddExercise}
         />
-
-        <UI.HSpacer size={20 + bottom} />
-      </BottomSheetView>
-    </UI.BottomSheetModal>
-  );
-};
+      </>
+    );
+  },
+  {
+    snapPoints: ['CONTENT_HEIGHT'],
+    dynamic: true,
+  },
+);

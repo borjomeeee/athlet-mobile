@@ -7,7 +7,7 @@ configureStyles();
 import dayjs from 'dayjs';
 
 import React from 'react';
-import {LogBox} from 'react-native';
+import {LogBox, View} from 'react-native';
 
 import {RecoilRoot} from 'recoil';
 import {NavigationContainer} from '@react-navigation/native';
@@ -17,7 +17,6 @@ import {Config} from 'src/Config';
 import {FakeApiFabric} from 'fakeapi';
 import {Navigation} from 'src/Navigation';
 
-import {ModalRouter} from 'src/Lib/ModalRouter';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import {OverlayProvider} from 'src/Lib/Overlay';
 import {DebugObserver} from 'src/Utils/Recoil';
@@ -25,11 +24,17 @@ import {DebugObserver} from 'src/Utils/Recoil';
 import notifee, {AndroidImportance} from '@notifee/react-native';
 import localeRu from 'dayjs/locale/ru';
 import duration from 'dayjs/plugin/duration';
-import {TopMessageProvider} from 'src/Lib/TopMessage';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import SplashScreen from 'react-native-splash-screen';
 
 import s from '@borjomeeee/rn-styles';
+import {
+  bottomSheetsShowablePortal,
+  confirmDialogShowablePortal,
+  notificationsShowablePortal,
+  ShowablePortal,
+} from 'src/Lib/ShowablePortal/Portal';
+import {ShowablePortalId} from 'src/Lib/ShowablePortal/Const';
 dayjs.locale(localeRu);
 dayjs.extend(duration);
 
@@ -40,12 +45,24 @@ LogBox.ignoreLogs([
 const AppContent = React.memo(() => {
   return (
     <GestureHandlerRootView style={s(`fill`)}>
-      <TopMessageProvider>
-        <OverlayProvider>
-          <Navigation />
-          <ModalRouter />
-        </OverlayProvider>
-      </TopMessageProvider>
+      <OverlayProvider>
+        <Navigation />
+
+        <ShowablePortal
+          ref={bottomSheetsShowablePortal}
+          id={ShowablePortalId.BOTTOM_SHEETS}
+        />
+
+        <ShowablePortal
+          ref={notificationsShowablePortal}
+          id={ShowablePortalId.NOTIFICATIONS}
+        />
+
+        <ShowablePortal
+          ref={confirmDialogShowablePortal}
+          id={ShowablePortalId.CONFIRM_DIALOG}
+        />
+      </OverlayProvider>
     </GestureHandlerRootView>
   );
 });

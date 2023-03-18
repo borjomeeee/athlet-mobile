@@ -1,10 +1,11 @@
 import React from 'react';
 
-import {useModal, useModalProps} from 'src/Lib/ModalRouter';
 import {OverlayRef} from 'src/Lib/Overlay/Types';
+import {useShowableInstance} from 'src/Lib/ShowablePortal/Hooks/useShowableInstance';
 import {useAppController} from 'src/Services/App';
 import {useExercisesService} from 'src/Services/Exercises';
 import {Exercise} from 'src/Store/Models/Training';
+import {SelectExerciseProps} from '../../Types';
 
 export const useExerciseController = (modalId: string, exercise: Exercise) => {
   const overlayRef = React.useRef<OverlayRef>(null);
@@ -12,14 +13,12 @@ export const useExerciseController = (modalId: string, exercise: Exercise) => {
   const {defaultHandleError} = useAppController();
   const {removeExercise} = useExercisesService();
 
-  const {hide} = useModal(modalId);
-  const {props} =
-    useModalProps<{onSelect: (exercise: Exercise) => void}>(modalId);
+  const {close, props} = useShowableInstance<SelectExerciseProps>();
 
   const handlePress = React.useCallback(() => {
     props.onSelect?.(exercise);
-    hide();
-  }, [props, hide, exercise]);
+    close();
+  }, [props, close, exercise]);
 
   const handleLongPress = React.useCallback(() => {
     overlayRef.current?.show();
