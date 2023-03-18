@@ -1,5 +1,4 @@
 import React from 'react';
-import {useModal} from 'src/Lib/ModalRouter';
 import {ExerciseUtils} from 'src/Store/ModelsUtils/Exercise';
 import * as UI from 'src/Components';
 import {
@@ -7,41 +6,43 @@ import {
   useTrainingConstructorHistory,
 } from '../../Store';
 import {Modals} from '../../Const';
+import {bottomSheetsShowablePortal} from 'src/Lib/ShowablePortal/Portal';
 
 export const useSetFooterController = (id: string) => {
   const {set} = useTrainingConstructorSet(id);
   const {addExerciseToSet, replaceSet} = useTrainingConstructorHistory();
 
-  const {show: showSelectExercise} = useModal(Modals.SelectExercise);
-  const {show: showEditExercise} = useModal(Modals.EditExercise);
-
-  const handlePressAddExercise = React.useCallback(
-    () =>
-      showSelectExercise(UI.SelectExercise, {
+  const handlePressAddExercise = React.useCallback(() => {
+    bottomSheetsShowablePortal.current?.show(
+      Modals.SelectExercise,
+      UI.SelectExercise,
+      {
         onSelect: exercise => {
-          showEditExercise(UI.EditExercise, {
-            exercise: ExerciseUtils.getExerciseElementFromBase(exercise),
-            onEdit: editedExercise => {
-              addExerciseToSet(id, editedExercise);
+          bottomSheetsShowablePortal.current?.show(
+            Modals.EditExercise,
+            UI.EditExercise,
+            {
+              exercise: ExerciseUtils.getExerciseElementFromBase(exercise),
+              onEdit: editedExercise => {
+                addExerciseToSet(id, editedExercise);
+              },
             },
-          });
+          );
         },
-      }),
-    [showSelectExercise, showEditExercise, addExerciseToSet, id],
-  );
-
-  const {show: showEditRest} = useModal(Modals.EditRest);
+      },
+    );
+  }, [addExerciseToSet, id]);
 
   const handlePressEditRest = React.useCallback(() => {
     if (!set) {
       return;
     }
 
-    showEditRest(UI.SelectRest, {
+    bottomSheetsShowablePortal.current?.show(Modals.EditRest, UI.SelectRest, {
       onSelect: rest => replaceSet(id, {...set, restAfterComplete: rest}),
       defaultRest: set.restAfterComplete,
     });
-  }, [showEditRest, set, id, replaceSet]);
+  }, [set, id, replaceSet]);
 
   return {handlePressAddExercise, handlePressEditRest};
 };

@@ -1,11 +1,7 @@
 import s from '@borjomeeee/rn-styles';
-import {
-  BottomSheetView,
-  useBottomSheetDynamicSnapPoints,
-} from '@gorhom/bottom-sheet';
+
 import React from 'react';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {BottomSheetModal, HSpacer, View} from 'src/Components/Common';
+import {HSpacer, View} from 'src/Components/Common';
 import {ExerciseCompletionType} from 'src/Store/Models/Training';
 import {useEditExerciseController} from './Hooks';
 import {CompletionType} from './Views/CompletionType';
@@ -18,7 +14,6 @@ import {
 import {useRecoilValue} from 'recoil';
 import {
   completionTypeStoreFamily,
-  currentExerciseStoreFamily,
   gymRepsStoreFamily,
   gymWeightStoreFamily,
   repsStoreFamily,
@@ -28,39 +23,24 @@ import Animated, {SlideInRight, SlideOutLeft} from 'react-native-reanimated';
 import {EditExerciseProps} from './Types';
 import {Submit} from './Views/Submit';
 import {Title} from './Views/Title';
+import {bottomSheet} from 'src/Lib/ShowablePortal/Variants/BottomSheet';
 
-export const EditExercise: React.FC<EditExerciseProps> = ({id, exercise}) => {
-  const currentExercise = useRecoilValue(currentExerciseStoreFamily(id));
-  const selectedCompletionType = useRecoilValue(completionTypeStoreFamily(id));
+export const EditExercise = bottomSheet<EditExerciseProps>(
+  ({id, exercise}) => {
+    const selectedCompletionType = useRecoilValue(
+      completionTypeStoreFamily(id),
+    );
 
-  const {changeCurrentExercise, reset} = useEditExerciseController(id);
+    const {changeCurrentExercise, reset} = useEditExerciseController(id);
 
-  const {bottom} = useSafeAreaInsets();
+    React.useEffect(() => {
+      changeCurrentExercise(exercise);
+    }, [exercise, changeCurrentExercise]);
 
-  React.useEffect(() => {
-    changeCurrentExercise(exercise);
-  }, [exercise, changeCurrentExercise]);
+    React.useEffect(() => () => reset(), [reset]);
 
-  React.useEffect(() => () => reset(), [reset]);
-
-  const {
-    animatedHandleHeight,
-    animatedSnapPoints,
-    animatedContentHeight,
-    handleContentLayout,
-  } = useBottomSheetDynamicSnapPoints(['CONTENT_HEIGHT']);
-
-  if (!currentExercise) {
-    return null;
-  }
-
-  return (
-    <BottomSheetModal
-      id={id}
-      snapPoints={animatedSnapPoints}
-      handleHeight={animatedHandleHeight}
-      contentHeight={animatedContentHeight}>
-      <BottomSheetView style={s(`container`)} onLayout={handleContentLayout}>
+    return (
+      <View style={s(`container`)}>
         <HSpacer size={10} />
         <CompletionType id={id} />
 
@@ -91,11 +71,11 @@ export const EditExercise: React.FC<EditExerciseProps> = ({id, exercise}) => {
         <Title id={id} />
         <HSpacer size={15} />
         <Submit id={id} />
-        <HSpacer size={bottom + 20} />
-      </BottomSheetView>
-    </BottomSheetModal>
-  );
-};
+      </View>
+    );
+  },
+  {snapPoints: ['CONTENT_HEIGHT'], dynamic: true},
+);
 
 interface SelectProps {
   id: string;

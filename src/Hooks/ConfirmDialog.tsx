@@ -2,26 +2,30 @@ import React from 'react';
 
 import * as UI from 'src/Components';
 import {ConfirmDialogProps} from 'src/Components';
-import {useModal} from 'src/Lib/ModalRouter';
+import {confirmDialogShowablePortal} from 'src/Lib/ShowablePortal/Portal';
 
-export const useConfirmDialog = (id: string) => {
-  const {show} = useModal(id);
-
+export const useConfirmDialog = () => {
   const requestConfirm = React.useCallback(
-    (props: Omit<ConfirmDialogProps, 'id' | 'onAccept' | 'onCancel'>) =>
+    (props: Omit<ConfirmDialogProps, 'onAccept' | 'onCancel'>) =>
       new Promise<boolean>(res => {
-        show(UI.ConfirmDialog, {
-          ...props,
+        confirmDialogShowablePortal.current?.show(
+          'confirm-dialog',
+          UI.ConfirmDialog,
+          {
+            ...props,
 
-          onAccept: () => {
-            res(true);
+            onAccept: () => {
+              confirmDialogShowablePortal.current?.close('confirm-dialog');
+              res(true);
+            },
+            onCancel: () => {
+              confirmDialogShowablePortal.current?.close('confirm-dialog');
+              res(false);
+            },
           },
-          onCancel: () => {
-            res(false);
-          },
-        });
+        );
       }),
-    [show],
+    [],
   );
 
   return {requestConfirm};

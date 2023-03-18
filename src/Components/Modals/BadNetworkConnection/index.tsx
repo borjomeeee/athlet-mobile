@@ -1,45 +1,20 @@
 import React from 'react';
 
 import s from '@borjomeeee/rn-styles';
-import {
-  BottomSheetModal,
-  HSpacer,
-  MultilineText,
-  Text,
-  View,
-} from '../../Common';
+import {HSpacer, MultilineText, Text, View} from '../../Common';
 
 import NetworkIcon from 'src/Assets/Svg/NetworkBig';
-import {
-  useBottomSheetDynamicSnapPoints,
-  BottomSheetView,
-} from '@gorhom/bottom-sheet';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+
 import {Button} from '../../Pressable';
-import {useModal} from 'src/Lib/ModalRouter';
+import {useShowable} from 'src/Lib/ShowablePortal/Hooks/useShowable';
+import {bottomSheet} from 'src/Lib/ShowablePortal/Variants/BottomSheet';
 
-interface BadNetworkConnectionProps {
-  id: string;
-}
-export const BadNetworkConnection: React.FC<BadNetworkConnectionProps> = ({
-  id,
-}) => {
-  const {hide} = useModal(id);
-  const {bottom} = useSafeAreaInsets();
-  const {
-    animatedHandleHeight,
-    animatedSnapPoints,
-    animatedContentHeight,
-    handleContentLayout,
-  } = useBottomSheetDynamicSnapPoints(['CONTENT_HEIGHT']);
+export const BadNetworkConnection = bottomSheet(
+  ({id}) => {
+    const {close} = useShowable(id);
 
-  return (
-    <BottomSheetModal
-      id={id}
-      snapPoints={animatedSnapPoints}
-      handleHeight={animatedHandleHeight}
-      contentHeight={animatedContentHeight}>
-      <BottomSheetView style={s(`container`)} onLayout={handleContentLayout}>
+    return (
+      <View style={s(`container`)}>
         <View style={s(`aic jcc`)}>
           <NetworkIcon />
           <HSpacer size={20} />
@@ -53,9 +28,9 @@ export const BadNetworkConnection: React.FC<BadNetworkConnectionProps> = ({
           </Text>
           <HSpacer size={20} />
         </View>
-        <Button label="Хорошо" onPress={hide} />
-        <HSpacer size={20 + bottom} />
-      </BottomSheetView>
-    </BottomSheetModal>
-  );
-};
+        <Button label="Хорошо" onPress={close} />
+      </View>
+    );
+  },
+  {snapPoints: ['CONTENT_HEIGHT'], dynamic: true},
+);

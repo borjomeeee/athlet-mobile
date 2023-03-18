@@ -1,6 +1,6 @@
 import React from 'react';
 import * as UI from 'src/Components';
-import {useModal} from 'src/Lib/ModalRouter';
+import {bottomSheetsShowablePortal} from 'src/Lib/ShowablePortal/Portal';
 import {TrainingUtils} from 'src/Store/ModelsUtils/Training';
 import {Modals} from '../../Const';
 import {
@@ -11,9 +11,6 @@ import {
 export const useTrainingExerciseController = (id: string) => {
   const {removeExercise, replaceExercise} = useTrainingConstructorHistory();
 
-  const {show: showEditRest} = useModal(Modals.EditRest);
-  const {show: showEditExercise} = useModal(Modals.EditExercise);
-
   const {exercise} = useTrainingConstructorExercise(id);
 
   const handlePress = React.useCallback(() => {
@@ -21,23 +18,27 @@ export const useTrainingExerciseController = (id: string) => {
       return;
     }
 
-    showEditExercise(UI.EditExercise, {
-      onEdit: newExercise => {
-        replaceExercise(id, {
-          ...newExercise,
-          restAfterComplete: exercise.restAfterComplete,
-        });
+    bottomSheetsShowablePortal.current?.show(
+      Modals.EditExercise,
+      UI.EditExercise,
+      {
+        onEdit: newExercise => {
+          replaceExercise(id, {
+            ...newExercise,
+            restAfterComplete: exercise.restAfterComplete,
+          });
+        },
+        exercise: exercise,
       },
-      exercise: exercise,
-    });
-  }, [showEditExercise, id, exercise, replaceExercise]);
+    );
+  }, [id, exercise, replaceExercise]);
 
   const handlePressRest = React.useCallback(() => {
     if (!exercise) {
       return;
     }
 
-    showEditRest(UI.SelectRest, {
+    bottomSheetsShowablePortal.current?.show(Modals.EditRest, UI.SelectRest, {
       onSelect: rest =>
         replaceExercise(id, {
           ...exercise,
@@ -45,7 +46,7 @@ export const useTrainingExerciseController = (id: string) => {
         }),
       defaultRest: exercise.restAfterComplete,
     });
-  }, [showEditRest, exercise, id, replaceExercise]);
+  }, [exercise, id, replaceExercise]);
 
   const handlePressRemove = React.useCallback(() => {
     removeExercise(id);

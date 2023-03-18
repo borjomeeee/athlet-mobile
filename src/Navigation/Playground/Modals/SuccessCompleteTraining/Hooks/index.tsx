@@ -1,13 +1,12 @@
 import {useNavigation} from '@react-navigation/core';
 import React from 'react';
-import {useModal, useModalProps} from 'src/Lib/ModalRouter';
+import {useShowableInstance} from 'src/Lib/ShowablePortal/Hooks/useShowableInstance';
 import {BottomTabAccountPaths, BottomTabPaths} from 'src/Navigation/Paths';
+import {SuccessCompleteTrainingProps} from '../Types';
 
-export const useSuccessCompleteTrainingController = (id: string) => {
+export const useSuccessCompleteTrainingController = () => {
   const navigation = useNavigation();
-
-  const {hide} = useModal(id);
-  const {props} = useModalProps<{trainingEventId: string}>(id);
+  const {close, props} = useShowableInstance<SuccessCompleteTrainingProps>();
 
   const handlePressShowStatistic = React.useCallback(() => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -18,8 +17,8 @@ export const useSuccessCompleteTrainingController = (id: string) => {
       params: {id: props.trainingEventId},
     });
 
-    hide();
-  }, [hide, props, navigation]);
+    close();
+  }, [close, props, navigation]);
 
   return {handlePressShowStatistic};
 };
