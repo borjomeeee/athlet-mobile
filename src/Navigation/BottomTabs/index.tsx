@@ -12,14 +12,16 @@ import {BottomTabPaths} from '../Paths';
 import {tabNavigationOptions} from './navigationOptions';
 import {BottomTabs} from 'src/Components';
 import {BottomTabsParamList} from './Types';
+import {CalendarStack} from './Calendar';
 
 const Tab = createBottomTabNavigator<BottomTabsParamList>();
 export const BottomTabsNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={tabNavigationOptions}
-      initialRouteName={BottomTabPaths.Trainings}
+      initialRouteName={BottomTabPaths.Calendar}
       tabBar={tabBar}>
+      <Tab.Screen name={BottomTabPaths.Calendar} component={CalendarStack} />
       <Tab.Screen name={BottomTabPaths.Trainings} component={TrainingsStack} />
       <Tab.Screen name={BottomTabPaths.Account} component={AccountStack} />
     </Tab.Navigator>

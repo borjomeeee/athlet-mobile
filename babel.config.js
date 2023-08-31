@@ -1,5 +1,5 @@
 module.exports = {
-  presets: ['module:metro-react-native-babel-preset'],
+  presets: ['babel-preset-expo'],
   plugins: [
     [
       'module-resolver',
@@ -13,6 +13,7 @@ module.exports = {
     ],
     '@babel/plugin-proposal-numeric-separator',
     '@babel/plugin-syntax-dynamic-import',
+    '@babel/plugin-proposal-export-namespace-from',
     'react-native-reanimated/plugin',
   ],
 };

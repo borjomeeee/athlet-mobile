@@ -53,19 +53,25 @@ export const EditExercise = bottomSheet<EditExerciseProps>(
 
         <View style={s(`aic`)}>
           {selectedCompletionType === ExerciseCompletionType.REPS && (
-            <Animated.View entering={SlideInRight} exiting={SlideOutLeft}>
+            <Animated.View
+            // entering={SlideInRight} exiting={SlideOutLeft}
+            >
               <SelectReps id={id} />
             </Animated.View>
           )}
 
           {selectedCompletionType === ExerciseCompletionType.TIME && (
-            <Animated.View entering={SlideInRight} exiting={SlideOutLeft}>
+            <Animated.View
+            // entering={SlideInRight} exiting={SlideOutLeft}
+            >
               <SelectTime id={id} />
             </Animated.View>
           )}
 
           {selectedCompletionType === ExerciseCompletionType.GYM && (
-            <Animated.View entering={SlideInRight} exiting={SlideOutLeft}>
+            <Animated.View
+            // entering={SlideInRight} exiting={SlideOutLeft}
+            >
               <SelectGym id={id} />
             </Animated.View>
           )}

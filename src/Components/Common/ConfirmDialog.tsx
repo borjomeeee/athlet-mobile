@@ -44,13 +44,13 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   return (
     <View style={s(`abs t:0 r:0 b:0 l:0`)}>
       <Animated.View
-        entering={FadeIn}
-        exiting={FadeOut}
+        // entering={FadeIn}
+        // exiting={FadeOut}
         style={s(`fill bgc:#00000050`)}>
         <View style={s(`abs container b:0 r:0 l:0`)}>
           <Animated.View
-            entering={SlideInDown}
-            exiting={SlideOutDown}
+            // entering={SlideInDown}
+            // exiting={SlideOutDown}
             style={s(`br:10 pv:10 pr:20 pl:15 bgc:white`)}>
             <Text style={s(`medium`)}>{title}</Text>
             <HSpacer size={15} />

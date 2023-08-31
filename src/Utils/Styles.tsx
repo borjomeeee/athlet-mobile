@@ -13,7 +13,7 @@ export const Colors = {
 
   ultraLightGray: '#DADADA',
   lightGray: '#DCDCDC',
-  gray: '#A0A0A0',
+  gray: '#ACACAC',
   darkGray: '#666666',
 
   layout: '#FAFAFA',

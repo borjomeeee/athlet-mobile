@@ -1,9 +1,7 @@
 import s from '@borjomeeee/rn-styles';
 import React from 'react';
 import Animated, {
-  useAnimatedReaction,
   useAnimatedScrollHandler,
-  useSharedValue,
   runOnUI,
   useAnimatedStyle,
   useDerivedValue,

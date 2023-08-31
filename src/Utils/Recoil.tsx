@@ -42,7 +42,6 @@ export const DebugObserver = () => {
 export const useGetRecoilState = <T,>(atomInstance: RecoilValue<T>) => {
   const getRecoilValueInfo = useGetRecoilValueInfo_UNSTABLE();
   return React.useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     () => getRecoilValueInfo(atomInstance).loadable?.contents as T,
     [getRecoilValueInfo, atomInstance],
   );

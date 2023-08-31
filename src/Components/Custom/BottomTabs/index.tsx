@@ -6,7 +6,7 @@ import {HSpacer, ShadowView, Text, View} from 'src/Components/Common';
 import {Pressable} from 'src/Components/Pressable';
 import {Colors} from 'src/Utils/Styles';
 
-import TabBarHome from 'src/Assets/Svg/TabBarHome';
+import TabBarCalendar from 'src/Assets/Svg/Calendar';
 import TabBarAccount from 'src/Assets/Svg/TabBarAccount';
 import TabBarFitness from 'src/Assets/Svg/TabBarFitness';
 import {BottomTabPaths} from 'src/Navigation/Paths';
@@ -23,24 +23,28 @@ export const BottomTabs = (props: BottomTabBarProps) => {
     navigation.navigate(BottomTabPaths.Trainings);
   }, [navigation]);
 
+  const handlePressCalendar = React.useCallback(() => {
+    navigation.navigate(BottomTabPaths.Calendar);
+  }, [navigation]);
+
   return (
     <ShadowView dx={0} dy={4} blur={12} color={Colors.black + '05'}>
       <View style={s(`btrr:15 btlr:15 bgc:${Colors.white}`)}>
         <View style={s(`container pv:15 row jcsa`)}>
-          {/* <Pressable>
-            <TabBarHome
+          <Pressable onPress={handlePressCalendar}>
+            <TabBarCalendar
               fill={
                 props.state.index === 0
                   ? Colors.tabBarActive
                   : Colors.tabBarInactive
               }
             />
-          </Pressable> */}
+          </Pressable>
 
           <Pressable onPress={handlePressFitness}>
             <TabBarFitness
               fill={
-                props.state.index === 0
+                props.state.index === 1
                   ? Colors.tabBarActive
                   : Colors.tabBarInactive
               }
@@ -50,7 +54,7 @@ export const BottomTabs = (props: BottomTabBarProps) => {
           <Pressable onPress={handlePressAccount}>
             <TabBarAccount
               fill={
-                props.state.index === 1
+                props.state.index === 2
                   ? Colors.tabBarActive
                   : Colors.tabBarInactive
               }
