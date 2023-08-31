@@ -100,7 +100,6 @@
 		13B07FAE1A68108700A75B9A /* athletmobile */ = {
 			isa = PBXGroup;
 			children = (
-				550CF1EB29770EAF00DAF57D /* AppDelegate.mm */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				5516B6C329C58B3300406877 /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,

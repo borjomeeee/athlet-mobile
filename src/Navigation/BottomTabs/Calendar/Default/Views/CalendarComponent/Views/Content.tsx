@@ -37,22 +37,21 @@ export const Content = () => {
 };
 
 export const generateDaysGridForDate = (date: number) => {
-  const dDate = dayjs(date);
-  const month = dayjs(date).get('month');
+  const currentMonthDate = dayjs(date).startOf('month');
+  const nextMonthDate = currentMonthDate.add(1, 'month');
 
   const daysByWeek: number[][] = [];
-  let cursorDate = dDate.startOf('week');
+  let cursorDate = currentMonthDate.startOf('week');
 
-  while (
-    cursorDate.get('month') <= month &&
-    cursorDate.get('year') === dDate.get('year')
-  ) {
-    daysByWeek.push([]);
+  while (cursorDate.isBefore(nextMonthDate)) {
+    const days = [];
 
     for (let i = 0; i < 7; i++) {
-      daysByWeek[daysByWeek.length - 1].push(cursorDate.toDate().getTime());
+      days.push(cursorDate.toDate().getTime());
       cursorDate = cursorDate.add(1, 'day');
     }
+
+    daysByWeek.push(days);
   }
 
   return daysByWeek;
