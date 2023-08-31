@@ -11,7 +11,9 @@ export const AddElementButton = React.memo(() => {
   const {handlePressAddElement} = useAddElementButtonController();
 
   return (
-    <Animated.View entering={FadeIn} exiting={FadeOut}>
+    <Animated.View
+    // entering={FadeIn} exiting={FadeOut}
+    >
       {isEditing && (
         <UI.Pressable
           style={s(

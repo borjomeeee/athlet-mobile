@@ -130,7 +130,6 @@ export class FakeApiFabric {
 
             const {id} = request.params;
 
-            // eslint-disable-next-line @typescript-eslint/no-shadow
             schema.db.trainings.remove(id);
             return makeResponse(updateTraining);
           },
